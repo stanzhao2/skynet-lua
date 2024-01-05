@@ -82,7 +82,7 @@ static void forword(const std::string& data, size_t caller, int rcf) {
     lua_State* L = luaC_getlocal();
     revert_if_return revert(L);
     lua_pushcfunction(L, on_watch);
-    lua_pushstring (L, evr_back);
+    lua_pushstring (L, evr_response);
     lua_pushlstring(L, data.c_str(), data.size());
     lua_pushinteger(L, (lua_Integer)caller);
     lua_pushinteger(L, (lua_Integer)rcf);
@@ -172,7 +172,7 @@ static int dispatch(const topic_type& topic, int rcb, const char* data, size_t s
     const char* result = luaL_checklstring(L, -1, &nsize);
     std::string temp(result, nsize);
     if (is_local(caller)) {
-      luaC_r_back(temp, caller, rcf);
+      luaC_r_response(temp, caller, rcf);
       return;
     }
     forword(temp, caller, rcf);
@@ -183,7 +183,7 @@ static int dispatch(const topic_type& topic, int rcb, const char* data, size_t s
 /********************************************************************************/
 
 /* ignoring return values */
-static int luaf_r_deliver(lua_State* L) {
+static int luaf_deliver(lua_State* L) {
   int i = 1, rcf = 0;
   const char* name = luaL_checkstring(L, i++);
   if (lua_type(L, i) == LUA_TFUNCTION) {
@@ -206,27 +206,16 @@ static int luaf_r_deliver(lua_State* L) {
 }
 
 /* async wait return values */
-static int luaf_r_invoke(lua_State* L) {
+static int luaf_invoke(lua_State* L) {
   luaL_checktype(L, 2, LUA_TFUNCTION);
   lua_pushinteger(L, 1); /* mask */
   lua_pushinteger(L, 0); /* who  */
   lua_rotate(L, 3, 2);
-  return luaf_r_deliver(L);
-}
-
-/* watch events */
-static int luaf_r_watch(lua_State* L) {
-  luaL_checktype(L, 1, LUA_TFUNCTION);
-  if (watcher_luaf) {
-    luaC_unref(L, watcher_luaf);
-  }
-  watcher_ios  = lws::getlocal();
-  watcher_luaf = luaC_ref(L, 1);
-  return 0;
+  return luaf_deliver(L);
 }
 
 /* register function */
-static int luaf_r_bind(lua_State* L) {
+static int luaf_bind(lua_State* L) {
   const char* name = luaL_checkstring(L, 1);
   luaL_checktype(L, 2, LUA_TFUNCTION);
   int opt = 0;
@@ -248,7 +237,7 @@ static int luaf_r_bind(lua_State* L) {
 }
 
 /* unregister function */
-static int luaf_r_unbind(lua_State* L) {
+static int luaf_unbind(lua_State* L) {
   const char* name = luaL_checkstring(L, 1);
   int ios = lws::getlocal();
   int opt = 0;
@@ -261,16 +250,74 @@ static int luaf_r_unbind(lua_State* L) {
   return 1;
 }
 
+/* watch events */
+static int luaf_lookout(lua_State* L) {
+  luaL_checktype(L, 1, LUA_TFUNCTION);
+  if (watcher_luaf) {
+    luaC_unref(L, watcher_luaf);
+  }
+  watcher_ios  = lws::getlocal();
+  watcher_luaf = luaC_ref(L, 1);
+  return 0;
+}
+
+static int luaf_r_bind(lua_State* L) {
+  const char* name = luaL_checkstring(L, 1);
+  size_t who = luaL_checkinteger(L, 2);
+  int rcb = (int)luaL_checkinteger(L, 3);
+  int opt = (int)luaL_checkinteger(L, 4);
+  int result = luaC_r_bind(name, who, rcb, opt);
+  lua_pushboolean(L, result == LUA_OK ? 1 : 0);
+  return 1;
+}
+
+static int luaf_r_unbind(lua_State* L) {
+  const char* name = luaL_checkstring(L, 1);
+  size_t who = luaL_checkinteger(L, 2);
+  int rcb = luaC_r_unbind(name, who, nullptr);
+  lua_pushboolean(L, rcb > 0 ? 1 : 0);
+  return 1;
+}
+
+static int luaf_r_response(lua_State* L) {
+  size_t size;
+  const char* data = luaL_checklstring(L, 1, &size);
+  size_t caller = luaL_checkinteger(L, 2);
+  int rcf = (int)luaL_checkinteger(L, 3);
+  std::string argv(data, size);
+  int result = luaC_r_response(argv, caller, rcf);
+  lua_pushboolean(L, result == LUA_OK ? 1 : 0);
+  return 1;
+}
+
+static int luaf_r_deliver(lua_State* L) {
+  size_t size;
+  const char* name = luaL_checkstring(L, 1);
+  const char* data = luaL_checklstring(L, 2, &size);
+  size_t mask      = luaL_checkinteger(L, 3);
+  size_t who       = luaL_checkinteger(L, 4);
+  size_t caller    = luaL_checkinteger(L, 5);
+  int rcf = (int)luaL_checkinteger(L, 6);
+  int count = luaC_r_deliver(name, data, size, mask, who, caller, rcf);
+  lua_pushinteger(L, count);
+  return 1;
+}
+
 /********************************************************************************/
 
 LUAC_API int luaopen_rpcall(lua_State* L) {
   const luaL_Reg methods[] = {
-    { "deliver",  luaf_r_deliver    },
-    { "invoke",   luaf_r_invoke     },
-    { "bind",     luaf_r_bind       },
-    { "watch",    luaf_r_watch      },
-    { "unbind",   luaf_r_unbind     },
-    { NULL,       NULL              }
+    { "lookout",    luaf_lookout    },
+    { "bind",       luaf_bind       },
+    { "unbind",     luaf_unbind     },
+    { "invoke",     luaf_invoke     },
+    { "deliver",    luaf_deliver    },
+
+    { "r_deliver",  luaf_r_deliver  },
+    { "r_bind",     luaf_r_bind     },
+    { "r_unbind",   luaf_r_unbind   },
+    { "r_response", luaf_r_response },
+    { NULL,         NULL            }
   };
   lua_getglobal(L, "os");
   luaL_setfuncs(L, methods, 0);
@@ -282,7 +329,7 @@ LUAC_API int luaopen_rpcall(lua_State* L) {
   return 0;
 }
 
-LUAC_API int luaC_r_watch(lua_CFunction f) {
+LUAC_API int luaC_lookout(lua_CFunction f) {
   unique_mutex_lock(rpcall_lock);
   watcher_ios = lws::getlocal();
   watcher_cfn = f;
@@ -341,7 +388,7 @@ LUAC_API int luaC_r_bind(const char* name, size_t who, int rcb, int opt) {
   return LUA_ERRRUN;
 }
 
-LUAC_API int luaC_r_back(const std::string& data, size_t caller, int rcf) {
+LUAC_API int luaC_r_response(const std::string& data, size_t caller, int rcf) {
   lws_int ok = lws_false;
   if (is_local(caller)) {
     ok = lws::post((int)caller, lws_bind(back_to_local, data, rcf));
