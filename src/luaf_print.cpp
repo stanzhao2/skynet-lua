@@ -54,7 +54,7 @@ static const char* localtime(char* out, size_t size) {
   time_t now = time(NULL);
   struct tm* ptm = localtime(&now);
   auto ms = (int)(luaC_clock() % 1000);
-  snprintf(out, size, "%02d/%02d %02d:%02d:%02d.%03d:", ptm->tm_mday, ptm->tm_mon + 1, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, ms);
+  snprintf(out, size, "%02d/%02d %02d:%02d:%02d.%03d: ", ptm->tm_mday, ptm->tm_mon + 1, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, ms);
   return out;
 }
 
@@ -64,9 +64,9 @@ static void foutput(const char* msg, color_type color) {
 
   static std::mutex printlock;
   std::unique_lock<std::mutex> lock(printlock);
-  printf("%s ", prefix);
 
 #ifndef _MSC_VER
+  printf("\033[1;36m%s\033[0m", prefix);
   switch (color) {
   case color_type::print:
     printf("\033[1;36m%s\033[0m", msg);
@@ -98,6 +98,9 @@ static void foutput(const char* msg, color_type color) {
     break;
   default: break;
   }
+  WORD defclr = FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_BLUE;
+  SetConsoleTextAttribute(h, defclr);
+  printf("%s", prefix);
   SetConsoleTextAttribute(h, text_color);
   printf("%s", msg);
   SetConsoleTextAttribute(h, si.wAttributes);
