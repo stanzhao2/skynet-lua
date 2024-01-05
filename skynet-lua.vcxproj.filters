@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="源文件\rapidjson">
+      <UniqueIdentifier>{3297a0dc-e918-4ae0-acf3-6c35d46539d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\socket.io">
+      <UniqueIdentifier>{92ae9c4a-ca9a-4616-bcbe-2055e906fd41}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\rapidjson\document.cpp">
+      <Filter>源文件\rapidjson</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rapidjson\rapidjson.cpp">
+      <Filter>源文件\rapidjson</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rapidjson\schema.cpp">
+      <Filter>源文件\rapidjson</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rapidjson\values.cpp">
+      <Filter>源文件\rapidjson</Filter>
+    </ClCompile>
+    <ClCompile Include="src\socket.io\socket.io.cpp">
+      <Filter>源文件\socket.io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\luaf_allotor.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\luaf_bind.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\luaf_clock.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\luaf_crypto.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\luaf_gzip.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\luaf_json.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\luaf_metatable.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\luaf_pack.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\luaf_pcall.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\luaf_pload.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\luaf_print.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\luaf_ref.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\luaf_require.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\luaf_rpcall.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\luaf_socket.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\luaf_state.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\luaf_timer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\rapidjson\file.hpp">
+      <Filter>源文件\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rapidjson\luax.hpp">
+      <Filter>源文件\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rapidjson\rapidjson.h">
+      <Filter>源文件\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rapidjson\stringstream.hpp">
+      <Filter>源文件\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rapidjson\userdata.hpp">
+      <Filter>源文件\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rapidjson\values.hpp">
+      <Filter>源文件\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\socket.io\socket.io.h">
+      <Filter>源文件\socket.io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\socket.io\socket.io.hpp">
+      <Filter>源文件\socket.io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\luaf_allotor.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\luaf_bind.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\luaf_clock.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\luaf_crypto.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\luaf_gzip.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\luaf_json.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\luaf_metatable.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\luaf_pack.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\luaf_pcall.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\luaf_pload.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\luaf_print.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\luaf_ref.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\luaf_require.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\luaf_rpcall.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\luaf_socket.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\luaf_state.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\luaf_timer.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
