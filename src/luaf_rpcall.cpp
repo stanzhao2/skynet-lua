@@ -32,20 +32,30 @@ typedef std::map<
 #define is_local(what) (what <= 0xffff)
 #define unique_mutex_lock(what) std::unique_lock<std::mutex> lock(what)
 
-static std::mutex rpcall_lock;
-static lws_int watcher = 0;
-static lua_CFunction fn_watcher = nullptr;
+static std::mutex      rpcall_lock;
+static lws_int         watcher_ios  = 0;
+static lws_int         watcher_luaf = 0;
+static lua_CFunction   watcher_cfn  = nullptr;
 static rpcall_map_type rpcall_handlers;
 
 /********************************************************************************/
 
 static int on_watch(lua_State* L) {
-  if (fn_watcher) {
-    return fn_watcher(L);
+  if (watcher_cfn != nullptr) {
+    return watcher_cfn(L);
   }
-  size_t size;
-  luaC_pack(L, lua_gettop(L));
-  const char* data = luaL_checklstring(L, -1, &size);
+  if (watcher_luaf == 0) {
+    return 0;
+  }
+  int argc = lua_gettop(L);
+  luaC_rawgeti(L, watcher_luaf);
+  if (lua_type(L, -1) != LUA_TFUNCTION) {
+    return 0;
+  }
+  lua_rotate(L, 1, 1);
+  if (luaC_xpcall(L, argc, 0) != LUA_OK) {
+    lua_ferror("%s\n", lua_tostring(L, -1));
+  }
   return 0;
 }
 
@@ -68,7 +78,7 @@ static void back_to_local(const std::string& data, int rcf) {
 
 /* back to response of request */
 static void forword(const std::string& data, size_t caller, int rcf) {
-  lws_int ok = lws::post(watcher, [=]() {
+  lws_int ok = lws::post(watcher_ios, [=]() {
     lua_State* L = luaC_getlocal();
     revert_if_return revert(L);
     lua_pushcfunction(L, on_watch);
@@ -89,7 +99,7 @@ static int forword(const topic_type& topic, const char* data, size_t size, size_
   if (data && size) {
     argv.assign(data, size);
   }
-  lws_int ok = lws::post(watcher, [=]() {
+  lws_int ok = lws::post(watcher_ios, [=]() {
     lua_State* L = luaC_getlocal();
     revert_if_return revert(L);
     lua_pushcfunction(L, on_watch);
@@ -110,14 +120,15 @@ static int forword(const topic_type& topic, const char* data, size_t size, size_
 
 /* send bind or unbind request */
 static int dispatch(const topic_type& topic, const std::string& what) {
-  return lws::post(watcher, [topic, what]() {
+  return lws::post(watcher_ios, [topic, what]() {
     lua_State* L = luaC_getlocal();
     revert_if_return revert(L);
     lua_pushcfunction(L, on_watch);
     lua_pushlstring(L, what.c_str(), what.size());
     lua_pushlstring(L, topic.c_str(), topic.size());
+    lua_pushinteger(L, lws::getlocal());
 
-    if (luaC_xpcall(L, 2, 0) != LUA_OK) {
+    if (luaC_xpcall(L, 3, 0) != LUA_OK) {
       lua_ferror("%s\n", lua_tostring(L, -1));
     }
   });
@@ -203,6 +214,17 @@ static int luaf_r_invoke(lua_State* L) {
   return luaf_r_deliver(L);
 }
 
+/* watch events */
+static int luaf_r_watch(lua_State* L) {
+  luaL_checktype(L, 1, LUA_TFUNCTION);
+  if (watcher_luaf) {
+    luaC_unref(L, watcher_luaf);
+  }
+  watcher_ios  = lws::getlocal();
+  watcher_luaf = luaC_ref(L, 1);
+  return 0;
+}
+
 /* register function */
 static int luaf_r_bind(lua_State* L) {
   const char* name = luaL_checkstring(L, 1);
@@ -246,6 +268,7 @@ LUAC_API int luaopen_rpcall(lua_State* L) {
     { "deliver",  luaf_r_deliver    },
     { "invoke",   luaf_r_invoke     },
     { "bind",     luaf_r_bind       },
+    { "watch",    luaf_r_watch      },
     { "unbind",   luaf_r_unbind     },
     { NULL,       NULL              }
   };
@@ -253,16 +276,16 @@ LUAC_API int luaopen_rpcall(lua_State* L) {
   luaL_setfuncs(L, methods, 0);
   lua_pop(L, 1); /* pop 'os' from stack */
 
-  if (!watcher) {
-    watcher = lws::getlocal();
+  if (!watcher_ios) {
+    watcher_ios = lws::getlocal();
   }
   return 0;
 }
 
 LUAC_API int luaC_r_watch(lua_CFunction f) {
   unique_mutex_lock(rpcall_lock);
-  watcher = lws::getlocal();
-  fn_watcher = f;
+  watcher_ios = lws::getlocal();
+  watcher_cfn = f;
   return LUA_OK;
 }
 
