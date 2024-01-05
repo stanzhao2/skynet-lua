@@ -59,11 +59,11 @@ VERS_1.0
 	luaC_ref;
 	luaC_rawgeti;
 	luaC_execute;
+	luaC_lookout;
+	luaC_r_deliver;
 	luaC_r_bind;
 	luaC_r_unbind;
-	luaC_r_deliver;
-	luaC_r_back;
-	luaC_r_watch;
+	luaC_r_response;
 
     local:
         *;
