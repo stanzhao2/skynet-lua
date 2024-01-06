@@ -5,7 +5,7 @@
 local format = string.format;
 local type_what = require("skynet.protocol");
 
-local sessions = {};
+local sessions   = {};
 local lua_bounds = {};
 local def_ws_port<const> = 80;
 
@@ -32,11 +32,12 @@ local function ws_on_error(ec, peer, msg)
     sessions[id] = nil;
     peer:close();
   end
+  --cancel bind for the session
   for caller, v in pairs(lua_bounds) do
     if caller & 0xffff == id then
 	  for name, info in pairs(v) do
 	    os.r_unbind(name, caller);
-        print("lua unbind", caller, name);
+        trace(format("unbind %s by caller(%d)", name, caller));
 	  end
 	  lua_bounds[caller] = nil;
 	end
@@ -46,19 +47,20 @@ end
 --------------------------------------------------------------------------------
 
 local function lua_bind(info, caller)
-  local name   = info.name;
+  local name = info.name;
   if not lua_bounds[caller] then
     lua_bounds[caller] = {};
   end
   lua_bounds[caller][name] = info;
-  print("lua bind", caller, name);
+  trace(format("bind %s by caller(%d)", name, caller));
 end
 
 --------------------------------------------------------------------------------
 
 local function lua_unbind(info, caller)
-  local name   = info.name;
+  local name = info.name;
   lua_bounds[caller][name] = nil;
+  trace(format("unbind %s by caller(%d)", name, caller));
 end
 
 --------------------------------------------------------------------------------
