@@ -9,6 +9,8 @@
 #include "luaf_state.h"
 #include "socket.io/socket.io.hpp"
 
+LUAC_API int luaC_clsexpires();
+
 /********************************************************************************/
 
 #define LUAC_STOPCALL  "os:cancel"
@@ -125,16 +127,25 @@ static int luaf_wait(lua_State* L) {
   }
   lua_Integer count = 0;
   if (expires < 0) {
-    count = lws::run();
+    while (!lws::stopped()) {
+      count += lws::run_for(1000);
+      luaC_clsexpires();
+    }
     lua_pushinteger(L, count);
     return 1;
   }
   if (expires == 0) {
     count = lws::poll();
+    luaC_clsexpires();
     lua_pushinteger(L, count);
     return 1;
   }
-  count = lws::run_for(expires);
+  while (!lws::stopped() && expires > 0) {
+    auto wait = luaC_min(1000, expires);
+    expires -= wait;
+    count += lws::run_for(wait);
+    luaC_clsexpires();
+  }
   lua_pushinteger(L, count);
   return 1;
 }
