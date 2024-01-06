@@ -1,4 +1,4 @@
-﻿
+
 
 --------------------------------------------------------------------------------
 
@@ -6,7 +6,7 @@ local format = string.format;
 local type_what = require("skynet.protocol");
 
 local sessions = {};
-local local_binder = {};
+local lua_bounds = {};
 local def_ws_port<const> = 80;
 
 --------------------------------------------------------------------------------
@@ -32,25 +32,82 @@ local function ws_on_error(ec, peer, msg)
     sessions[id] = nil;
     peer:close();
   end
-end
-
---------------------------------------------------------------------------------
-
-local function lua_bind(info)
-  local name   = info.name;
-  local caller = info.caller;
-  if not local_binder[caller] then
-    local_binder[caller] = {};
+  for caller, v in pairs(lua_bounds) do
+    if caller & 0xffff == id then
+	  for name, info in pairs(v) do
+	    os.r_unbind(name, caller);
+        print("lua unbind", caller, name);
+	  end
+	  lua_bounds[caller] = nil;
+	end
   end
-  local_binder[caller][name] = info;
 end
 
 --------------------------------------------------------------------------------
 
-local function lua_unbind(info)
+local function lua_bind(info, caller)
   local name   = info.name;
-  local caller = info.caller;
-  local_binder[caller][name] = nil;
+  if not lua_bounds[caller] then
+    lua_bounds[caller] = {};
+  end
+  lua_bounds[caller][name] = info;
+  print("lua bind", caller, name);
+end
+
+--------------------------------------------------------------------------------
+
+local function lua_unbind(info, caller)
+  local name   = info.name;
+  lua_bounds[caller][name] = nil;
+end
+
+--------------------------------------------------------------------------------
+
+local function ws_on_receive(peer, ec, data)
+  if ec > 0 then
+    ws_on_error(ec, peer, "receive error");
+	return;
+  end
+  
+  local id   = peer:id();
+  local info = unpack(data);
+  local what = info.what;
+  
+  if what == type_what.deliver then
+    local name   = info.name;
+	local argv   = info.argv;
+	local mask   = info.mask;
+	local who    = info.who;
+	local caller = info.caller << 16 | id;
+	local rcf    = info.rcf;
+	os.r_deliver(name, argv, mask, who, caller, rcf);
+	return;
+  end
+  
+  if what == type_what.response then
+    local data   = info.data;
+	local caller = info.caller;
+	local rcf    = info.rcf;
+	os.r_response(data, caller, rcf);
+	return;
+  end
+  
+  if what == type_what.bind then
+    local name   = info.name;
+	local rcb    = info.rcb;
+	local caller = info.caller << 16 | id;
+	lua_bind(info, caller);
+	os.r_bind(name, caller, rcb);
+	return;
+  end
+  
+  if what == type_what.unbind then
+    local name   = info.name;
+	local caller = info.caller << 16 | id;
+	lua_unbind(info, caller);
+	os.r_unbind(name, caller);
+	return;
+  end
 end
 
 --------------------------------------------------------------------------------
@@ -58,13 +115,13 @@ end
 local function on_lookout(info)
   local what = info.what;  
   if what == type_what.bind then
-	lua_bind(info);
+	lua_bind(info, info.caller);
     sendto_others(pack(info));
 	return;
   end
   
   if what == type_what.unbind then
-	lua_unbind(info);
+	lua_unbind(info, info.caller);
     sendto_others(pack(info));
 	return;
   end
@@ -88,58 +145,6 @@ end
 
 --------------------------------------------------------------------------------
 
-local function ws_on_receive(peer, ec, data)
-  if ec > 0 then
-    ws_on_error(ec, peer, "receive error");
-	return;
-  end
-  
-  local id   = peer:id();
-  local info = unpack(data);
-  local what = info.what;
-  
-  if what == type_what.deliver then
-    local name   = info.name;	
-    local data   = info.data;
-	local argv   = info.argv;
-	local mask   = info.mask;
-	local who    = info.who;
-	local caller = info.caller;
-	local rcf    = info.rcf;
-	os.r_deliver(name, data, mask, who, caller, rcf);
-	print("r_deliver");
-	return;
-  end
-  
-  if what == type_what.response then
-    local data   = info.data;
-	local caller = info.caller;
-	local rcf    = info.rcf;
-	os.r_response(data, caller, rcf);
-	print("r_response");
-	return;
-  end
-  
-  if what == type_what.bind then
-    local name   = info.name;
-	local rcb    = info.rcb;
-	local caller = info.caller << 16 | id;
-	os.r_bind(name, caller, rcb);
-	print("r_bind", caller);
-	return;
-  end
-  
-  if what == type_what.unbind then
-    local name   = info.name;
-	local caller = info.caller << 16 | id;
-	os.r_unbind(name, caller);
-	print("r_unbind");
-	return;
-  end
-end
-
---------------------------------------------------------------------------------
-
 local function new_session(protocol, peer)
   local session = {
     socket = peer,
@@ -157,6 +162,13 @@ local function ws_on_accept(protocol, ec, peer)
 	return;
   end
   new_session(protocol, peer);
+  for caller, bounds in pairs(lua_bounds) do
+    if caller <= 0xffff then
+	  for name, info in pairs(bounds) do
+	    peer:send(pack(info));
+	  end
+	end
+  end
   return io.socket(protocol);
 end
 
