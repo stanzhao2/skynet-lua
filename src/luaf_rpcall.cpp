@@ -281,7 +281,7 @@ static int luaf_deliver(lua_State* L) {
 /* async wait return values */
 static int luaf_invoke(lua_State* L) {
   luaL_checktype(L, 2, LUA_TFUNCTION);
-  lua_pushinteger(L, 1); /* mask */
+  lua_pushinteger(L, (lua_Integer)luaC_clock()); /* mask */
   lua_pushinteger(L, 0); /* who  */
   lua_rotate(L, 3, 2);
   return luaf_deliver(L);
