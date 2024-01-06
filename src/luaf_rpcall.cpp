@@ -286,7 +286,6 @@ static int luaf_deliver(lua_State* L) {
       luaC_unref(L, rcf);
     }
   }
-  clear_timeout();
   lua_pushinteger(L, count);
   return 1;
 }
@@ -427,6 +426,11 @@ LUAC_API int luaC_lookout(lua_CFunction f) {
   unique_mutex_lock(rpcall_lock);
   watcher_ios = lws::getlocal();
   watcher_cfn = f;
+  return LUA_OK;
+}
+
+LUAC_API int luaC_clsexpires() {
+  clear_timeout();
   return LUA_OK;
 }
 
