@@ -166,14 +166,12 @@ static int luaf_read(lua_State* L) {
     }
   });
   if (size > 0) {
-    lua_pushboolean(L, 1);
     lua_pushlstring(L, packet.c_str(), packet.size());
   }
   else {
-    lua_pushboolean(L, 0);
     lua_pushnil(L);
   }
-  return 2;
+  return 1;
 }
 
 static int luaf_write(lua_State* L) {
@@ -184,9 +182,8 @@ static int luaf_write(lua_State* L) {
   }
   const char* data = luaL_checklstring(L, 2, &size);
   lws_int sent = lws::write(ud->handle, data, size);
-  lua_pushboolean(L, sent < 0 ? 0 : 1);
   lua_pushinteger(L, sent);
-  return 2;
+  return 1;
 }
 
 static int luaf_send(lua_State* L) {
@@ -243,16 +240,14 @@ static int luaf_endpoint(lua_State* L) {
   lws_endinfo info;
   lws_int ok = lws::endpoint(ud->handle, &info, type);
   if (ok == lws_true) {
-    lua_pushboolean(L, 1);
     lua_pushstring (L, info.ip);
     lua_pushinteger(L, info.port);
   }
   else {
-    lua_pushboolean(L, 0);
     lua_pushnil(L);
     lua_pushnil(L);
   }
-  return 3;
+  return 2;
 }
 
 static int luaf_connect(lua_State* L) {
@@ -298,14 +293,12 @@ static int luaf_geturi(lua_State* L) {
   char* uri = nullptr;
   lws_int ok = lws::geturi(ud->handle, &uri);
   if (ok == lws_true) {
-    lua_pushboolean(L, 1);
     lua_pushstring(L, uri);
   }
   else {
-    lua_pushboolean(L, 0);
     lua_pushnil(L);
   }
-  return 2;
+  return 1;
 }
 
 static int luaf_seturi(lua_State* L) {
@@ -328,14 +321,12 @@ static int luaf_getheader(lua_State* L) {
   char* value = nullptr;
   lws_int ok = lws::getheader(ud->handle, name, &value);
   if (ok == lws_true) {
-    lua_pushboolean(L, 1);
     lua_pushstring(L, value);
   }
   else {
-    lua_pushboolean(L, 0);
     lua_pushnil(L);
   }
-  return 2;
+  return 1;
 }
 
 static int luaf_setheader(lua_State* L) {
@@ -355,14 +346,12 @@ static int luaf_wwwget(lua_State* L) {
   std::string data;
   lws_int ok = lws::wwwget(url, data);
   if (ok == lws_true) {
-    lua_pushboolean(L, 1);
     lua_pushlstring(L, data.c_str(), data.size());
   }
   else {
-    lua_pushboolean(L, 0);
     lua_pushnil(L);
   }
-  return 2;
+  return 1;
 }
 
 /********************************************************************************/

@@ -112,12 +112,16 @@ static void forword(const std::string& data, size_t caller, int rcf) {
     lua_State* L = luaC_getlocal();
     revert_if_return revert(L);
     lua_pushcfunction(L, on_watch);
-    lua_pushstring (L, evr_response);
+    lua_newtable(L);
+    lua_pushstring(L, evr_response);
+    lua_setfield(L, -2, "what");
     lua_pushlstring(L, data.c_str(), data.size());
+    lua_setfield(L, -2, "data");
     lua_pushinteger(L, (lua_Integer)caller);
+    lua_setfield(L, -2, "caller");
     lua_pushinteger(L, (lua_Integer)rcf);
-
-    if (luaC_xpcall(L, 6, 0) != LUA_OK) {
+    lua_setfield(L, -2, "rcf");
+    if (luaC_xpcall(L, 1, 0) != LUA_OK) {
       lua_ferror("%s\n", lua_tostring(L, -1));
     }
   });
@@ -137,15 +141,22 @@ static int forword(const topic_type& topic, const char* data, size_t size, size_
     lua_State* L = luaC_getlocal();
     revert_if_return revert(L);
     lua_pushcfunction(L, on_watch);
-    lua_pushstring (L, evr_deliver);
+    lua_newtable(L);
+    lua_pushstring(L, evr_deliver);
+    lua_setfield(L, -2, "what");
     lua_pushlstring(L, topic.c_str(), topic.size());
+    lua_setfield(L, -2, "name");
     lua_pushlstring(L, argv.c_str(), argv.size());
+    lua_setfield(L, -2, "argv");
     lua_pushinteger(L, (lua_Integer)mask);
+    lua_setfield(L, -2, "mask");
     lua_pushinteger(L, (lua_Integer)who);
+    lua_setfield(L, -2, "who");
     lua_pushinteger(L, (lua_Integer)caller);
+    lua_setfield(L, -2, "caller");
     lua_pushinteger(L, (lua_Integer)rcf);
-
-    if (luaC_xpcall(L, 6, 0) != LUA_OK) {
+    lua_setfield(L, -2, "rcf");
+    if (luaC_xpcall(L, 1, 0) != LUA_OK) {
       lua_ferror("%s\n", lua_tostring(L, -1));
     }
   });
@@ -153,16 +164,21 @@ static int forword(const topic_type& topic, const char* data, size_t size, size_
 }
 
 /* send bind or unbind request */
-static int dispatch(const topic_type& topic, const std::string& what) {
-  return lws::post(watcher_ios, [topic, what]() {
+static int dispatch(const topic_type& topic, const std::string& what, int rcb, size_t caller) {
+  return lws::post(watcher_ios, [=]() {
     lua_State* L = luaC_getlocal();
     revert_if_return revert(L);
     lua_pushcfunction(L, on_watch);
+    lua_newtable(L);
     lua_pushlstring(L, what.c_str(), what.size());
+    lua_setfield(L, -2, "what");
     lua_pushlstring(L, topic.c_str(), topic.size());
-    lua_pushinteger(L, lws::getlocal());
-
-    if (luaC_xpcall(L, 3, 0) != LUA_OK) {
+    lua_setfield(L, -2, "name");
+    lua_pushinteger(L, (lua_Integer)rcb);
+    lua_setfield(L, -2, "rcb");
+    lua_pushinteger(L, (lua_Integer)caller);
+    lua_setfield(L, -2, "caller");
+    if (luaC_xpcall(L, 1, 0) != LUA_OK) {
       lua_ferror("%s\n", lua_tostring(L, -1));
     }
   });
@@ -288,7 +304,7 @@ static int luaf_bind(lua_State* L) {
   }
   else {
     lua_pushboolean(L, 1);
-    if (opt) dispatch(name, evr_bind);
+    if (opt) dispatch(name, evr_bind, rcb, ios);
   }
   return 1;
 }
@@ -301,7 +317,7 @@ static int luaf_unbind(lua_State* L) {
   int rcb = luaC_r_unbind(name, ios, &opt);
   if (rcb) {
     luaC_unref(L, rcb);
-    if (opt) dispatch(name, evr_unbind);
+    if (opt) dispatch(name, evr_unbind, rcb, ios);
   }
   lua_pushboolean(L, rcb ? 1 : 0);
   return 1;
