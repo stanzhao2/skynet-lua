@@ -1,33 +1,12 @@
 ﻿
---skynet watcher service
 
 --------------------------------------------------------------------------------
+
+local format = string.format;
 
 local sessions = {};
 
 local def_ws_port<const> = 80;
-
---------------------------------------------------------------------------------
-
-local function sendto_others(data, session)
-  for peer, v in pairs(sessions) do
-    if peer ~= session.socket then
-	  peer:send(data);
-	end
-  end
-end
-
---------------------------------------------------------------------------------
-
-local function member_change(what, session)
-  local packet = {
-    what   = what,
-	id     = session.socket:id(),
-	ip     = session.ip,
-	port   = session.port,
-  };
-  sendto_others(pack(packet), session);
-end
 
 --------------------------------------------------------------------------------
 
@@ -36,10 +15,9 @@ local function ws_on_error(ec, peer, msg)
   if not session then
     return;
   end
-  member_change("leave", session);
   sessions[peer] = nil;
   peer:close();
-  error(string.format("error(%d): %s", ec, msg));
+  error(format("error(%d): %s", ec, msg));
 end
 
 --------------------------------------------------------------------------------
@@ -49,28 +27,18 @@ local function ws_on_receive(peer, ec, data)
     ws_on_error(ec, peer, "receive error");
 	return;
   end
-  peer:send(data);
 end
 
 --------------------------------------------------------------------------------
 
 local function new_session(protocol, peer)
+  local _, ip, port = peer:endpoint();
   local session = {
     socket = peer,
-	ip     = peer:getheader("cluster-addr"),
-	port   = peer:getheader("cluster-port")
   };
-  local _, ip, port = peer:endpoint();
-  if not session.ip then
-    session.ip = ip;
-  end
-  if not session.port then
-    session.port = def_ws_port;
-  end
   sessions[peer] = session;
   peer:receive(bind(ws_on_receive, peer));
-  member_change("join", session);
-  print(string.format("%s accept(%s:%d)", protocol, session.ip, session.port));
+  print(format("%s accept(%s:%d)", protocol, ip, port));
 end
 
 --------------------------------------------------------------------------------
@@ -86,23 +54,43 @@ end
 
 --------------------------------------------------------------------------------
 
-function main(port, host)
-  port = port or def_ws_port;
+local function start_listen(port, protocol)
+  port = port or 0;
   local acceptor = io.acceptor();
-  local ok = acceptor:listen(port, host, 16);
+  local ok = acceptor:listen(port, nil, 16);
   if not ok then
-    error(string.format("socket listen error at port: %d", port));
-	return;
+	return false;
   end
-  
-  local protocol = "ws";
   local socket = io.socket(protocol);
   acceptor:accept(socket, bind(ws_on_accept, protocol));
+  return acceptor:endpoint("local");
+end
+
+--------------------------------------------------------------------------------
+
+function main(host, port)
+  local protocol = "ws";
+  local ok, _, lport = start_listen(0, protocol);
+  if not ok then
+    error(format("socket listen error at port: %d", port));
+    return;
+  end
+  
+  local socket = io.socket(protocol);
+  host = host or "127.0.0.1";
+  port = port or def_ws_port;
+  socket:setheader("cluster-port", lport);  
+  
+  if not socket:connect(host, port) then
+    error(format("socket connect to %s:%d error", host, port));
+	return;
+  end
+  socket:receive(bind(ws_on_receive, socket));
+  
+  print(format("%s works on port %d", os.name(), lport));
   while not os.stopped() do
     os.wait(60000);
 	collectgarbage();
   end
-  acceptor:close();
+  socket:close();
 end
-
---------------------------------------------------------------------------------
