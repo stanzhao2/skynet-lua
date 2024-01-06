@@ -19,6 +19,11 @@ typedef struct __node_type {
   }
 } node_type;
 
+struct pend_invoke {
+  lws_int caller;
+  size_t  invoke_time;
+};
+
 typedef std::string topic_type;
 
 typedef std::set<
@@ -29,6 +34,10 @@ typedef std::map<
   topic_type, rpcall_set_type
 > rpcall_map_type;
 
+typedef std::map<
+  int, pend_invoke
+> invoke_map_type;
+
 #define is_local(what) (what <= 0xffff)
 #define unique_mutex_lock(what) std::unique_lock<std::mutex> lock(what)
 
@@ -38,12 +47,7 @@ static lws_int         watcher_ios   = 0;
 static lws_int         watcher_luaf  = 0;
 static lua_CFunction   watcher_cfn   = nullptr;
 static rpcall_map_type rpcall_handlers;
-
-struct pend_invoke {
-  lws_int caller;
-  size_t  invoke_time;
-};
-static std::map<int, pend_invoke> invoke_pendings;
+static thread_local invoke_map_type invoke_pendings;
 
 /********************************************************************************/
 
@@ -66,21 +70,32 @@ static int on_watch(lua_State* L) {
   return 0;
 }
 
+static void on_timeout(int rcf) {
+  auto L = luaC_getlocal();
+  revert_if_return revert(L);
+  unref_if_return  unref_rcf(L, rcf);
+  luaC_rawgeti(L, rcf);
+  if (lua_type(L, -1) != LUA_TFUNCTION) {
+    return;
+  }
+  lua_pushboolean(L, 0);
+  if (luaC_xpcall(L, 1, 0) != LUA_OK) {
+    lua_ferror("%s\n", lua_tostring(L, -1));
+  }
+}
+
 static void clear_timeout() {
   auto now  = luaC_clock();
   auto iter = invoke_pendings.begin();
   for (; iter != invoke_pendings.end();) {
     auto prev = iter->second.invoke_time;
-    if (now - prev < 10000) {
+    if (now - prev < 1000) {
       ++iter;
       continue;
     }
     auto rcf = iter->first;
     auto caller = iter->second.caller;
-    lws::post(caller, [rcf]() {
-      auto L = luaC_getlocal();
-      luaC_unref(L, rcf);
-    });
+    lws::post(caller, lws_bind(on_timeout, rcf));
     iter = invoke_pendings.erase(iter);
   }
 }
@@ -91,9 +106,7 @@ static void back_to_local(const std::string& data, int rcf) {
   revert_if_return revert(L);
   unref_if_return  unref_rcf(L, rcf);
   if (rcf) {
-    unique_mutex_lock(rpcall_lock);
     invoke_pendings.erase(rcf);
-    clear_timeout();
   }
   luaC_rawgeti(L, rcf);
   if (lua_type(L, -1) != LUA_TFUNCTION) {
@@ -263,17 +276,17 @@ static int luaf_deliver(lua_State* L) {
   auto caller = lws::getlocal();
   int count = luaC_r_deliver(name, data, size, mask, who, caller, rcf);
   if (rcf) {
-    if (count == 0) {
-      luaC_unref(L, rcf);
-    }
-    else {
-      unique_mutex_lock(rpcall_lock);
+    if (count > 0) {
       pend_invoke pend;
       pend.caller = caller;
       pend.invoke_time = luaC_clock();
       invoke_pendings[rcf] = pend;
     }
+    else {
+      luaC_unref(L, rcf);
+    }
   }
+  clear_timeout();
   lua_pushinteger(L, count);
   return 1;
 }
