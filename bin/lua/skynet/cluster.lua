@@ -25,27 +25,6 @@ end
 
 --------------------------------------------------------------------------------
 
-local function ws_on_error(ec, peer, msg)
-  local id = peer:id();
-  local session = sessions[id];
-  if session then
-    sessions[id] = nil;
-    peer:close();
-  end
-  --cancel bind for the session
-  for caller, v in pairs(lua_bounds) do
-    if caller & 0xffff == id then
-	  for name, info in pairs(v) do
-	    os.r_unbind(name, caller);
-        trace(format("unbind %s by caller(%d)", name, caller));
-	  end
-	  lua_bounds[caller] = nil;
-	end
-  end
-end
-
---------------------------------------------------------------------------------
-
 local function lua_bind(info, caller)
   local name = info.name;
   if not lua_bounds[caller] then
@@ -57,10 +36,32 @@ end
 
 --------------------------------------------------------------------------------
 
-local function lua_unbind(info, caller)
-  local name = info.name;
+local function lua_unbind(name, caller)
+  if caller > 0xffff then    
+	os.r_unbind(name, caller);
+  end
   lua_bounds[caller][name] = nil;
   trace(format("unbind %s by caller(%d)", name, caller));
+end
+
+--------------------------------------------------------------------------------
+
+local function ws_on_error(ec, peer, msg)
+  local id = peer:id();
+  local session = sessions[id];
+  if session then
+    sessions[id] = nil;
+    peer:close();
+  end
+  --cancel bind for the session
+  for caller, v in pairs(lua_bounds) do
+    if caller > 0xffff and caller & 0xffff == id then
+	  for name, info in pairs(v) do
+	    lua_unbind(name, caller);
+	  end
+	  lua_bounds[caller] = nil;
+	end
+  end
 end
 
 --------------------------------------------------------------------------------
@@ -106,8 +107,7 @@ local function ws_on_receive(peer, ec, data)
   if what == type_what.unbind then
     local name   = info.name;
 	local caller = info.caller << 16 | id;
-	lua_unbind(info, caller);
-	os.r_unbind(name, caller);
+	lua_unbind(name, caller);
 	return;
   end
 end
@@ -123,7 +123,7 @@ local function on_lookout(info)
   end
   
   if what == type_what.unbind then
-	lua_unbind(info, info.caller);
+	lua_unbind(info.name, info.caller);
     sendto_others(pack(info));
 	return;
   end
@@ -164,6 +164,7 @@ local function ws_on_accept(protocol, ec, peer)
 	return;
   end
   new_session(protocol, peer);
+  --
   for caller, bounds in pairs(lua_bounds) do
     if caller <= 0xffff then
 	  for name, info in pairs(bounds) do
