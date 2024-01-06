@@ -124,6 +124,10 @@ static void forword(const std::string& data, size_t caller, int rcf) {
 }
 
 /* send deliver request */
+/*
+** who: receiver
+** rcf: callback function reference for the caller
+*/
 static int forword(const topic_type& topic, const char* data, size_t size, size_t mask, size_t who, size_t caller, int rcf) {
   std::string argv;
   if (data && size) {
@@ -165,6 +169,10 @@ static int dispatch(const topic_type& topic, const std::string& what) {
 }
 
 /* calling the receiver function */
+/*
+** who: receiver
+** rcf: callback function reference for the caller
+*/
 static int dispatch(const topic_type& topic, int rcb, const char* data, size_t size, size_t mask, size_t who, size_t caller, int rcf) {
   /* who is receiver */
   if (!is_local(who)) {
@@ -314,8 +322,7 @@ static int luaf_r_bind(lua_State* L) {
   const char* name = luaL_checkstring(L, 1);
   size_t who = luaL_checkinteger(L, 2);
   int rcb = (int)luaL_checkinteger(L, 3);
-  int opt = (int)luaL_checkinteger(L, 4);
-  int result = luaC_r_bind(name, who, rcb, opt);
+  int result = luaC_r_bind(name, who, rcb, 0);
   lua_pushboolean(L, result == LUA_OK ? 1 : 0);
   return 1;
 }
@@ -332,6 +339,9 @@ static int luaf_r_response(lua_State* L) {
   size_t size;
   const char* data = luaL_checklstring(L, 1, &size);
   size_t caller = luaL_checkinteger(L, 2);
+  if (!is_local(caller)) {
+    luaL_error(L, "#2 out of range: %d", caller);
+  }
   int rcf = (int)luaL_checkinteger(L, 3);
   std::string argv(data, size);
   int result = luaC_r_response(argv, caller, rcf);
@@ -346,6 +356,12 @@ static int luaf_r_deliver(lua_State* L) {
   size_t mask      = luaL_checkinteger(L, 3);
   size_t who       = luaL_checkinteger(L, 4);
   size_t caller    = luaL_checkinteger(L, 5);
+  if (!is_local(who)) {
+    luaL_error(L, "#4 out of range: %d", who);
+  }
+  if (is_local(caller)) {
+    luaL_error(L, "#5 out of range: %d", caller);
+  }
   int rcf = (int)luaL_checkinteger(L, 6);
   int count = luaC_r_deliver(name, data, size, mask, who, caller, rcf);
   lua_pushinteger(L, count);
