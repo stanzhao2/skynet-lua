@@ -259,11 +259,11 @@ static int dispatch(const topic_type& topic, int rcb, const char* data, size_t s
 /* ignoring return values */
 static int luaf_deliver(lua_State* L) {
   int i = 1, rcf = 0;
-  const char* name = luaL_checkstring(L, i++);
   if (lua_type(L, i) == LUA_TFUNCTION) {
     rcf = luaC_ref(L, i++);
   }
   size_t size = 0;
+  const char* name = luaL_checkstring(L, i++);
   size_t mask = luaL_checkinteger(L, i++);
   size_t who  = luaL_checkinteger(L, i);
 
@@ -292,7 +292,7 @@ static int luaf_deliver(lua_State* L) {
 
 /* async wait return values */
 static int luaf_invoke(lua_State* L) {
-  luaL_checktype(L, 2, LUA_TFUNCTION);
+  luaL_checktype(L, 1, LUA_TFUNCTION);
   lua_pushinteger(L, (lua_Integer)luaC_clock()); /* mask */
   lua_pushinteger(L, 0); /* who  */
   lua_rotate(L, 3, 2);
