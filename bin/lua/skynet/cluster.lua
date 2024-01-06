@@ -85,6 +85,22 @@ function main(host, port)
     error(format("socket connect to %s:%d error", host, port));
 	return;
   end
+  
+  while true do
+    local ok, data = socket:read();
+	if not ok then
+	  return;
+	end
+	local packet = unpack(data);
+	if packet.what == "ready" then
+	  break;
+	end
+	if packet.what ~= "member" then
+	  return;
+	end
+	host = packet.ip;
+	port = packet.port;
+  end
   socket:receive(bind(ws_on_receive, socket));
   
   print(format("%s works on port %d", os.name(), lport));

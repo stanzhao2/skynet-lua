@@ -160,12 +160,12 @@ static int luaf_read(lua_State* L) {
   if (ud->accept) {
     luaL_error(L, "invalid method");
   }
-  lws_int ok = lws::read(ud->handle, [&](int ec, const char* data, lws_size size) {
+  lws_int size = lws::read(ud->handle, [&](int ec, const char* data, lws_size size) {
     if (!ec) {
       packet.assign(data, size);
     }
   });
-  if (ok == lws_true) {
+  if (size > 0) {
     lua_pushboolean(L, 1);
     lua_pushlstring(L, packet.c_str(), packet.size());
   }

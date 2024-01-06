@@ -21,6 +21,22 @@ end
 
 --------------------------------------------------------------------------------
 
+local function member_notify(what, session)
+  for peer, v in pairs(sessions) do
+    if peer ~= session.socket then
+	  local packet = {
+	    what = what,
+		id   = v.socket:id(),
+		ip   = v.ip,
+		port = v.port,
+	  };
+	  session.socket:send(pack(packet));
+	end
+  end
+end
+
+--------------------------------------------------------------------------------
+
 local function member_change(what, session)
   local packet = {
     what   = what,
@@ -71,9 +87,13 @@ local function new_session(protocol, peer)
   if not session.port then
     session.port = def_ws_port;
   end
+  
+  member_change("join",   session);
+  member_notify("member", session);
+  peer:send(pack({what = "ready"}));
+  
   sessions[peer] = session;
   peer:receive(bind(ws_on_receive, peer));
-  member_change("join", session);
   print(format("%s accept(%s:%d)", protocol, session.ip, session.port));
 end
 
