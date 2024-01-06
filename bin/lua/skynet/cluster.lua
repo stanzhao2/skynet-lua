@@ -68,6 +68,43 @@ end
 
 --------------------------------------------------------------------------------
 
+local function new_connect(host, port, protocol)
+  local peer = io.socket(protocol);
+  local ok = peer:connect(host, port);
+  if ok then
+    new_session(protocol, peer);
+  end
+  return ok;
+end
+
+--------------------------------------------------------------------------------
+
+local function connect_others(socket, protocol)
+  while true do
+    local ok, data = socket:read();
+	if not ok then
+	  return false;
+	end
+	local packet = unpack(data);
+	if packet.what == "ready" then
+	  break;
+	end
+	if packet.what ~= "member" then
+	  return false;
+	end
+	local host = packet.ip;
+	local port = packet.port;
+	ok   = new_connect(host, port, protocol);
+	if not ok then
+      error(format("socket connect to %s:%d error", host, port));
+	  return false;
+	end
+  end
+  return true;
+end
+
+--------------------------------------------------------------------------------
+
 function main(host, port)
   local protocol = "ws";
   local ok, _, lport = start_listen(0, protocol);
@@ -85,21 +122,8 @@ function main(host, port)
     error(format("socket connect to %s:%d error", host, port));
 	return;
   end
-  
-  while true do
-    local ok, data = socket:read();
-	if not ok then
-	  return;
-	end
-	local packet = unpack(data);
-	if packet.what == "ready" then
-	  break;
-	end
-	if packet.what ~= "member" then
-	  return;
-	end
-	host = packet.ip;
-	port = packet.port;
+  if not connect_others(socket, protocol) then
+    return;
   end
   socket:receive(bind(ws_on_receive, socket));
   
