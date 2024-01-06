@@ -21,7 +21,7 @@ typedef struct __node_type {
 
 struct pend_invoke {
   lws_int caller;
-  size_t  invoke_time;
+  size_t  timeout;
 };
 
 typedef std::string topic_type;
@@ -88,8 +88,8 @@ static void clear_timeout() {
   auto now  = luaC_clock();
   auto iter = invoke_pendings.begin();
   for (; iter != invoke_pendings.end();) {
-    auto prev = iter->second.invoke_time;
-    if (now - prev < 1000) {
+    auto timeout = iter->second.timeout;
+    if (now < timeout) {
       ++iter;
       continue;
     }
@@ -258,34 +258,19 @@ static int dispatch(const topic_type& topic, int rcb, const char* data, size_t s
 
 /* ignoring return values */
 static int luaf_deliver(lua_State* L) {
-  int i = 1, rcf = 0;
-  if (lua_type(L, i) == LUA_TFUNCTION) {
-    rcf = luaC_ref(L, i++);
-  }
-  size_t size = 0;
-  const char* name = luaL_checkstring(L, i++);
-  size_t mask = luaL_checkinteger(L, i++);
-  size_t who  = luaL_checkinteger(L, i);
+  const char* name = luaL_checkstring(L, 1);
+  size_t mask = luaL_checkinteger(L, 2);
+  size_t who  = luaL_checkinteger(L, 3);
 
+  size_t size = 0;
   const char* data = nullptr;
-  int argc = lua_gettop(L) - i;
+  int argc = lua_gettop(L) - 3;
   if (argc > 0) {
     luaC_pack(L, argc);
     data = luaL_checklstring(L, -1, &size);
   }
   auto caller = lws::getlocal();
-  int count = luaC_r_deliver(name, data, size, mask, who, caller, rcf);
-  if (rcf) {
-    if (count > 0) {
-      pend_invoke pend;
-      pend.caller = caller;
-      pend.invoke_time = luaC_clock();
-      invoke_pendings[rcf] = pend;
-    }
-    else {
-      luaC_unref(L, rcf);
-    }
-  }
+  int count = luaC_r_deliver(name, data, size, mask, who, caller, 0);
   lua_pushinteger(L, count);
   return 1;
 }
@@ -293,10 +278,31 @@ static int luaf_deliver(lua_State* L) {
 /* async wait return values */
 static int luaf_invoke(lua_State* L) {
   luaL_checktype(L, 1, LUA_TFUNCTION);
-  lua_pushinteger(L, (lua_Integer)luaC_clock()); /* mask */
-  lua_pushinteger(L, 0); /* who  */
-  lua_rotate(L, 3, 2);
-  return luaf_deliver(L);
+  int rcf = luaC_ref(L, 1);
+  auto expires = luaL_checkinteger(L, 2);
+  expires = luaC_max(1000, expires);
+
+  const char* name = luaL_checkstring(L, 3);
+  size_t size = 0;
+  const char* data = nullptr;
+  int argc = lua_gettop(L) - 3;
+  if (argc > 0) {
+    luaC_pack(L, argc);
+    data = luaL_checklstring(L, -1, &size);
+  }
+  auto caller = lws::getlocal();
+  int count = luaC_r_deliver(name, data, size, rand(), 0, caller, rcf);
+  if (count > 0) {
+    pend_invoke pend;
+    pend.caller  = caller;
+    pend.timeout = luaC_clock() + expires;
+    invoke_pendings[rcf] = pend;
+  }
+  else {
+    luaC_unref(L, rcf);
+  }
+  lua_pushinteger(L, count);
+  return 1;
 }
 
 /* register function */
