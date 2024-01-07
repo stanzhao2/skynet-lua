@@ -51,7 +51,7 @@ static thread_local invoke_map_type invoke_pendings;
 
 /********************************************************************************/
 
-static int on_watch(lua_State* L) {
+static int watch_handler(lua_State* L) {
   if (watcher_cfn != nullptr) {
     return watcher_cfn(L);
   }
@@ -70,7 +70,7 @@ static int on_watch(lua_State* L) {
   return 0;
 }
 
-static void on_timeout(int rcf) {
+static void cancel_invoke(int rcf) {
   auto L = luaC_getlocal();
   revert_if_return revert(L);
   unref_if_return  unref_rcf(L, rcf);
@@ -95,7 +95,7 @@ static void clear_timeout() {
     }
     auto rcf = iter->first;
     auto caller = iter->second.caller;
-    lws::post(caller, lws_bind(on_timeout, rcf));
+    lws::post(caller, lws_bind(cancel_invoke, rcf));
     iter = invoke_pendings.erase(iter);
   }
 }
@@ -124,7 +124,7 @@ static void forword(const std::string& data, size_t caller, int rcf) {
   lws_int ok = lws::post(watcher_ios, [=]() {
     lua_State* L = luaC_getlocal();
     revert_if_return revert(L);
-    lua_pushcfunction(L, on_watch);
+    lua_pushcfunction(L, watch_handler);
     lua_newtable(L);
     lua_pushstring(L, evr_response);
     lua_setfield(L, -2, "what");
@@ -153,7 +153,7 @@ static int forword(const topic_type& topic, const char* data, size_t size, size_
   lws_int ok = lws::post(watcher_ios, [=]() {
     lua_State* L = luaC_getlocal();
     revert_if_return revert(L);
-    lua_pushcfunction(L, on_watch);
+    lua_pushcfunction(L, watch_handler);
     lua_newtable(L);
     lua_pushstring(L, evr_deliver);
     lua_setfield(L, -2, "what");
@@ -181,7 +181,7 @@ static int dispatch(const topic_type& topic, const std::string& what, int rcb, s
   return lws::post(watcher_ios, [=]() {
     lua_State* L = luaC_getlocal();
     revert_if_return revert(L);
-    lua_pushcfunction(L, on_watch);
+    lua_pushcfunction(L, watch_handler);
     lua_newtable(L);
     lua_pushlstring(L, what.c_str(), what.size());
     lua_setfield(L, -2, "what");
