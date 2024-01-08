@@ -319,6 +319,9 @@ static int luaf_invoke(lua_State* L) {
 }
 
 static int luaf_rpcall(lua_State* L) {
+  if (lua_type(L, 1) == LUA_TFUNCTION) {
+    return luaf_invoke(L);
+  }
   int rcf = 0;
   if (lua_isyieldable(L)) {
     /* in coroutine */
@@ -478,7 +481,6 @@ LUAC_API int luaopen_rpcall(lua_State* L) {
     { "lookout",    luaf_lookout    },
     { "bind",       luaf_bind       },
     { "unbind",     luaf_unbind     },
-    { "invoke",     luaf_invoke     },
     { "rpcall",     luaf_rpcall     },
     { "deliver",    luaf_deliver    },
 
