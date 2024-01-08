@@ -94,7 +94,6 @@ int main(int argc, const char *argv[]) {
     return 0;
   }
   lua_State* L = luaC_newstate(nullptr, nullptr);
-  int top = lua_gettop(L);
   lua_pushcfunction(L, pmain);
   lua_pushinteger(L, argc);
   lua_pushlightuserdata(L, argv);
