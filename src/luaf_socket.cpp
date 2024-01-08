@@ -379,7 +379,7 @@ static void init_metatable(lua_State* L) {
   lua_pop(L, 1);
 }
 
-LUAC_API int luaopen_socket(lua_State* L) {
+LUAC_API int luaC_open_socket(lua_State* L) {
   init_metatable(L);
   const luaL_Reg methods[] = {
     { "wwwget",   luaf_wwwget   },

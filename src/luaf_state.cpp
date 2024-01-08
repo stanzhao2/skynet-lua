@@ -18,20 +18,20 @@
 /********************************************************************************/
 
 static const lua_CFunction modules[] = {
-  luaopen_pcall,
-  luaopen_bind,
-  luaopen_print,
-  luaopen_json,
-  luaopen_package,
-  luaopen_socket,
-  luaopen_timer,
-  luaopen_clock,
-  luaopen_gzip,
-  luaopen_base64,
-  luaopen_crypto,
-  luaopen_pload,
-  luaopen_require,
-  luaopen_rpcall,
+  luaC_open_pcall,
+  luaC_open_bind,
+  luaC_open_print,
+  luaC_open_json,
+  luaC_open_pack,
+  luaC_open_socket,
+  luaC_open_timer,
+  luaC_open_clock,
+  luaC_open_gzip,
+  luaC_open_base64,
+  luaC_open_crypto,
+  luaC_open_pload,
+  luaC_open_require,
+  luaC_open_rpcall,
   /* ... */
   NULL
 };

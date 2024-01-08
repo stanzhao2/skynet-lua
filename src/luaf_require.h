@@ -10,7 +10,7 @@
 
 /********************************************************************************/
 
-LUAC_API int luaopen_require(lua_State* L);
+LUAC_API int luaC_open_require(lua_State* L);
 LUAC_API int luaC_execute(lua_State* L);
 
 /********************************************************************************/

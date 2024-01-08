@@ -30,7 +30,7 @@
 
 /********************************************************************************/
 
-LUALIB_API int luaopen_base64(lua_State* L);
-LUALIB_API int luaopen_crypto(lua_State* L);
+LUALIB_API int luaC_open_base64(lua_State* L);
+LUALIB_API int luaC_open_crypto(lua_State* L);
 
 /********************************************************************************/

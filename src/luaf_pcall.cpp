@@ -59,7 +59,7 @@ static int luaf_pcall(lua_State* L) {
 
 /********************************************************************************/
 
-LUAC_API int luaopen_pcall(lua_State* L) {
+LUAC_API int luaC_open_pcall(lua_State* L) {
   const luaL_Reg methods[] = {
     { "pcall",    luaf_pcall    }, /* pcall (f [, arg1, ...]) */
     { "xpcall",   luaf_xpcall   }, /* xpcall(f, msgh [, arg1, ...]) */

@@ -19,7 +19,7 @@ LUAC_API size_t luaC_clock() {
   ).count();
 }
 
-LUAC_API int luaopen_clock(lua_State* L) {
+LUAC_API int luaC_open_clock(lua_State* L) {
   const luaL_Reg methods[] = {
     { "steady_clock", luaf_clock }, /* os.steady_clock() */
     { NULL,       NULL          }

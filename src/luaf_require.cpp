@@ -301,7 +301,7 @@ LUAC_API int luaC_execute(lua_State* L) {
   return LUA_OK;
 }
 
-LUAC_API int luaopen_require(lua_State* L) {
+LUAC_API int luaC_open_require(lua_State* L) {
   lua_newrequire(L, luaf_require);
   return 0;
 }

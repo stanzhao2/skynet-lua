@@ -15,7 +15,7 @@
 
 /********************************************************************************/
 
-LUAC_API int luaopen_rpcall (lua_State* L);
+LUAC_API int luaC_open_rpcall (lua_State* L);
 LUAC_API int luaC_lookout   (lua_CFunction f);
 LUAC_API int luaC_r_bind    (const char* name, size_t who, int rcb, int opt);
 LUAC_API int luaC_r_unbind  (const char* name, size_t who, int* opt);

@@ -43,7 +43,7 @@ static int gzip_inflate(lua_State *L) {
 
 /********************************************************************************/
 
-LUALIB_API int luaopen_gzip(lua_State* L) {
+LUALIB_API int luaC_open_gzip(lua_State* L) {
   lua_getglobal(L, LUA_GNAME);
   lua_newtable(L);
   const luaL_Reg methods[] = {

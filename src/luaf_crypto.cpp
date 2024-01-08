@@ -603,7 +603,7 @@ static int rsa_verify(lua_State* L) {
 
 /***********************************************************************************/
 
-LUALIB_API int luaopen_base64(lua_State* L) {
+LUALIB_API int luaC_open_base64(lua_State* L) {
   luaL_checkversion(L);
   lua_getglobal(L, LUA_GNAME);
   lua_newtable(L);
@@ -620,7 +620,7 @@ LUALIB_API int luaopen_base64(lua_State* L) {
 
 /***********************************************************************************/
 
-LUALIB_API int luaopen_crypto(lua_State* L) {
+LUALIB_API int luaC_open_crypto(lua_State* L) {
   lua_getglobal(L, LUA_GNAME);
   lua_newtable(L);
   const luaL_Reg methods[] = {

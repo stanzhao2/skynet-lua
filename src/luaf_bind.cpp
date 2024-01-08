@@ -32,7 +32,7 @@ static int luaf_bind(lua_State* L) {
 
 /********************************************************************************/
 
-LUAC_API int luaopen_bind(lua_State* L) {
+LUAC_API int luaC_open_bind(lua_State* L) {
   const luaL_Reg methods[] = {
     { "bind",     luaf_bind     }, /* bind  (f [, arg1, ...]) */
     { NULL,       NULL          }

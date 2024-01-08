@@ -297,7 +297,7 @@ LUAC_API void luaC_exit() {
   lws::stop(main_ios);
 }
 
-LUAC_API int luaopen_pload(lua_State* L) {
+LUAC_API int luaC_open_pload(lua_State* L) {
   init_metatable(L);
   const luaL_Reg methods[] = {
     { "pload",      luaf_pload      },

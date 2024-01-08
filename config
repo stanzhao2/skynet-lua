@@ -1,0 +1,13 @@
+
+
+# Default installation prefix
+PREFIX=/usr/local
+
+LUA_VERSION := 5.4
+
+# System's libraries directory (where binary libraries are installed)
+LUA_LIBDIR= $(PREFIX)/lib
+
+# Lua includes directory
+LUA_INCLUDE += -I$(PREFIX)/include
+LUA_INCLUDE += -I/usr/include/lua$(LUA_VERSION) -I/usr/include/lua/$(LUA_VERSION)

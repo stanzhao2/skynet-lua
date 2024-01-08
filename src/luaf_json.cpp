@@ -5,7 +5,7 @@
 
 /********************************************************************************/
 
-LUAC_API int luaopen_json(lua_State* L) {
+LUAC_API int luaC_open_json(lua_State* L) {
   lua_getglobal(L, LUA_GNAME);
   luaL_rapidjson(L);
   lua_setfield(L, -2, "json");

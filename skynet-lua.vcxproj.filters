@@ -14,28 +14,13 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="源文件\rapidjson">
-      <UniqueIdentifier>{3297a0dc-e918-4ae0-acf3-6c35d46539d0}</UniqueIdentifier>
+      <UniqueIdentifier>{172f6fe8-58f4-4a80-bfb5-4ea0f5b61e54}</UniqueIdentifier>
     </Filter>
     <Filter Include="源文件\socket.io">
-      <UniqueIdentifier>{92ae9c4a-ca9a-4616-bcbe-2055e906fd41}</UniqueIdentifier>
+      <UniqueIdentifier>{4132f5f2-fe51-46c6-baa2-45bdeae59fc2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\rapidjson\document.cpp">
-      <Filter>源文件\rapidjson</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rapidjson\rapidjson.cpp">
-      <Filter>源文件\rapidjson</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rapidjson\schema.cpp">
-      <Filter>源文件\rapidjson</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rapidjson\values.cpp">
-      <Filter>源文件\rapidjson</Filter>
-    </ClCompile>
-    <ClCompile Include="src\socket.io\socket.io.cpp">
-      <Filter>源文件\socket.io</Filter>
-    </ClCompile>
     <ClCompile Include="src\luaf_allotor.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -78,6 +63,9 @@
     <ClCompile Include="src\luaf_rpcall.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="src\luaf_skynet.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="src\luaf_socket.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -87,32 +75,23 @@
     <ClCompile Include="src\luaf_timer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="src\rapidjson\document.cpp">
+      <Filter>源文件\rapidjson</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rapidjson\rapidjson.cpp">
+      <Filter>源文件\rapidjson</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rapidjson\schema.cpp">
+      <Filter>源文件\rapidjson</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rapidjson\values.cpp">
+      <Filter>源文件\rapidjson</Filter>
+    </ClCompile>
+    <ClCompile Include="src\socket.io\socket.io.cpp">
+      <Filter>源文件\socket.io</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\rapidjson\file.hpp">
-      <Filter>源文件\rapidjson</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rapidjson\luax.hpp">
-      <Filter>源文件\rapidjson</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rapidjson\rapidjson.h">
-      <Filter>源文件\rapidjson</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rapidjson\stringstream.hpp">
-      <Filter>源文件\rapidjson</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rapidjson\userdata.hpp">
-      <Filter>源文件\rapidjson</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rapidjson\values.hpp">
-      <Filter>源文件\rapidjson</Filter>
-    </ClInclude>
-    <ClInclude Include="src\socket.io\socket.io.h">
-      <Filter>源文件\socket.io</Filter>
-    </ClInclude>
-    <ClInclude Include="src\socket.io\socket.io.hpp">
-      <Filter>源文件\socket.io</Filter>
-    </ClInclude>
     <ClInclude Include="src\luaf_allotor.h">
       <Filter>源文件</Filter>
     </ClInclude>
@@ -155,6 +134,9 @@
     <ClInclude Include="src\luaf_rpcall.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="src\luaf_skynet.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
     <ClInclude Include="src\luaf_socket.h">
       <Filter>源文件</Filter>
     </ClInclude>
@@ -163,6 +145,30 @@
     </ClInclude>
     <ClInclude Include="src\luaf_timer.h">
       <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rapidjson\file.hpp">
+      <Filter>源文件\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rapidjson\luax.hpp">
+      <Filter>源文件\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rapidjson\rapidjson.h">
+      <Filter>源文件\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rapidjson\stringstream.hpp">
+      <Filter>源文件\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rapidjson\userdata.hpp">
+      <Filter>源文件\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rapidjson\values.hpp">
+      <Filter>源文件\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\socket.io\socket.io.h">
+      <Filter>源文件\socket.io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\socket.io\socket.io.hpp">
+      <Filter>源文件\socket.io</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

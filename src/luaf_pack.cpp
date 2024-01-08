@@ -944,7 +944,7 @@ LUAC_API int luaC_unpack(lua_State* L) {
 
 /********************************************************************************/
 
-LUAC_API int luaopen_package(lua_State* L) {
+LUAC_API int luaC_open_pack(lua_State* L) {
   package_create(L);
   /* Wrap all functions in the safe handler */
   for (int i = 0; i < (sizeof(methods)/sizeof(*methods) - 1); i++) {

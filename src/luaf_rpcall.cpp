@@ -490,7 +490,7 @@ static int luaf_r_deliver(lua_State* L) {
 
 /********************************************************************************/
 
-LUAC_API int luaopen_rpcall(lua_State* L) {
+LUAC_API int luaC_open_rpcall(lua_State* L) {
   const luaL_Reg methods[] = {
     { "lookout",    luaf_lookout    },
     { "bind",       luaf_bind       },

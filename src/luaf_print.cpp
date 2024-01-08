@@ -138,7 +138,7 @@ static int luaf_error(lua_State* L) {
 
 /********************************************************************************/
 
-LUAC_API int luaopen_print(lua_State* L) {
+LUAC_API int luaC_open_print(lua_State* L) {
   const luaL_Reg methods[] = {
     { "print",    luaf_print    }, /* print (arg1 [, ...]) */
     { "trace",    luaf_trace    }, /* trace (arg1 [, ...]) */
