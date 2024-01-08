@@ -1,4 +1,4 @@
- **1. 新增及重载的全局函数** 
+ **1. global functions** 
 -   bind
 -   pack
 -   unpack
@@ -9,7 +9,7 @@
 -   error
 -   throw
 
- **2. 新增的os类函数** 
+ **2. os functions** 
 -   os.deliver
 -   os.bind
 -   os.unbind
@@ -28,24 +28,24 @@
 -   os.debugging
 -   os.steady_clock
 
- **3. 新增的io类函数** 
+ **3. io functions** 
 -   io.wwwget
 -   io.socket
 -   io.acceptor
 
- **4. 新增的gzip类函数** 
+ **4. gzip functions** 
 -   gzip.deflate
 -   gzip.inflate
 
- **5. 新增的json类函数** 
+ **5. json functions** 
 -   json.encode
 -   json.decode
 
- **6. 新增的base64类函数** 
+ **6. base64 functions** 
 -   base64.encode
 -   base64.decode
 
- **7. 新增的crypto类函数** 
+ **7. crypto functions** 
 -   crypto.aes_encrypt
 -   crypto.aes_decrypt
 -   crypto.rsa_sign
