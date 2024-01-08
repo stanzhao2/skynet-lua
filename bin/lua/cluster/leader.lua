@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 
 local format = string.format;
-local type_what = require("skynet.protocol");
+local type_what = require("cluster.protocol");
 
 local sessions = {};
 local def_ws_port<const> = 80;

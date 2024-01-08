@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 
 local format = string.format;
-local type_what = require("skynet.protocol");
+local type_what = require("cluster.protocol");
 
 local sessions   = {};
 local lua_bounds = {};
