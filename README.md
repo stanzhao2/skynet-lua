@@ -1,49 +1,48 @@
  **1. global functions** 
--   bind
--   pack
--   unpack
--   pcall
--   xpcall
--   print
--   trace
--   error
--   throw
+-   bind(arg1 [,...])
+-   pack(arg1 [,...])
+-   unpack(str)
+-   pcall(f [, arg1, ...])
+-   print(fmt [, ...])
+-   trace(fmt [, ...])
+-   error(fmt [, ...])
+-   throw(fmt [, ...])
 
  **2. os functions** 
--   os.deliver
--   os.bind
--   os.unbind
--   os.rpcall
--   os.pload
--   os.name
--   os.dirsep
--   os.timer
--   os.id
--   os.post
--   os.wait
--   os.restart
--   os.exit
--   os.stop
--   os.stopped
--   os.debugging
--   os.steady_clock
+-   os.deliver(name, mask, receiver [, ...])
+-   os.bind(name, f [, cluster])
+-   os.unbind(name)
+-   os.rpcall(name [, arg1, ...])
+-   os.pload(name [, arg1, ...])
+-   os.name()
+-   os.dirsep()
+-   os.timer()
+-   os.id()
+-   os.post(f [, arg1, ...])
+-   os.wait([expires])
+-   os.restart()
+-   os.exit()
+-   os.stop()
+-   os.stopped()
+-   os.debugging()
+-   os.steady_clock()
 
  **3. io functions** 
--   io.wwwget
--   io.socket
--   io.acceptor
+-   io.wwwget(url)
+-   io.socket(protocol)
+-   io.acceptor()
 
  **4. gzip functions** 
--   gzip.deflate
--   gzip.inflate
+-   gzip.deflate(str)
+-   gzip.inflate(str)
 
  **5. json functions** 
--   json.encode
--   json.decode
+-   json.encode(tab)
+-   json.decode(str)
 
  **6. base64 functions** 
--   base64.encode
--   base64.decode
+-   base64.encode(str)
+-   base64.decode(str)
 
  **7. crypto functions** 
 -   crypto.aes_encrypt
