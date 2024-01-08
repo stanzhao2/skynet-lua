@@ -1,4 +1,4 @@
- **1. global functions** 
+**global functions**
 -   bind(arg1 [,...])
 -   pack(arg1 [,...])
 -   unpack(str)
@@ -8,7 +8,7 @@
 -   error(fmt [, ...])
 -   throw(fmt [, ...])
 
- **2. os functions** 
+ **os functions** 
 -   os.deliver(name, mask, receiver [, ...])
 -   os.bind(name, f [, cluster])
 -   os.unbind(name)
@@ -27,24 +27,24 @@
 -   os.debugging()
 -   os.steady_clock()
 
- **3. io functions** 
+ **io functions** 
 -   io.wwwget(url)
 -   io.socket(protocol)
 -   io.acceptor()
 
- **4. gzip functions** 
+ **gzip functions** 
 -   gzip.deflate(str)
 -   gzip.inflate(str)
 
- **5. json functions** 
+ **json functions** 
 -   json.encode(tab)
 -   json.decode(str)
 
- **6. base64 functions** 
+ **base64 functions** 
 -   base64.encode(str)
 -   base64.decode(str)
 
- **7. crypto functions** 
+ **crypto functions** 
 -   crypto.aes_encrypt(str, key)
 -   crypto.aes_decrypt(str, key)
 -   crypto.rsa_sign(str, key)
