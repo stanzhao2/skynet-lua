@@ -105,9 +105,11 @@ static void back_to_local(const std::string& data, int rcf) {
   lua_State* L = luaC_getlocal();
   revert_if_return revert(L);
   unref_if_return  unref_rcf(L, rcf);
-  if (rcf) {
-    invoke_pendings.erase(rcf);
+  auto iter = invoke_pendings.find(rcf);
+  if (iter == invoke_pendings.end()) {
+    return;
   }
+  invoke_pendings.erase(iter);
   luaC_rawgeti(L, rcf);
   if (lua_type(L, -1) != LUA_TFUNCTION) {
     return;
