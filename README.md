@@ -1,5 +1,4 @@
  **1. global functions** 
-```
 -   bind(arg1 [,...])
 -   pack(arg1 [,...])
 -   unpack(str)
@@ -8,8 +7,6 @@
 -   trace(fmt [, ...])
 -   error(fmt [, ...])
 -   throw(fmt [, ...])
-```
-
 
  **2. os functions** 
 -   os.deliver(name, mask, receiver [, ...])
