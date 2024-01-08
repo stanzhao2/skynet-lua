@@ -148,12 +148,31 @@ end
 --------------------------------------------------------------------------------
 
 local function new_session(protocol, peer)
+  local what = peer:getheader("xforword-join");
+  if what ~= "skynet-lua" then
+    return false;
+  end
+  local ip, port = peer:endpoint();
   local session = {
     socket = peer,
+	ip     = ip,
+	port   = port,
   };
   local id = peer:id();
   sessions[id] = session;
   peer:receive(bind(ws_on_receive, peer));
+  return true;
+end
+
+--------------------------------------------------------------------------------
+
+local function peer_exist(host, port)
+  for id, session in pairs(sessions) do
+    if session.ip == host and session.port == port then
+	  return true;
+	end
+  end
+  return false;
 end
 
 --------------------------------------------------------------------------------
@@ -163,7 +182,10 @@ local function ws_on_accept(protocol, ec, peer)
     ws_on_error(ec, peer, "accept error");
 	return;
   end
-  new_session(protocol, peer);
+  if not new_session(protocol, peer) then
+    peer:close();
+	return;
+  end
   --
   for caller, bounds in pairs(lua_bounds) do
     if caller <= 0xffff then
@@ -178,7 +200,11 @@ end
 --------------------------------------------------------------------------------
 
 local function new_connect(host, port, protocol)
+  if peer_exist(host, port) then
+    return true;
+  end
   local peer = io.socket(protocol);
+  peer:setheader("xforword-join", "skynet-lua");
   if peer:connect(host, port) then
     new_session(protocol, peer);
 	return true;
@@ -221,41 +247,51 @@ local function create_listen(port, protocol)
   end
   local socket = io.socket(protocol);
   acceptor:accept(socket, bind(ws_on_accept, protocol));
-  return acceptor:endpoint("local");
+  local host, port = acceptor:endpoint("local");
+  return acceptor, port;
+end
+
+--------------------------------------------------------------------------------
+
+local function keepalive(socket, ec, data)
+  if ec  then
+    socket:close();
+  end
 end
 
 --------------------------------------------------------------------------------
 
 function main(host, port)
   local protocol = "ws";
-  local _, lport = create_listen(0, protocol);
+  local acceptor, lport = create_listen(0, protocol);
   if not lport then
     error(format("socket listen error at port: %d", port));
     return;
   end
   
-  local socket = io.socket(protocol);
   host = host or "127.0.0.1";
   port = port or def_ws_port;
-  socket:setheader("xforword-port", lport);  
+  local socket = io.socket(protocol);
+  socket:setheader("xforword-port", lport);
   
   if not socket:connect(host, port) then
     error(format("socket connect to %s:%d error", host, port));
 	return;
-  end
-  
+  end  
   if not connect_members(socket, protocol) then
     return;
   end
-  socket:receive(function() end);
   
   os.lookout(on_lookout);
+  socket:receive(bind(keepalive, socket));  
   print(format("%s works on port %d", os.name(), lport));
+  
   while not os.stopped() do
     os.wait(60000);
 	collectgarbage();
   end
   socket:close();
+  acceptor:close();
 end
 
 --------------------------------------------------------------------------------
