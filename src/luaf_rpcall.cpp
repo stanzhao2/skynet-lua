@@ -366,8 +366,22 @@ static int luaf_rpcall(lua_State* L) {
   }
   /* not in coroutine */
   rcf = std::abs(rcf);
-  lws::runone_for(rcf, max_expires);
+  int expires = max_expires;
+  while (!lws::stopped()) {
+    int wait = luaC_min(100, expires);
+    if ((expires -= wait) <= 0) {
+      break;
+    }
+    if (lws::runone_for(rcf, wait) > 0) {
+      break;
+    }
+  }
   lws::close(rcf);
+  if (lws::stopped()) {
+    lua_pushboolean(L, 0); /* false */
+    lua_pushstring(L, "cancel");
+    return 2;
+  }
   if (rpcall_result.empty()) {
     lua_pushboolean(L, 0); /* false */
     lua_pushstring(L, "timeout");
