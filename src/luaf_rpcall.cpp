@@ -347,7 +347,7 @@ static int luaf_unbind(lua_State* L) {
 static int luaf_lookout(lua_State* L) {
   luaL_checktype(L, 1, LUA_TFUNCTION);
   if (watcher_luaf) {
-    luaC_unref(L, watcher_luaf);
+    luaL_error(L, "lookout can only be called once");
   }
   watcher_ios  = lws::getlocal();
   watcher_luaf = luaC_ref(L, 1);
