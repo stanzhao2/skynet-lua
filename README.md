@@ -45,22 +45,22 @@
 -   base64.decode(str)
 
  **7. crypto functions** 
--   crypto.aes_encrypt
--   crypto.aes_decrypt
--   crypto.rsa_sign
--   crypto.rsa_verify
--   crypto.rsa_encrypt
--   crypto.rsa_decrypt
--   crypto.hash32
--   crypto.sha1
--   crypto.hmac_sha1
--   crypto.sha224
--   crypto.hmac_sha224
--   crypto.sha256
--   crypto.hmac_sha256
--   crypto.sha384
--   crypto.hmac_sha384
--   crypto.sha512
--   crypto.hmac_sha512
--   crypto.md5
--   crypto.hmac_md5
+-   crypto.aes_encrypt(str, key)
+-   crypto.aes_decrypt(str, key)
+-   crypto.rsa_sign(str, key)
+-   crypto.rsa_verify(src, sign, key)
+-   crypto.rsa_encrypt(str, key)
+-   crypto.rsa_decrypt(str, key)
+-   crypto.hash32(str)
+-   crypto.sha1(str)
+-   crypto.hmac_sha1(str, key)
+-   crypto.sha224(str)
+-   crypto.hmac_sha224(str, key)
+-   crypto.sha256(str)
+-   crypto.hmac_sha256(str, key)
+-   crypto.sha384(str)
+-   crypto.hmac_sha384(str, key)
+-   crypto.sha512(str)
+-   crypto.hmac_sha512(str, key)
+-   crypto.md5(str)
+-   crypto.hmac_md5(str, key)
