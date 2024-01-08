@@ -48,6 +48,7 @@ static lws_int         watcher_ios   = 0;
 static lws_int         watcher_luaf  = 0;
 static lua_CFunction   watcher_cfn   = nullptr;
 static rpcall_map_type rpcall_handlers;
+static thread_local std::string rpcall_result;
 static thread_local invoke_map_type invoke_pendings;
 
 /********************************************************************************/
@@ -85,13 +86,14 @@ static void cancel_invoke(int rcf) {
       return;
     }
     int argc = 1;
-    lua_pushboolean(coL, 0);
-    lua_resume(coL, L, 1, &argc);
+    lua_pushboolean(coL, 0); /* false */
+    lua_pushstring(coL, "timeout");
+    lua_resume(coL, L, 2, &argc);
     return;
   }
 
   if (typeof_rcf == LUA_TFUNCTION) {
-    lua_pushboolean(L, 0);
+    lua_pushboolean(L, 0); /* false */
     if (luaC_xpcall(L, 1, 0) != LUA_OK) {
       lua_ferror("%s\n", lua_tostring(L, -1));
     }
@@ -317,18 +319,20 @@ static int luaf_invoke(lua_State* L) {
 }
 
 static int luaf_rpcall(lua_State* L) {
-  if (lua_type(L, 1) == LUA_TFUNCTION) {
-    return luaf_invoke(L);
+  int rcf = 0;
+  if (lua_isyieldable(L)) {
+    /* in coroutine */
+    lua_State* main = luaC_getlocal();
+    lua_pushthread(L);
+    lua_xmove(L, main, 1);
+    rcf = luaC_ref(main, -1);
+    lua_pop(main, 1);
   }
-  if (lua_isyieldable(L) == 0) {
-    luaL_error(L, "rpcall can only be called in the coroutine");
+  else {
+    /* not in coroutine */
+    rpcall_result.clear();
+    rcf = 0 - lws::newstate();
   }
-  lua_State* main = luaC_getlocal();
-  lua_pushthread(L);
-  lua_xmove(L, main, 1);
-  int rcf = luaC_ref(main, -1);
-  lua_pop(main, 1);
-
   const char* name = luaL_checkstring(L, 1);
   size_t size = 0;
   const char* data = nullptr;
@@ -337,20 +341,37 @@ static int luaf_rpcall(lua_State* L) {
     luaC_pack(L, argc);
     data = luaL_checklstring(L, -1, &size);
   }
-
   auto caller = lws::getlocal();
   int count = luaC_r_deliver(name, data, size, rand(), 0, caller, rcf);
   if (count == 0) {
-    luaC_unref(L, rcf);
-    lua_pushboolean(L, 0);
+    if (rcf > 0) {
+      luaC_unref(L, rcf);
+    } else {
+      lws::close(std::abs(rcf));
+    }
+    lua_pushboolean(L, 0); /* false */
     lua_pushfstring(L, "%s not found", name);
     return 2;
   }
-  pend_invoke pend;
-  pend.caller  = caller;
-  pend.timeout = luaC_clock() + max_expires;
-  invoke_pendings[rcf] = pend;
-  return lua_yieldk(L, LUA_MULTRET, 0, 0);
+  /* in coroutine */
+  if (rcf > 0) {
+    pend_invoke pend;
+    pend.caller  = caller;
+    pend.timeout = luaC_clock() + max_expires;
+    invoke_pendings[rcf] = pend;
+    return lua_yieldk(L, LUA_MULTRET, 0, 0);
+  }
+  /* not in coroutine */
+  rcf = std::abs(rcf);
+  lws::runone_for(rcf, max_expires);
+  lws::close(rcf);
+  if (rpcall_result.empty()) {
+    lua_pushboolean(L, 0); /* false */
+    lua_pushstring(L, "timeout");
+    return 2;
+  }
+  lua_pushlstring(L, rpcall_result.c_str(), rpcall_result.size());
+  return luaC_unpack(L);
 }
 
 /* register function */
@@ -457,6 +478,7 @@ LUAC_API int luaopen_rpcall(lua_State* L) {
     { "lookout",    luaf_lookout    },
     { "bind",       luaf_bind       },
     { "unbind",     luaf_unbind     },
+    { "invoke",     luaf_invoke     },
     { "rpcall",     luaf_rpcall     },
     { "deliver",    luaf_deliver    },
 
@@ -555,6 +577,12 @@ LUAC_API int luaC_r_bind(const char* name, size_t who, int rcb, int opt) {
 LUAC_API int luaC_r_response(const std::string& data, size_t caller, int rcf) {
   lws_int ok = lws_false;
   if (is_local(caller)) {
+    if (rcf < 0) {
+      lws::post(std::abs(rcf), [data]() {
+        rpcall_result.assign(data);
+      });
+      return LUA_OK;
+    }
     ok = lws::post((int)caller, lws_bind(back_to_local, data, rcf));
   }
   return (ok == lws_true) ? LUA_OK : LUA_ERRRUN;
