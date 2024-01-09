@@ -108,7 +108,7 @@ static void foutput(const char* msg, color_type color) {
 }
 
 static int luaf_throw(lua_State* L) {
-  luaL_error(L, "%s %s", tostring(L));
+  luaL_error(L, "%s", tostring(L));
   return 0;
 }
 

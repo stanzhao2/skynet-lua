@@ -48,6 +48,7 @@ static lws_int         watcher_ios   = 0;
 static lws_int         watcher_luaf  = 0;
 static lua_CFunction   watcher_cfn   = nullptr;
 static rpcall_map_type rpcall_handlers;
+static thread_local size_t rpcall_caller = 0;
 static thread_local std::string rpcall_result;
 static thread_local invoke_map_type invoke_pendings;
 
@@ -235,18 +236,20 @@ static int dispatch(const topic_type& topic, int rcb, const char* data, size_t s
     if (lua_type(L, -1) != LUA_TFUNCTION) {
       return;
     }
-    int argc = 1;
-    lua_pushinteger(L, caller);
+    int argc = 0;
     if (!argv.empty()) {
       lua_pushlstring(L, argv.c_str(), argv.size());
       argc += luaC_unpack(L);
     }
     bool success = true;
+    size_t previous = rpcall_caller;
+    rpcall_caller = caller;
     if (luaC_xpcall(L, argc, LUA_MULTRET) != LUA_OK) {
       success = false;
       lua_ferror("%s\n", lua_tostring(L, -1));
       lua_pop(L, 1); /* pop error */
     }
+    rpcall_caller = previous;
     /* don't need result */
     if (rcf == 0) {
       return;
@@ -271,6 +274,11 @@ static int dispatch(const topic_type& topic, int rcb, const char* data, size_t s
 }
 
 /********************************************************************************/
+
+static int luaf_caller(lua_State* L) {
+  lua_pushinteger(L, (lua_Integer)rpcall_caller);
+  return 1;
+}
 
 /* ignoring return values */
 static int luaf_deliver(lua_State* L) {
@@ -495,6 +503,7 @@ LUAC_API int luaC_open_rpcall(lua_State* L) {
     { "lookout",    luaf_lookout    },
     { "bind",       luaf_bind       },
     { "unbind",     luaf_unbind     },
+    { "caller",     luaf_caller     },
     { "rpcall",     luaf_rpcall     },
     { "deliver",    luaf_deliver    },
 
