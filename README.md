@@ -10,6 +10,7 @@
 
  **os functions** 
 -   os.deliver(name, mask, receiver [, ...])
+-   os.caller()
 -   os.bind(name, f [, cluster])
 -   os.unbind(name)
 -   os.rpcall(name [, arg1, ...])
