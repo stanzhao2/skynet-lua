@@ -74,7 +74,10 @@ static int luaf_gc(lua_State* L) {
 #ifdef _DEBUG
   lua_ftrace("%s will gc\n", LUAC_SOCKET);
 #endif
-  return luaf_close(L);
+  auto ud = luaC_checkudata<ud_context>(L, 1, LUAC_SOCKET);
+  int result = luaf_close(L);
+  ud->~ud_context();
+  return result;
 }
 
 static int luaf_id(lua_State* L) {

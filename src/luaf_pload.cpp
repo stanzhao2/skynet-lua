@@ -108,7 +108,10 @@ static int luaf_gc(lua_State* L) {
 #ifdef _DEBUG
   lua_ftrace("%s will gc\n", LUAC_THREAD);
 #endif
-  return luaf_free(L);
+  ud_thread* job = luaC_checkudata<ud_thread>(L, 1, LUAC_THREAD);
+  int result = luaf_free(L);
+  job->~ud_thread();
+  return result;
 }
 
 static int luaf_wait(lua_State* L) {

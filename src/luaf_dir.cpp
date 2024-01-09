@@ -31,7 +31,10 @@ static int luaf_dir_gc(lua_State* L) {
 #ifdef _DEBUG
   lua_ftrace("%s will gc\n", LUAC_DIR);
 #endif
-  return luaf_dir_close(L);
+  auto ud = luaC_checkudata<ud_dir>(L, 1, LUAC_DIR);
+  int result = luaf_dir_close(L);
+  ud->~ud_dir();
+  return result;
 }
 
 static int luaf_dir_iter(lua_State* L) {

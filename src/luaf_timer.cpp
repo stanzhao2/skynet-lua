@@ -27,7 +27,10 @@ static int luaf_gc(lua_State* L) {
 #ifdef _DEBUG
   lua_ftrace("%s will gc\n", LUAC_TIMER);
 #endif
-  return luaf_close(L);
+  auto ud = luaC_checkudata<ud_timer>(L, 1, LUAC_TIMER);
+  int result = luaf_close(L);
+  ud->~ud_timer();
+  return result;
 }
 
 static int luaf_cancel(lua_State* L) {
