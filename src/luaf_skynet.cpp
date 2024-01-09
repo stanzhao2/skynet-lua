@@ -78,9 +78,10 @@ static void on_signal(int code) {
 static void usage(const char* filename) {
   const char* p = strrchr(filename, *LUA_DIRSEP);
   filename = p ? p + 1 : filename;
-  lua_fprint("Copyright (C) iccgame.com, All right reserved%s\n", "");
-  lua_fprint("Version(R): %s\n", SKYNET_VERSION);
-  lua_fprint("Usage: %s module [, ...]\n\n", filename);
+  printf("%s\n", "Copyright (C) iccgame.com, All right reserved");
+  printf("%s\n", "https://gitee.com/stancpp/skynet-lua.git");
+  printf("Version(R): %s\n\n", SKYNET_VERSION);
+  printf("Usage: %s module [, ...]\n\n", filename);
 }
 
 int main(int argc, const char *argv[]) {
