@@ -11,7 +11,7 @@
  **os functions** 
 -   os.deliver(name, mask, receiver [, ...])
 -   os.caller()
--   os.bind(name, f [, cluster])
+-   os.bind(name, f [, <true/false>])
 -   os.unbind(name)
 -   os.rpcall([f, ] name [, arg1, ...])
 -   os.pload(name [, arg1, ...])
@@ -19,7 +19,7 @@
 -   os.timer()
 -   os.dirsep()
 -   os.mkdir(name)
--   os.opendir(name)
+-   os.opendir([name])
 -   os.id()
 -   os.post(f [, arg1, ...])
 -   os.wait([expires])
