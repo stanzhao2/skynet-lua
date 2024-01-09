@@ -11,12 +11,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\http-parser\http_parser.cpp" />
     <ClCompile Include="src\luaf_allotor.cpp" />
     <ClCompile Include="src\luaf_bind.cpp" />
     <ClCompile Include="src\luaf_clock.cpp" />
     <ClCompile Include="src\luaf_crypto.cpp" />
     <ClCompile Include="src\luaf_dir.cpp" />
     <ClCompile Include="src\luaf_gzip.cpp" />
+    <ClCompile Include="src\luaf_http.cpp" />
     <ClCompile Include="src\luaf_json.cpp" />
     <ClCompile Include="src\luaf_metatable.cpp" />
     <ClCompile Include="src\luaf_pack.cpp" />
@@ -37,12 +39,14 @@
     <ClCompile Include="src\socket.io\socket.io.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\http-parser\http_parser.h" />
     <ClInclude Include="src\luaf_allotor.h" />
     <ClInclude Include="src\luaf_bind.h" />
     <ClInclude Include="src\luaf_clock.h" />
     <ClInclude Include="src\luaf_crypto.h" />
     <ClInclude Include="src\luaf_dir.h" />
     <ClInclude Include="src\luaf_gzip.h" />
+    <ClInclude Include="src\luaf_http.h" />
     <ClInclude Include="src\luaf_json.h" />
     <ClInclude Include="src\luaf_metatable.h" />
     <ClInclude Include="src\luaf_pack.h" />

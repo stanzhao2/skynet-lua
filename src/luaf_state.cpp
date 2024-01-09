@@ -2,6 +2,7 @@
 
 #include "luaf_state.h"
 #include "luaf_allotor.h"
+#include "luaf_http.h"
 #include "luaf_json.h"
 #include "luaf_bind.h"
 #include "luaf_gzip.h"
@@ -22,6 +23,7 @@ static const lua_CFunction modules[] = {
   luaC_open_pcall,
   luaC_open_bind,
   luaC_open_print,
+  luaC_open_http,
   luaC_open_json,
   luaC_open_pack,
   luaC_open_socket,

@@ -19,6 +19,9 @@
     <Filter Include="源文件\socket.io">
       <UniqueIdentifier>{4132f5f2-fe51-46c6-baa2-45bdeae59fc2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\http-parser">
+      <UniqueIdentifier>{bb6adb49-c282-4a70-9858-27f9b761ba29}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\luaf_allotor.cpp">
@@ -91,6 +94,12 @@
       <Filter>源文件\socket.io</Filter>
     </ClCompile>
     <ClCompile Include="src\luaf_dir.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\http-parser\http_parser.cpp">
+      <Filter>源文件\http-parser</Filter>
+    </ClCompile>
+    <ClCompile Include="src\luaf_http.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -174,6 +183,12 @@
       <Filter>源文件\socket.io</Filter>
     </ClInclude>
     <ClInclude Include="src\luaf_dir.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\http-parser\http_parser.h">
+      <Filter>源文件\http-parser</Filter>
+    </ClInclude>
+    <ClInclude Include="src\luaf_http.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
