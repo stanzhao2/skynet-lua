@@ -65,7 +65,6 @@ static int luaf_dir_open(lua_State* L) {
   auto ud = luaC_newuserdata<ud_dir>(L, LUAC_DIR);
   if (tinydir_open(&ud->tdir, path.c_str()) < 0) {
     lua_pushnil(L);
-    return 1;
   }
   return 1;
 }
