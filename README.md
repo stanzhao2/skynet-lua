@@ -13,7 +13,7 @@
 -   os.caller()
 -   os.bind(name, f [, cluster])
 -   os.unbind(name)
--   os.rpcall(name [, arg1, ...])
+-   os.rpcall([f, ] name [, arg1, ...])
 -   os.pload(name [, arg1, ...])
 -   os.name()
 -   os.timer()
@@ -32,7 +32,7 @@
 
  **io functions** 
 -   io.wwwget(url)
--   io.socket(protocol)
+-   io.socket([<tcp/ssl/ws/wss>])
 -   io.acceptor()
 -   io.http.request_parser(options)
 -   io.http.response_parser(options)
@@ -41,8 +41,8 @@
 -   io.http.unescape(url)
 
  **gzip functions** 
--   gzip.deflate(str)
--   gzip.inflate(str)
+-   gzip.deflate(str [,<true/false>])
+-   gzip.inflate(str [,<true/false>])
 
  **json functions** 
 -   json.encode(tab)
