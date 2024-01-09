@@ -90,6 +90,9 @@
     <ClCompile Include="src\socket.io\socket.io.cpp">
       <Filter>源文件\socket.io</Filter>
     </ClCompile>
+    <ClCompile Include="src\luaf_dir.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\luaf_allotor.h">
@@ -169,6 +172,9 @@
     </ClInclude>
     <ClInclude Include="src\socket.io\socket.io.hpp">
       <Filter>源文件\socket.io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\luaf_dir.h">
+      <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

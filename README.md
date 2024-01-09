@@ -18,6 +18,7 @@
 -   os.name()
 -   os.dirsep()
 -   os.timer()
+-   os.opendir(name)
 -   os.id()
 -   os.post(f [, arg1, ...])
 -   os.wait([expires])

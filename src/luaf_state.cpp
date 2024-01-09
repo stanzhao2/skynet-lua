@@ -8,6 +8,7 @@
 #include "luaf_crypto.h"
 #include "luaf_pload.h"
 #include "luaf_timer.h"
+#include "luaf_dir.h"
 #include "luaf_clock.h"
 #include "luaf_socket.h"
 #include "luaf_rpcall.h"
@@ -26,6 +27,7 @@ static const lua_CFunction modules[] = {
   luaC_open_socket,
   luaC_open_timer,
   luaC_open_clock,
+  luaC_open_dir,
   luaC_open_gzip,
   luaC_open_base64,
   luaC_open_crypto,

@@ -15,6 +15,7 @@
     <ClCompile Include="src\luaf_bind.cpp" />
     <ClCompile Include="src\luaf_clock.cpp" />
     <ClCompile Include="src\luaf_crypto.cpp" />
+    <ClCompile Include="src\luaf_dir.cpp" />
     <ClCompile Include="src\luaf_gzip.cpp" />
     <ClCompile Include="src\luaf_json.cpp" />
     <ClCompile Include="src\luaf_metatable.cpp" />
@@ -40,6 +41,7 @@
     <ClInclude Include="src\luaf_bind.h" />
     <ClInclude Include="src\luaf_clock.h" />
     <ClInclude Include="src\luaf_crypto.h" />
+    <ClInclude Include="src\luaf_dir.h" />
     <ClInclude Include="src\luaf_gzip.h" />
     <ClInclude Include="src\luaf_json.h" />
     <ClInclude Include="src\luaf_metatable.h" />
@@ -75,14 +77,14 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -100,7 +102,7 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>include\asio;include\eport;3rd\openssl;3rd\zlib;3rd\lua\5.4\src;$(IncludePath)</IncludePath>
+    <IncludePath>include;include\asio;include\eport;3rd\openssl;3rd\zlib;3rd\lua\5.4\src;$(IncludePath)</IncludePath>
     <LibraryPath>3rd\zlib\lib;3rd\openssl;3rd\lua\5.4\src;$(LibraryPath)</LibraryPath>
     <TargetName>skynet</TargetName>
   </PropertyGroup>
@@ -108,7 +110,7 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>include\asio;include\eport;3rd\openssl;3rd\zlib;3rd\lua\5.4\src;$(IncludePath)</IncludePath>
+    <IncludePath>include;include\asio;include\eport;3rd\openssl;3rd\zlib;3rd\lua\5.4\src;$(IncludePath)</IncludePath>
     <LibraryPath>3rd\zlib\lib;3rd\openssl;3rd\lua\5.4\src;$(LibraryPath)</LibraryPath>
     <TargetName>skynet</TargetName>
   </PropertyGroup>
