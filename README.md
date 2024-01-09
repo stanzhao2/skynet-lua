@@ -36,7 +36,9 @@
 -   io.acceptor()
 -   io.http.request_parser(options)
 -   io.http.response_parser(options)
--   io.http.parseurl(url)
+-   io.http.parse_url(url)
+-   io.http.escape(url)
+-   io.http.unescape(url)
 
  **gzip functions** 
 -   gzip.deflate(str)

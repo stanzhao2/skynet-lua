@@ -649,6 +649,95 @@ static void lhp_push_execute_fn(lua_State* L) {
     assert(lua_isfunction(L, -1));
 }
 
+static std::string url_escape(const std::string& url) {  
+  std::string encoded = "";
+  for (int i = 0; i < url.length(); i++) {
+    char c = url[i];
+    if (c >= -1 && c <= 255 && std::isalnum(c)) {
+      encoded += c;
+    } else if (c == '-' || c == '_' || c == '.' || c == '~') {
+      encoded += c;
+    } else if (c == ':') {
+      encoded += "%3A";
+    } else if (c == ' ') {
+      encoded += "%20";
+    } else {
+      char hex[8];
+      sprintf(hex, "%%%02X", (unsigned char)c);
+      encoded += hex;
+    }
+  }
+  return encoded;
+}
+
+static bool is_hex(const char c) {
+  if (c >= '0' && c <= '9') return true;
+  if (c >= 'a' && c <= 'f') return true;
+  if (c >= 'A' && c <= 'F') return true;
+  return false;
+}
+
+static std::string url_unescape(const std::string& encoded) {
+  std::string url = "";
+  const char* p = encoded.c_str();
+  while (*p) {
+    char c = *p++;
+    if (c != '%') {
+      url += c;
+      continue;
+    }
+    char c1 = *p++;
+    if (c1 == 0) {
+      url.clear();
+      break;
+    }
+    char c2 = *p++;
+    if (c2 == 0) {
+      url.clear();
+      break;
+    }
+    if (!is_hex(c1) || !is_hex(c2)) {
+      url.clear();
+      break;
+    }
+    char h[3] = { c1, c2, 0 };
+    c = (char)std::strtol(h, nullptr, 16);
+    url += c;
+  }
+  return url;
+}
+
+static int luaf_escape(lua_State* L) {
+  size_t size = 0;
+  const char* url = luaL_checklstring(L, 1, &size);
+  try {
+    auto str = url_escape(std::string(url, size));
+    lua_pushlstring(L, str.c_str(), str.size());
+  }
+  catch (...) {
+    lua_pushnil(L);
+  }
+  return 1;
+}
+
+static int luaf_unescape(lua_State* L) {
+  size_t size = 0;
+  const char* url = luaL_checklstring(L, 1, &size);
+  try {
+    auto str = url_unescape(std::string(url, size));
+    if (str.empty()) {
+      lua_pushnil(L);
+    }
+    else {
+      lua_pushlstring(L, str.c_str(), str.size());
+    }
+  }
+  catch (...) {
+    lua_pushnil(L);
+  }
+  return 1;
+}
+
 LUAC_API int luaC_open_http(lua_State* L) {
     /* parser metatable init */
     luaL_newmetatable(L, PARSER_MT);
@@ -682,7 +771,11 @@ LUAC_API int luaC_open_http(lua_State* L) {
     lua_pushcfunction(L, lhp_response);
     lua_setfield(L, -2, "response_parser");
     lua_pushcfunction(L, lhp_parse_url);
-    lua_setfield(L, -2, "parseurl");
+    lua_setfield(L, -2, "parse_url");
+    lua_pushcfunction(L, luaf_escape);
+    lua_setfield(L, -2, "escape");
+    lua_pushcfunction(L, luaf_unescape);
+    lua_setfield(L, -2, "unescape");
     lua_setfield(L, -2, "http");
     lua_pop(L, 1);
     return 0;
