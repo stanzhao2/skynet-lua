@@ -601,6 +601,12 @@ static int rsa_verify(lua_State* L) {
   return 1;
 }
 
+static void setfield(lua_State* L, int i, const char* name, const luaL_Reg m[]) {
+  lua_newtable(L);
+  luaL_setfuncs(L, m, 0);
+  lua_setfield(L, i - 1, name);
+}
+
 /***********************************************************************************/
 
 LUALIB_API int luaC_open_base64(lua_State* L) {
@@ -623,27 +629,42 @@ LUALIB_API int luaC_open_base64(lua_State* L) {
 LUALIB_API int luaC_open_crypto(lua_State* L) {
   lua_getglobal(L, LUA_GNAME);
   lua_newtable(L);
+  const luaL_Reg aes[] = {
+    { "encrypt",  aes_encrypt   },
+    { "decrypt",  aes_decrypt   },
+    { NULL,		    NULL          }
+  };
+  setfield(L, -1, "aes", aes);
+
+  const luaL_Reg rsa[] = {
+    { "sign"   ,  rsa_sign      },
+    { "verify" ,  rsa_verify    },
+    { "encrypt",  rsa_encrypt   },
+    { "decrypt",  rsa_decrypt   },
+    { NULL,		    NULL          }
+  };
+  setfield(L, -1, "rsa", rsa);
+
+  const luaL_Reg hmac[] = {
+    { "sha1",     hash_hmac_sha1    },
+    { "sha224",   hash_hmac_sha224  },
+    { "sha256",   hash_hmac_sha256  },
+    { "sha384",   hash_hmac_sha384  },
+    { "sha512",   hash_hmac_sha512  },
+    { "md5",      hash_hmac_md5     },
+    { NULL,		    NULL              }
+  };
+  setfield(L, -1, "hmac", hmac);
+
   const luaL_Reg methods[] = {
-    { "aes_encrypt",  aes_encrypt       },
-    { "aes_decrypt",  aes_decrypt       },
-    { "rsa_sign"   ,  rsa_sign          },
-    { "rsa_verify" ,  rsa_verify        },
-    { "rsa_encrypt",  rsa_encrypt       },
-    { "rsa_decrypt",  rsa_decrypt       },
-    { "hash32",       hash_crc32        },
-    { "sha1",         hash_sha1         },
-    { "hmac_sha1",    hash_hmac_sha1    },
-    { "sha224",       hash_sha224       },
-    { "hmac_sha224",  hash_hmac_sha224  },
-    { "sha256",       hash_sha256       },
-    { "hmac_sha256",  hash_hmac_sha256  },
-    { "sha384",       hash_sha384       },
-    { "hmac_sha384",  hash_hmac_sha384  },
-    { "sha512",       hash_sha512       },
-    { "hmac_sha512",  hash_hmac_sha512  },
-    { "md5",          hash_md5          },
-    { "hmac_md5",     hash_hmac_md5     },
-    { NULL,		        NULL              }
+    { "hash32",   hash_crc32        },
+    { "md5",      hash_md5          },
+    { "sha1",     hash_sha1         },
+    { "sha224",   hash_sha224       },
+    { "sha256",   hash_sha256       },
+    { "sha384",   hash_sha384       },
+    { "sha512",   hash_sha512       },
+    { NULL,		    NULL              }
   };
   luaL_setfuncs(L, methods, 0);
   lua_setfield(L, -2, "crypto");
