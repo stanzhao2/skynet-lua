@@ -2,6 +2,7 @@
 
 #include <tinydir.h>
 #include "luaf_dir.h"
+#include "eport/detail/os/os.hpp"
 #include "eport/detail/io/conv.hpp"
 
 #define LUAC_DIR "os:dir"
@@ -69,6 +70,13 @@ static int luaf_dir_open(lua_State* L) {
   return 1;
 }
 
+static int luaf_dir_make(lua_State* L) {
+  const char* name = luaL_checkstring(L, 1);
+  auto ok = eport::os::make_dir(name);
+  lua_pushboolean(L, ok ? 1 : 0);
+  return 1;
+}
+
 /********************************************************************************/
 
 static void init_metatable(lua_State* L) {
@@ -85,7 +93,8 @@ static void init_metatable(lua_State* L) {
 LUAC_API int luaC_open_dir(lua_State* L) {
   init_metatable(L);
   const luaL_Reg methods[] = {
-    { "opendir",  luaf_dir_open   }, /* os.dir(name) */
+    { "mkdir",    luaf_dir_make   }, /* os.mkdir(name) */
+    { "opendir",  luaf_dir_open   }, /* os.opendir(name) */
     { NULL,       NULL            }
   };
   lua_getglobal(L, "os");
