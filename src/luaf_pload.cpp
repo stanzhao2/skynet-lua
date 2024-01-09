@@ -124,32 +124,18 @@ static int luaf_wait(lua_State* L) {
   else {
     lua_pop(L, 1);
   }
-  lua_Integer expires = -1;
-  if (lua_gettop(L) > 0) {
-    expires = luaL_checkinteger(L, 1);
-  }
-  lua_Integer count = 0;
-  if (expires < 0) {
-    while (!lws::stopped()) {
-      count += lws::run_for(1000);
-      luaC_clsexpires();
-    }
-    lua_pushinteger(L, count);
-    return 1;
-  }
-  if (expires == 0) {
-    count = lws::poll();
-    luaC_clsexpires();
-    lua_pushinteger(L, count);
-    return 1;
-  }
-  while (!lws::stopped() && expires > 0) {
-    auto wait = luaC_min(1000, expires);
+  size_t count = 0;
+  size_t expires = luaL_optinteger(L, 1, -1);
+  while (!lws::stopped()) {
+    size_t wait = luaC_min(1000, expires);
     expires -= wait;
     count += lws::run_for(wait);
+    if (expires == 0) {
+      break;
+    }
     luaC_clsexpires();
   }
-  lua_pushinteger(L, count);
+  lua_pushinteger(L, (lua_Integer)count);
   return 1;
 }
 

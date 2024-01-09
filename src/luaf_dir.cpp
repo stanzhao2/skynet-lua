@@ -64,7 +64,7 @@ static int luaf_dir_pairs(lua_State* L) {
 }
 
 static int luaf_dir_open(lua_State* L) {
-  const char* name = luaL_checkstring(L, 1);
+  const char* name = luaL_optstring(L, 1, "." LUA_DIRSEP);
   std::string path = convto_utf8(name);
   auto ud = luaC_newuserdata<ud_dir>(L, LUAC_DIR);
   if (tinydir_open(&ud->tdir, path.c_str()) < 0) {

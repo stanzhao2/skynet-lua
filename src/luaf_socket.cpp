@@ -32,7 +32,7 @@ static lws_cainfo* init_cainfo(lua_State* L, lws_cainfo* pinfo) {
 static lws_int new_socket(lua_State* L) {
   lws_cainfo info;
   lws_cainfo* ca = init_cainfo(L, &info);
-  const char* family = luaL_checkstring(L, 1);
+  const char* family = luaL_optstring(L, 1, "tcp");
 
   if (strcmp(family, "tcp") == 0) {
     return lws::socket(lws_family::tcp, nullptr);
