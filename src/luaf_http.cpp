@@ -675,13 +675,15 @@ LUAC_API int luaC_open_http(lua_State* L) {
     lua_pop(L, 1);
 
     /* export http.parser */
+    lua_getglobal(L, "io");
     lua_newtable(L); /* Stack: table */
     lua_pushcfunction(L, lhp_request);
-    lua_setfield(L, -2, "request");
+    lua_setfield(L, -2, "request_parser");
     lua_pushcfunction(L, lhp_response);
-    lua_setfield(L, -2, "response");
+    lua_setfield(L, -2, "response_parser");
     lua_pushcfunction(L, lhp_parse_url);
-    lua_setfield(L, -2, "parse_url");
-    lua_setglobal(L, "http");
+    lua_setfield(L, -2, "parseurl");
+    lua_setfield(L, -2, "http");
+    lua_pop(L, 1);
     return 0;
 }

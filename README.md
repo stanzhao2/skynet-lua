@@ -30,15 +30,13 @@
 -   os.debugging()
 -   os.steady_clock()
 
- **http functions**
--   http.request(options)
--   http.response(options)
--   http.parse_url(url)
-
  **io functions** 
 -   io.wwwget(url)
 -   io.socket(protocol)
 -   io.acceptor()
+-   io.http.request_parser(options)
+-   io.http.response_parser(options)
+-   io.http.parseurl(url)
 
  **gzip functions** 
 -   gzip.deflate(str)
