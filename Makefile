@@ -82,7 +82,7 @@ install:
 	$(RM) $(INSTALLPATH)/$(TARGET)-$(VERSION)
 	cp $(OUTPUT) $(INSTALLPATH)/$(TARGET)-$(VERSION)
 	
-	$(RM) $(INSTALLPATH)/lua
+	$(RM) -r $(INSTALLPATH)/lua
 	cp -r ./bin/lua $(INSTALLPATH)
 	
 	$(RM) $(PREFIXPATH)/$(TARGET)
