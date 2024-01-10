@@ -20,7 +20,7 @@
 -   os.rpcall([func, ] name [, ...])
 -   os.pload(name [, ...]) #1
 -   os.name()
--   os.timer() *
+-   os.timer() #2
 -   os.dirsep()
 -   os.mkdir(name)
 -   os.opendir([name])
@@ -40,8 +40,8 @@
 
  **io functions** 
 -   io.wwwget(url)
--   io.socket([<tcp/ssl/ws/wss>], [ca], [key], [pwd]]) *
--   io.acceptor() *
+-   io.socket([<tcp/ssl/ws/wss>], [ca], [key], [pwd]]) #3
+-   io.acceptor() #4
 -   io.http.request_parser(options)
 -   io.http.response_parser(options)
 -   io.http.parse_url(url)
@@ -120,5 +120,6 @@
 -   crypto.hmac.sha512(str, key)
 -   crypto.hmac.md5(str, key)
 
- **The function ending in (*) returns the userdata object**
+#1: return object of job
+
  
