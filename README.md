@@ -40,6 +40,9 @@
 -   io.http.escape(url)
 -   io.http.unescape(url)
 
+ **string functions**
+-   string.split(s, seq)
+
  **gzip functions** 
 -   gzip.deflate(str [,<true/false>])
 -   gzip.inflate(str [,<true/false>])
