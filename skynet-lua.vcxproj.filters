@@ -102,6 +102,9 @@
     <ClCompile Include="src\luaf_http.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="src\luaf_string.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\luaf_allotor.h">
@@ -189,6 +192,9 @@
       <Filter>源文件\http-parser</Filter>
     </ClInclude>
     <ClInclude Include="src\luaf_http.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\luaf_string.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>

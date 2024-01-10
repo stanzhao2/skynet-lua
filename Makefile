@@ -25,6 +25,7 @@ SOURCE  :=  src/socket.io/socket.io.o \
 			src/http-parser/http_parser.o \
 			src/luaf_http.o \
 			src/luaf_allotor.o \
+			src/luaf_string.o \
 			src/luaf_bind.o \
 			src/luaf_clock.o \
 			src/luaf_crypto.o \

@@ -370,7 +370,7 @@ static int luaf_rpcall(lua_State* L) {
     pend.caller  = caller;
     pend.timeout = luaC_clock() + max_expires;
     invoke_pendings[rcf] = pend;
-    return lua_yieldk(L, LUA_MULTRET, 0, 0);
+    return lua_yieldk(L, 0, 0, 0);
   }
   /* not in coroutine */
   rcf = std::abs(rcf);

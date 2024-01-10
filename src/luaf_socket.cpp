@@ -15,17 +15,19 @@ struct ud_context {
 
 static lws_cainfo* init_cainfo(lua_State* L, lws_cainfo* pinfo) {
   memset(pinfo, 0, sizeof(lws_cainfo));
-  int top = lua_gettop(L);
-  if (top == 2) {
+  if (lua_isnoneornil(L, 3)) {
     return nullptr;
   }
-  if (top == 3) {
-    pinfo->caf = luaL_checklstring(L, 3, &pinfo->caf_size);
+  pinfo->caf = luaL_checklstring(L, 3, &pinfo->caf_size);
+  if (lua_isnoneornil(L, 4)) {
     return pinfo;
   }
-  pinfo->crt.data = luaL_checklstring(L, 4, &pinfo->crt.size);
-  pinfo->key.data = luaL_checklstring(L, 5, &pinfo->key.size);
-  pinfo->pwd = luaL_optstring(L, 6, nullptr);
+  pinfo->crt.data = luaL_checklstring(L, 3, &pinfo->crt.size);
+  if (lua_isnoneornil(L, 4)) {
+    return pinfo;
+  }
+  pinfo->key.data = luaL_checklstring(L, 4, &pinfo->key.size);
+  pinfo->pwd = luaL_optstring(L, 5, nullptr);
   return pinfo;
 }
 
