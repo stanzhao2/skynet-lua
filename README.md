@@ -62,7 +62,7 @@
 -   socket:seturi(uri)
 -   socket:setheader(name, value)
 
- **acceptor function**
+ **acceptor functions**
 -   acceptor:listen(port [, host, backlog])
 -   acceptor:id()
 -   acceptor:accept(s [, func])
