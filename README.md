@@ -51,6 +51,7 @@
 -   storage.set_if(key, f, value [, ...])
 -   storage.get(key)
 -   storage.erase(key)
+-   storage.size()
 -   storage.clear()
 
  **gzip functions** 

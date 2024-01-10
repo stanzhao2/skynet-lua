@@ -119,6 +119,12 @@ static int luaf_storage_erase(lua_State* L) {
   return luaC_unpack(L);
 }
 
+static int luaf_storage_size(lua_State* L) {
+  std::unique_lock<std::recursive_mutex> lock(_mutex);
+  lua_pushinteger(L, (lua_Integer)_storage.size());
+  return 1;
+}
+
 static int luaf_storage_clear(lua_State* L) {
   std::unique_lock<std::recursive_mutex> lock(_mutex);
   _storage.clear();
@@ -131,6 +137,7 @@ LUAC_API int luaC_open_storage(lua_State* L) {
   lua_newtable(L);
   const luaL_Reg methods[] = {
     { "exist",    luaf_storage_exist  },
+    { "size",     luaf_storage_size   },
     { "set",      luaf_storage_set    },
     { "set_if",   luaf_storage_set_if },
     { "get",      luaf_storage_get    },
