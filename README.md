@@ -45,6 +45,14 @@
 -   string.isalpha(s)
 -   string.isalnum(s)
 
+ **storage functions**
+-   storage.exist(key)
+-   storage.set(key, value [, ...])
+-   storage.set_if(key, f, value [, ...])
+-   storage.get(key)
+-   storage.erase(key)
+-   storage.clear()
+
  **gzip functions** 
 -   gzip.deflate(str [,<true/false>])
 -   gzip.inflate(str [,<true/false>])

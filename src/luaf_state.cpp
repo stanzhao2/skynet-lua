@@ -14,6 +14,7 @@
 #include "luaf_clock.h"
 #include "luaf_socket.h"
 #include "luaf_rpcall.h"
+#include "luaf_storage.h"
 
 #include <string.h>
 #include "eport/detail/os/os.hpp"
@@ -38,6 +39,7 @@ static const lua_CFunction modules[] = {
   luaC_open_pload,
   luaC_open_require,
   luaC_open_rpcall,
+  luaC_open_storage,
   /* ... */
   NULL
 };

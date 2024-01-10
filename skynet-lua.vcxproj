@@ -31,6 +31,7 @@
     <ClCompile Include="src\luaf_skynet.cpp" />
     <ClCompile Include="src\luaf_socket.cpp" />
     <ClCompile Include="src\luaf_state.cpp" />
+    <ClCompile Include="src\luaf_storage.cpp" />
     <ClCompile Include="src\luaf_string.cpp" />
     <ClCompile Include="src\luaf_timer.cpp" />
     <ClCompile Include="src\rapidjson\document.cpp" />
@@ -60,6 +61,7 @@
     <ClInclude Include="src\luaf_skynet.h" />
     <ClInclude Include="src\luaf_socket.h" />
     <ClInclude Include="src\luaf_state.h" />
+    <ClInclude Include="src\luaf_storage.h" />
     <ClInclude Include="src\luaf_string.h" />
     <ClInclude Include="src\luaf_timer.h" />
     <ClInclude Include="src\rapidjson\file.hpp" />

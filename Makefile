@@ -44,6 +44,7 @@ SOURCE  :=  src/socket.io/socket.io.o \
 			src/luaf_state.o \
 			src/luaf_timer.o \
 			src/luaf_skynet.o \
+			src/luaf_storage.o \
 			src/rapidjson/document.o \
 			src/rapidjson/schema.o \
 			src/rapidjson/values.o \
