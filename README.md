@@ -1,8 +1,8 @@
 **global functions**
--   bind(arg1 [,...])
--   pack(arg1 [,...])
+-   bind(func, [,...])
+-   pack(...)
 -   unpack(str)
--   pcall(f [, arg1, ...])
+-   pcall(func [, ...])
 -   print(fmt [, ...])
 -   trace(fmt [, ...])
 -   error(fmt [, ...])
@@ -11,17 +11,17 @@
  **os functions** 
 -   os.deliver(name, mask, receiver [, ...])
 -   os.caller()
--   os.bind(name, f [, <true/false>])
+-   os.bind(name, func [, <true/false>])
 -   os.unbind(name)
--   os.rpcall([f, ] name [, arg1, ...])
--   os.pload(name [, arg1, ...])
+-   os.rpcall([func, ] name [, ...])
+-   os.pload(name [, ...])
 -   os.name()
 -   os.timer()
 -   os.dirsep()
 -   os.mkdir(name)
 -   os.opendir([name])
 -   os.id()
--   os.post(f [, arg1, ...])
+-   os.post(func [, ...])
 -   os.wait([expires])
 -   os.restart()
 -   os.exit()
@@ -32,13 +32,36 @@
 
  **io functions** 
 -   io.wwwget(url)
--   io.socket([<tcp/ssl/ws/wss>])
+-   io.socket([<tcp/ssl/ws/wss>], [ca], [key], [pwd]])
 -   io.acceptor()
 -   io.http.request_parser(options)
 -   io.http.response_parser(options)
 -   io.http.parse_url(url)
 -   io.http.escape(url)
 -   io.http.unescape(url)
+
+ **socket functions**
+-   socket:connect(host, port [, func])
+-   socket:read()
+-   socket:write(data)
+-   socket:send(data)
+-   socket:receive(func)
+-   socket:endpoint()
+-   socket:close()
+-   socket:geturi()
+-   socket:getheader(name)
+-   socket:seturi(uri)
+-   socket:setheader(name, value)
+
+ **acceptor function**
+-   acceptor:listen(port [, host, backlog])
+-   acceptor:accept(s [, func])
+-   acceptor:close();
+
+ **timer functions**
+-   timer:expires(ms, func)
+-   timer:close()
+-   timer:cancel()
 
  **string functions**
 -   string.split(s, seq)
@@ -48,7 +71,7 @@
  **storage functions**
 -   storage.exist(key)
 -   storage.set(key, value [, ...])
--   storage.set_if(key, f, value [, ...])
+-   storage.set_if(key, func, value [, ...])
 -   storage.get(key)
 -   storage.erase(key)
 -   storage.size()
