@@ -13,12 +13,12 @@
 -   throw(fmt [, ...])
 
  **os functions** 
--   os.deliver(name, mask, receiver [, ...])
--   os.caller()
+-   os.pload(name [, ...]) #1
 -   os.bind(name, func [, <true/false>])
 -   os.unbind(name)
+-   os.caller()
 -   os.rpcall([func, ] name [, ...])
--   os.pload(name [, ...]) #1
+-   os.deliver(name, mask, receiver [, ...])
 -   os.name()
 -   os.timer() #2
 -   os.dirsep()
