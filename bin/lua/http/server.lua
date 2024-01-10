@@ -106,7 +106,7 @@ local function http_response(peer, code, body)
     ["Connection"]     = "keep-alive",
     ["Cache-Control"]  = "max-age=0",
     ["Connection"]     = "keep-alive",
-    ["Content-Length"] = format("%d", body),
+    ["Content-Length"] = format("%d", #body),
     ["Content-Type"]   = http_mime_type.html .. ";charset=UTF-8",
   };
   if code ~= 200 then
