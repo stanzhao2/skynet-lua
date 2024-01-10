@@ -51,6 +51,8 @@ local http_status_text = {
   [505] = "HTTP Version not supported",
 };
 
+--------------------------------------------------------------------------------
+
 local http_mime_type = {
     cod   = "image/cis-cod",
     ras   = "image/cmu-raster",
@@ -90,10 +92,16 @@ local http_mime_type = {
 
 --------------------------------------------------------------------------------
 
+local function index_default()
+  return "skynet-lua/3.0.1";
+end
+
+--------------------------------------------------------------------------------
+
 local function http_response(peer, code, body)
   local status  = format("HTTP/1.1 %d %s\r\n", code, http_status_text[code]);
   local headers = {
-    ["Server"]         = "skynet/3.0.1",
+    ["Server"]         = index_default(),
     ["Connection"]     = "keep-alive",
     ["Cache-Control"]  = "max-age=0",
     ["Connection"]     = "keep-alive",
@@ -114,12 +122,6 @@ local function http_response(peer, code, body)
   insert(response, "\r\n");
   insert(response, body or "");
   peer:send(concat(response));
-end
-
---------------------------------------------------------------------------------
-
-local function index_default()
-  return "Skynet/3.0.1";
 end
 
 --------------------------------------------------------------------------------
