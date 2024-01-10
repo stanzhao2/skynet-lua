@@ -250,7 +250,7 @@ end
 function main(port, host, ca, key, pwd)
   port = port or (ca and 443 or 80);
   local acceptor = io.acceptor();
-  local ok = acceptor:listen(port, host or "0.0.0.0", 16);
+  local ok = acceptor:listen(port, host or "0.0.0.0", 64);
   if not ok then
     error(format("socket listen error at port: %d", port));
 	return;
