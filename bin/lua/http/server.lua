@@ -118,11 +118,20 @@ end
 
 --------------------------------------------------------------------------------
 
+local function index_default()
+  return "Skynet/3.0.1";
+end
+
+--------------------------------------------------------------------------------
+
 local function co_on_request(method, session)
   local url     = session.url;
   local body    = concat(session.body);
   local context = io.http.parse_url(url);
   local fname   = context.path:sub(2);
+  if not fname or #fname == 0 then
+    fname = "index";
+  end
   local query   = context.query;
   if query and #query > 0 then
     local t = string.split(query, "&");
@@ -254,6 +263,7 @@ function main(port, host, ca, key, pwd)
   local socket = io.socket(protocol, ca, key, pwd);
   acceptor:accept(socket, bind(http_on_accept, protocol, ca, key, pwd));
   
+  os.bind("index", index_default);
   print(format("%s works on port %d", os.name(), port));
   while not os.stopped() do
     os.wait();
