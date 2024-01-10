@@ -1,3 +1,7 @@
+**skynet-lua usage**
+-   skynet name [arguments...]
+-   skynet cluster.leader [port] [host]
+
 **global functions**
 -   bind(func, [,...])
 -   pack(...)
