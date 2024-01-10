@@ -147,6 +147,10 @@ local function rp_on_request(session)
   local co     = session.co;
   local parser = session.parser;
   local method = parser:method();
+  if method ~= "GET" and method ~= "POST" then
+    http_response(session.socket, 405, "Method Not Allowed");
+    return;
+  end
   if not coroutine.resume(co, method, session) then
     peer:close();
   end
