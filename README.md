@@ -1,8 +1,8 @@
-**skynet-lua usage**
+ **skynet-lua usage**
 -   skynet name [arguments...]
 -   skynet cluster.leader [port] [host]
 
-**global functions**
+ **global functions**
 -   bind(func, [,...])
 -   pack(...)
 -   unpack(str)
@@ -18,9 +18,9 @@
 -   os.bind(name, func [, <true/false>])
 -   os.unbind(name)
 -   os.rpcall([func, ] name [, ...])
--   os.pload(name [, ...])
+-   os.pload(name [, ...])*
 -   os.name()
--   os.timer()
+-   os.timer()*
 -   os.dirsep()
 -   os.mkdir(name)
 -   os.opendir([name])
@@ -34,10 +34,14 @@
 -   os.debugging()
 -   os.steady_clock()
 
+ **job functions**
+-   job:free()
+-   job:id()
+
  **io functions** 
 -   io.wwwget(url)
--   io.socket([<tcp/ssl/ws/wss>], [ca], [key], [pwd]])
--   io.acceptor()
+-   io.socket([<tcp/ssl/ws/wss>], [ca], [key], [pwd]])*
+-   io.acceptor()*
 -   io.http.request_parser(options)
 -   io.http.response_parser(options)
 -   io.http.parse_url(url)
@@ -46,6 +50,7 @@
 
  **socket functions**
 -   socket:connect(host, port [, func])
+-   socket:id()
 -   socket:read()
 -   socket:write(data)
 -   socket:send(data)
@@ -59,6 +64,7 @@
 
  **acceptor function**
 -   acceptor:listen(port [, host, backlog])
+-   acceptor:id()
 -   acceptor:accept(s [, func])
 -   acceptor:close();
 
