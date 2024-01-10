@@ -133,7 +133,7 @@ local function co_on_request(method, session)
   local context = io.http.parse_url(url);
   local fname   = context.path:sub(2);
   if not fname or #fname == 0 then
-    fname = "index";
+    fname = "http:index";
   end
   local query   = context.query;
   if query and #query > 0 then
@@ -266,7 +266,7 @@ function main(port, host, ca, key, pwd)
   local socket = io.socket(protocol, ca, key, pwd);
   acceptor:accept(socket, bind(http_on_accept, protocol, ca, key, pwd));
   
-  os.bind("index", index_default);
+  os.bind("http:index", index_default);
   print(format("%s works on port %d", os.name(), port));
   while not os.stopped() do
     os.wait();
