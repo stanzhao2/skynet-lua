@@ -18,7 +18,7 @@
 -   os.bind(name, func [, <true/false>])
 -   os.unbind(name)
 -   os.rpcall([func, ] name [, ...])
--   os.pload(name [, ...]) *
+-   os.pload(name [, ...]) #1
 -   os.name()
 -   os.timer() *
 -   os.dirsep()
@@ -120,4 +120,5 @@
 -   crypto.hmac.sha512(str, key)
 -   crypto.hmac.md5(str, key)
 
-The function ending in (*) returns the userdata object
+ **The function ending in (*) returns the userdata object**
+ 
