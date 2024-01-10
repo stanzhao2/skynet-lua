@@ -51,7 +51,7 @@ static const lua_CFunction modules[] = {
 #else
 #define FSO_EXT ".so"
 #endif
-#define LUAC_DIR "lua"
+#define LUAC_DIR "lua" LUA_DIRSEP LUA_VERSION_MAJOR "." LUA_VERSION_MINOR
 
 static void warnfoff (void *ud, const char *message, int tocont);
 static void warnfon  (void *ud, const char *message, int tocont);
@@ -146,10 +146,8 @@ static std::string exedir() {
 static void setpath(lua_State* L) {
   auto module_path = exedir();
   const char* path[] = {
-    "?.lua",
-    "?" LUA_DIRSEP "init.lua",
-    LUAC_DIR LUA_DIRSEP "?.lua",
-    LUAC_DIR LUA_DIRSEP "?" LUA_DIRSEP "init.lua",
+    "lua" LUA_DIRSEP LUA_VERSION_MAJOR "." LUA_VERSION_MINOR LUA_DIRSEP "?.lua",
+    "lua" LUA_DIRSEP LUA_VERSION_MAJOR "." LUA_VERSION_MINOR LUA_DIRSEP "?" LUA_DIRSEP "init.lua",
   };
   auto count = sizeof(path) / sizeof(const char*);
 
@@ -174,7 +172,7 @@ static void setpath(lua_State* L) {
 static void setcpath(lua_State* L) {
   auto module_path = exedir();
   const char* path[] = {
-    "lib" LUA_DIRSEP LUAC_DIR LUA_DIRSEP LUA_VERSION_MAJOR "." LUA_VERSION_MINOR LUA_DIRSEP"?" FSO_EXT
+    "lib" LUA_DIRSEP "lua" LUA_DIRSEP LUA_VERSION_MAJOR "." LUA_VERSION_MINOR LUA_DIRSEP "?" FSO_EXT
   };
   std::string dir;
   auto count = sizeof(path) / sizeof(const char*);
