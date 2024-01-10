@@ -4,6 +4,30 @@
 
 /********************************************************************************/
 
+static int luaf_isalnum(lua_State* L) {
+  const char* p = luaL_checkstring(L, 1);
+  while (*p) {
+    if (isalnum(*p++) == 0) {
+      lua_pushboolean(L, 0);
+      return 1;
+    }
+  }
+  lua_pushboolean(L, 1);
+  return 1;
+}
+
+static int luaf_isalpha(lua_State* L) {
+  const char* p = luaL_checkstring(L, 1);
+  while (*p) {
+    if (isalpha(*p++) == 0) {
+      lua_pushboolean(L, 0);
+      return 1;
+    }
+  }
+  lua_pushboolean(L, 1);
+  return 1;
+}
+
 static int luaf_split(lua_State* L) {
   const char *s = luaL_checkstring(L, 1);
   const char *sep = luaL_checkstring(L, 2);
@@ -28,6 +52,8 @@ static int luaf_split(lua_State* L) {
 LUAC_API int luaC_open_string(lua_State* L) {
   const luaL_Reg methods[] = {
     { "split",    luaf_split    }, /* string.split(s, r) */
+    { "isalnum",  luaf_isalnum  }, /* string.isalnum(s)  */
+    { "isalpha",  luaf_isalpha  }, /* string.isalpha(s)  */
     { NULL,       NULL          }
   };
   lua_getglobal(L, "string");

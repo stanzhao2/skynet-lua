@@ -42,6 +42,8 @@
 
  **string functions**
 -   string.split(s, seq)
+-   string.isalpha(s)
+-   string.isalnum(s)
 
  **gzip functions** 
 -   gzip.deflate(str [,<true/false>])
