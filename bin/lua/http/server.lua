@@ -99,13 +99,14 @@ end
 --------------------------------------------------------------------------------
 
 local function http_response(peer, code, body)
+  body = body or "";
   local status  = format("HTTP/1.1 %d %s\r\n", code, http_status_text[code]);
   local headers = {
     ["Server"]         = index_default(),
     ["Connection"]     = "keep-alive",
     ["Cache-Control"]  = "max-age=0",
     ["Connection"]     = "keep-alive",
-    ["Content-Length"] = format("%d", #(body or "")),
+    ["Content-Length"] = format("%d", body),
     ["Content-Type"]   = http_mime_type.html .. ";charset=UTF-8",
   };
   if code ~= 200 then
@@ -120,7 +121,7 @@ local function http_response(peer, code, body)
     insert(response, "\r\n");
   end
   insert(response, "\r\n");
-  insert(response, body or "");
+  insert(response, body);
   peer:send(concat(response));
 end
 
