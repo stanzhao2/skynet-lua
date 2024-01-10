@@ -120,6 +120,9 @@
 -   crypto.hmac.sha512(str, key)
 -   crypto.hmac.md5(str, key)
 
-#1: return object of job
+ *#1: return job object*
+ *#2: return timer object*
+ *#3: return socket object*
+ *#4: return acceptor object*
 
  
