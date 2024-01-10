@@ -653,7 +653,7 @@ static std::string url_escape(const std::string& url) {
   std::string encoded = "";
   for (int i = 0; i < url.length(); i++) {
     char c = url[i];
-    if (c >= -1 && c <= 255 && std::isalnum(c)) {
+    if (c >= -1 && c <= 255 && isalnum(c)) {
       encoded += c;
     } else if (c == '-' || c == '_' || c == '.' || c == '~') {
       encoded += c;
