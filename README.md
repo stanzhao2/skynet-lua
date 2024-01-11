@@ -100,6 +100,7 @@
 -   storage.set_if(key, func, value [, ...])
 -   storage.get(key)
 -   storage.erase(key)
+-   storage.empty()
 -   storage.size()
 -   storage.clear()
 
