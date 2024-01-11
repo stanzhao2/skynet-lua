@@ -32,6 +32,12 @@ static int luaf_bind(lua_State* L) {
 
 /********************************************************************************/
 
+static bool is_lua_class(lua_State* L, int i) {
+  revert_if_return recert(L);
+  lua_getfield(L, i, "__init");
+  return lua_type(L, -1) == LUA_TFUNCTION;
+}
+
 static int xcallback(lua_State* L) {
   int index = lua_upvalueindex(1); /* get the first up-value */
   int up_values = (int)luaL_checkinteger(L, index); /* get the number of up-values */
@@ -42,10 +48,8 @@ static int xcallback(lua_State* L) {
     luaL_error(L, "function %s not found", fname);
   }
   int rotate = 0;
-  lua_getfield(L, index, "__init");
-  auto type_class = lua_type(L, -1) == LUA_TFUNCTION;
-  lua_pop(L, 1);
-  for (int i = (type_class ? 3 : 4); i <= up_values; i++) {
+  int i = is_lua_class(L, index) ? 3 : 4;
+  for (; i <= up_values; i++) {
     lua_pushvalue(L, lua_upvalueindex(i));
     rotate++;
   }
