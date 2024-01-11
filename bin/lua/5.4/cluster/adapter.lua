@@ -233,6 +233,7 @@ local function connect_members(socket, protocol)
       error(format("socket connect to %s:%d error", host, port));
 	  return false;
 	end
+    os.wait(0);
   end
   return true;
 end
