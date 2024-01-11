@@ -40,11 +40,10 @@ end
 function co_class:comain()
   while true do
     if self.tasklist:empty() then
-      if not self.closed then
-        coroutine.yield();
-      else
+      if self.closed then
         break;
       end
+      coroutine.yield();
     else
       print_if_error(pcall(self.tasklist:front()));
       self.tasklist:pop_front();
