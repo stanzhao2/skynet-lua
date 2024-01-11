@@ -4,6 +4,7 @@
 
  **global functions**
 -   bind(func, [,...])
+-   xbind(name, self [,...])
 -   pack(...)
 -   unpack(str)
 -   pcall(func [, ...])
