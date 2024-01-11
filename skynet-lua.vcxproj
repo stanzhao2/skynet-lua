@@ -20,6 +20,7 @@
     <ClCompile Include="src\luaf_gzip.cpp" />
     <ClCompile Include="src\luaf_http.cpp" />
     <ClCompile Include="src\luaf_json.cpp" />
+    <ClCompile Include="src\luaf_list.cpp" />
     <ClCompile Include="src\luaf_metatable.cpp" />
     <ClCompile Include="src\luaf_pack.cpp" />
     <ClCompile Include="src\luaf_pcall.cpp" />
@@ -50,6 +51,7 @@
     <ClInclude Include="src\luaf_gzip.h" />
     <ClInclude Include="src\luaf_http.h" />
     <ClInclude Include="src\luaf_json.h" />
+    <ClInclude Include="src\luaf_list.h" />
     <ClInclude Include="src\luaf_metatable.h" />
     <ClInclude Include="src\luaf_pack.h" />
     <ClInclude Include="src\luaf_pcall.h" />
