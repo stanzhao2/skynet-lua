@@ -186,7 +186,7 @@ static int luaf_list_new(lua_State* L) {
 
 /********************************************************************************/
 
-LUALIB_API int luaf_open_list(lua_State* L) {
+LUAC_API int luaf_open_list(lua_State* L) {
   init_metatable(L);
   bool need_pop = true;
   lua_getglobal(L, "std");
