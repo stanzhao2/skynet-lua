@@ -34,8 +34,14 @@ static int luaf_bind(lua_State* L) {
 
 static bool is_lua_class(lua_State* L, int i) {
   revert_if_return recert(L);
-  lua_getfield(L, i, "__init");
-  return lua_type(L, -1) == LUA_TFUNCTION;
+  if (lua_getmetatable(L, i)) {
+    lua_getfield(L, -1, "__index");
+    if (lua_type(L, -1) == LUA_TTABLE) {
+      lua_getfield(L, -1, "__class");
+      return (lua_type(L, -1) == LUA_TTABLE);
+    }
+  }
+  return false;
 }
 
 static int xcallback(lua_State* L) {
@@ -48,7 +54,9 @@ static int xcallback(lua_State* L) {
     luaL_error(L, "function %s not found", fname);
   }
   int rotate = 0;
-  int i = is_lua_class(L, index) ? 3 : 4;
+  int i = (up_values < 0) ? 4 : 3;
+  up_values = std::abs(up_values);
+
   for (; i <= up_values; i++) {
     lua_pushvalue(L, lua_upvalueindex(i));
     rotate++;
@@ -74,14 +82,16 @@ static int luaf_bind_ex(lua_State* L) {
     return luaf_bind(L);
   }
   const char* fname = luaL_checkstring(L, 1); /* function name */
+  int iclass = is_lua_class(L, 2) ? 1 : (-1);
   luaL_checktype(L, 2, LUA_TTABLE);  /* table type check  */
+
   lua_getfield(L, 2, fname);
   if (lua_type(L, -1) != LUA_TFUNCTION) {
     luaL_error(L, "function %s not found", fname);
   }
   lua_pop(L, 1);
   int up_values = lua_gettop(L) + 1; /* number of up-values (function + argvs)*/
-  lua_pushinteger(L, up_values); /* push up-values onto the stack */
+  lua_pushinteger(L, up_values * iclass); /* push up-values onto the stack */
   lua_insert(L, 1);
   lua_pushcclosure(L, xcallback, up_values);
   return 1;
