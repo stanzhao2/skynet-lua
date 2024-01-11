@@ -1,5 +1,3 @@
-![输入图片说明](skynet-lua.png)
-
  **skynet-lua usage**
 -   skynet name [arguments...]
 -   skynet cluster.leader [port] [host]
