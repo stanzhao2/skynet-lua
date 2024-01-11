@@ -30,9 +30,6 @@ end
 function co_class:close(func)
   assert(func == nil or type(func) == "function");
   self.closed = func;
-  if coroutine.isyieldable() then
-    return; --invoke in coroutine
-  end
   if self.tasklist.empty() then
     os.post(coroutine.resume, self.co);
   end
@@ -64,9 +61,6 @@ function co_class:append(task)
   assert(type(task) == "function");
   if not self.closed then
     self.tasklist:push_back(task);
-    if coroutine.isyieldable() then
-      return; --invoke in coroutine
-    end
     if self.tasklist:size() == 1 then
       os.post(coroutine.resume, self.co);
     end
