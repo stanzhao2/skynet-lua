@@ -202,6 +202,7 @@ LUAC_API lua_State* luaC_newstate(lua_Alloc alloc, void* ud) {
   alloc = alloc ? alloc : luaC_realloc;
   lua_State* L = lua_newstate(alloc, ud);
   if (L) {
+    luaL_checkversion(L);
     lua_atpanic  (L, &panic);
     lua_setwarnf (L, warnfoff, L);  /* default is warnings off */
     luaL_openlibs(L);
