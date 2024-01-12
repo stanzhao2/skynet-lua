@@ -71,7 +71,7 @@
 -   socket:write(data)
 -   socket:send(data)
 -   socket:receive(func)
--   socket:endpoint()
+-   socket:endpoint([<"local"/"remote">])
 -   socket:close()
 -   socket:geturi()
 -   socket:getheader(name)
@@ -81,8 +81,9 @@
  **acceptor functions**
 -   acceptor:listen(port [, host, backlog])
 -   acceptor:id()
--   acceptor:accept(s [, func])
 -   acceptor:close();
+-   acceptor:endpoint()
+-   acceptor:accept(s [, func])
 
  **timer functions**
 -   timer:expires(ms, func)

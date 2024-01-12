@@ -237,8 +237,9 @@ static int luaf_receive(lua_State* L) {
 
 static int luaf_endpoint(lua_State* L) {
   auto ud = luaC_checkudata<ud_context>(L, 1, LUAC_SOCKET);
-  lws_endtype type = lws_endtype::remote;
-  const char* option = luaL_optstring(L, 2, "remote");
+  lws_endtype type   = lws_endtype::remote;
+  const char* temp   = ud->accept ? "local" : "remote";
+  const char* option = luaL_optstring(L, 2, temp);
   if (strcmp(option, "local") == 0) {
     type = lws_endtype::local;
   }
