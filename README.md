@@ -92,6 +92,7 @@
 
  **string functions**
 -   string.split(s, seq)
+-   string.trim(s)
 -   string.isalpha(s)
 -   string.isalnum(s)
 
