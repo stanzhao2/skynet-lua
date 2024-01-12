@@ -91,7 +91,7 @@ static void lua_thread(lua_State* PL, ud_thread* job) {
   luaC_close(L);
 }
 
-static int luaf_job_free(lua_State* L) {
+static int luaf_job_stop(lua_State* L) {
   ud_thread* job = luaC_checkudata<ud_thread>(L, 1, LUAC_THREAD);
   if (!job || !job->thread->joinable()) {
     return 0;
@@ -109,7 +109,7 @@ static int luaf_job_gc(lua_State* L) {
   lua_ftrace("%s will gc\n", LUAC_THREAD);
 #endif
   ud_thread* job = luaC_checkudata<ud_thread>(L, 1, LUAC_THREAD);
-  int result = luaf_job_free(L);
+  int result = luaf_job_stop(L);
   job->~ud_thread();
   return result;
 }
@@ -282,7 +282,7 @@ static void init_metatable(lua_State* L) {
   const luaL_Reg methods[] = {
     { "__gc",       luaf_job_gc     },
     { "id",         luaf_job_id     },
-    { "free",       luaf_job_free   },
+    { "stop",       luaf_job_stop   },
     { NULL,         NULL            }
   };
   luaC_newmetatable(L, LUAC_THREAD, methods);

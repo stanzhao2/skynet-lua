@@ -51,7 +51,7 @@
 -   list:pop_front()
 
  **job functions**
--   job:free()
+-   job:stop()
 -   job:id()
 
  **io functions** 
