@@ -20,7 +20,6 @@ static int luaf_storage_set(lua_State* L) {
   }
   luaC_pack(L, lua_gettop(L) - 1);
   std::unique_lock<std::recursive_mutex> lock(_mutex);
-
   auto iter = _storage.find(key);
   if (iter != _storage.end()) {
     old_value = iter->second;
@@ -41,41 +40,46 @@ static int luaf_storage_set_if(lua_State* L) {
 
   int top = lua_gettop(L);
   if (top < 3) {
-    luaL_error(L, "no value");
+    luaL_error(L, "no values");
   }
   int argc = top - 2;
+  lua_pushvalue(L, 2); /* push function to stack */
+  for (int i = 3; i <= top; i++) {
+    lua_pushvalue(L, i); /* push params to stack */
+  }
   std::unique_lock<std::recursive_mutex> lock(_mutex);
   auto iter = _storage.find(key);
   if (iter != _storage.end()) {
     old_value = iter->second;
   }
-  lua_pushvalue(L, 2);
-  lua_rotate(L, 3, 1);
   if (!old_value.empty()) {
     lua_pushlstring(L, old_value.c_str(), old_value.size());
     argc += luaC_unpack(L);
   }
-  if (luaC_xpcall(L, argc, LUA_MULTRET) != LUA_OK) {
+  if (luaC_xpcall(L, argc, 1) != LUA_OK) {
     lua_ferror("%s\n", luaL_checkstring(L, -1));
+    lua_pushboolean(L, 0);
     lua_pushnil(L);
-    return 1;
+    return 2;
   }
-  int lua_ret_count = lua_gettop(L) - 2;
-  if (lua_ret_count <= 0) {
-    lua_pushnil(L); /* no return value */
-    lua_ret_count = 1;
+  if (lua_toboolean(L, -1) == 0) {
+    lua_pushboolean(L, 0);
+    lua_pushnil(L);
+    return 2;
   }
-  luaC_pack(L, lua_ret_count);
+  lua_settop(L, top);
+  luaC_pack (L, top - 2);
   size_t size = 0;
   const char* data = luaL_checklstring(L, -1, &size);
-
   _storage[key] = std::move(std::string(data, size));
   if (old_value.empty()) {
+    lua_pushboolean(L, 1);
     lua_pushnil(L);
-    return 1;
+    return 2;
   }
+  lua_pushboolean(L, 1);
   lua_pushlstring(L, old_value.c_str(), old_value.size());
-  return luaC_unpack(L);
+  return luaC_unpack(L) + 1;
 }
 
 static int luaf_storage_get(lua_State* L) {
