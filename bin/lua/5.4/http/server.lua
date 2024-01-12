@@ -98,9 +98,8 @@ end
 
 --------------------------------------------------------------------------------
 
-local function http_response(peer, code, body)
+local function http_response(peer, code, body, encoding)
   body = body or "";
-  local status  = format("HTTP/1.1 %d %s\r\n", code, http_status_text[code]);
   local headers = {
     ["Server"]         = index_default(),
     ["Connection"]     = "keep-alive",
@@ -109,10 +108,16 @@ local function http_response(peer, code, body)
     ["Content-Length"] = format("%d", #body),
     ["Content-Type"]   = http_mime_type.html .. ";charset=UTF-8",
   };
+
   if code ~= 200 then
     headers["Connection"] = "Close";
   end
+  if encoding then
+    headers["Content-Encoding"] = encoding;
+  end
+
   local response = {};
+  local status   = format("HTTP/1.1 %d %s\r\n", code, http_status_text[code]);
   insert(response, status);
   for k, v in pairs(headers) do
     insert(response, k);
@@ -129,12 +134,14 @@ end
 
 local function co_on_request(method, session)
   local url     = session.url;
+  local headers = session.headers;
   local body    = concat(session.body);
   local context = io.http.parse_url(url);
   local fname   = context.path:sub(2);
   if not fname or #fname == 0 then
     fname = "http:index";
   end
+
   local query   = context.query;
   if query and #query > 0 then
     local t = string.split(query, "&");
@@ -144,12 +151,27 @@ local function co_on_request(method, session)
       query[s[1]] = s[2];
     end
   end
+
   local status = 200;
   local ok, result = os.rpcall(fname, query, body);
   if not ok then
     status = 500;
   end
-  http_response(session.socket, status, result);
+  result = tostring(result or "");
+
+  local encoding = nil;
+  if #result > 0 then
+    encoding = headers["Accept-Encoding"];
+    if encoding then
+      if encoding:find("gzip") then
+        encoding = "gzip";
+        result = gzip.deflate(result);
+      else
+        encoding = nil;
+      end
+    end
+  end
+  http_response(session.socket, status, result, encoding);
 end
 
 --------------------------------------------------------------------------------
@@ -219,6 +241,13 @@ end
 local function http_on_begin(session)
   session.url  = "";
   session.body = {};
+  session.headers = {};
+end
+
+--------------------------------------------------------------------------------
+
+local function http_on_header(session, name, value)
+  session.headers[name] = value;
 end
 
 --------------------------------------------------------------------------------
@@ -229,14 +258,16 @@ local function http_on_accept(protocol, ca, key, pwd, ec, peer)
 	return;
   end
   local session = {
-    socket = peer,
-    url  = "",
-    body = {},
+    socket  = peer,
+    url     = "",
+    body    = {},
+    headers = {},
     co = coroutine.create(co_on_request)
   };
   local options = {
     on_message_begin    = bind(http_on_begin,   session),
     on_body             = bind(http_on_body,    session),
+    on_header           = bind(http_on_header,  session),
     on_url              = bind(http_on_url,     session),
     on_message_complete = bind(http_on_request, session)
   };
