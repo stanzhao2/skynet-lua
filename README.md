@@ -13,6 +13,7 @@
 -   throw(fmt [, ...])
 
  **os functions** 
+-   os.version()
 -   os.pload(name [, ...]) #1
 -   os.bind(name, func [, <true/false>])
 -   os.unbind(name)

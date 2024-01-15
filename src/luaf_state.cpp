@@ -18,11 +18,29 @@
 #include "luaf_storage.h"
 
 #include <string.h>
+#include "luaf_skynet.h"
 #include "eport/detail/os/os.hpp"
 
 /********************************************************************************/
 
+static int luaf_os_version(lua_State* L) {
+  lua_pushstring(L, SKYNET_VERSION);
+  return 1;
+}
+
+static int luaC_open_version(lua_State* L) {
+  const luaL_Reg methods[] = {
+    { "version",    luaf_os_version },
+    { NULL,         NULL            }
+  };
+  lua_getglobal(L, "os");
+  luaL_setfuncs(L, methods, 0);
+  lua_pop(L, 1); /* pop 'io' from stack */
+  return 0;
+}
+
 static const lua_CFunction modules[] = {
+  luaC_open_version,
   luaC_open_pcall,
   luaC_open_bind,
   luaC_open_string,
