@@ -104,18 +104,13 @@ local function http_response(peer, code, body, encoding)
     ["Server"]         = index_default(),
     ["Connection"]     = "keep-alive",
     ["Cache-Control"]  = "max-age=0",
-    ["Connection"]     = "keep-alive",
+    ["Connection"]     = "Close",
     ["Content-Length"] = format("%d", #body),
     ["Content-Type"]   = http_mime_type.html .. ";charset=UTF-8",
   };
-
-  if code ~= 200 then
-    headers["Connection"] = "Close";
-  end
   if encoding then
     headers["Content-Encoding"] = encoding;
   end
-
   local response = {};
   local status   = format("HTTP/1.1 %d %s\r\n", code, http_status_text[code]);
   insert(response, status);

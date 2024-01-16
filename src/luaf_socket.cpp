@@ -101,63 +101,58 @@ static int luaf_listen(lua_State* L) {
   return 1;
 }
 
+static void on_accept(int ec, int, int acceptor, int rpeer, int rcb) {
+  lua_State* L = luaC_getlocal();
+  revert_if_return revert(L);
+  unref_if_return  unref_rcb(L, rcb);
+  unref_if_return  unref_rpeer(L, rpeer);
+  luaC_rawgeti(L, rcb);
+  if (lua_type(L, -1) != LUA_TFUNCTION) {
+    return;
+  }
+  lua_pushinteger(L, ec);
+  luaC_rawgeti(L, rpeer);
+  if (luaC_xpcall(L, 2, 1) != LUA_OK) {
+    lua_ferror("%s\n", lua_tostring(L, -1));
+    return;
+  }
+  if (ec > 0) {
+    if (!lws::valid(acceptor)) {
+      return;
+    }
+  }
+  if (lua_type(L, -1) != LUA_TUSERDATA) {
+    return;
+  }
+  rpeer = luaC_ref(L, -1);
+  auto peer = luaC_checkudata<ud_context>(L, -1, LUAC_SOCKET);
+  lws_int ok = lws::accept(
+    acceptor, peer->handle, lws_bind(on_accept, lws_arg1, lws_arg2, acceptor, rpeer, rcb)
+  );
+  if (ok == lws_true) {
+    unref_rcb.cancel();
+  }
+}
+
 static int luaf_accept(lua_State* L) {
-  auto ud = luaC_checkudata<ud_context>(L, 1, LUAC_SOCKET);
-  if (!ud->accept) {
+  auto ud   = luaC_checkudata<ud_context>(L, 1, LUAC_SOCKET);
+  auto peer = luaC_checkudata<ud_context>(L, 2, LUAC_SOCKET);
+  if (!ud->accept || peer->accept) {
     luaL_error(L, "invalid method");
   }
   auto acceptor = ud->handle;
-  auto peer = luaC_checkudata<ud_context>(L, 2, LUAC_SOCKET);
-  if (peer->accept) {
-    luaL_error(L, "invalid method");
-  }
   if (lua_isnoneornil(L, 3)) {
     lws_int ok = lws::accept(acceptor, peer->handle);
     lua_pushboolean(L, ok == lws_true ? 1 : 0);
     return 1;
   }
   luaL_checktype(L, 3, LUA_TFUNCTION);
-  int rud   = luaC_ref(L, 1);
-  int rpeer = luaC_ref(L, 2);
-  int rcb   = luaC_ref(L, 3);
-  lws_int ok = lws::accept(acceptor, peer->handle, [=](int ec, int peer) {
-    lua_State* L = luaC_getlocal();
-    revert_if_return revert(L);
-    unref_if_return  unref_rud(L, rud);
-    unref_if_return  unref_rcb(L, rcb);
-    unref_if_return  unref_rpeer(L, rpeer);
-
-    luaC_rawgeti(L, rcb);
-    if (lua_type(L, -1) != LUA_TFUNCTION) {
-      return;
-    }
-    luaC_rawgeti(L, rcb);
-    luaC_rawgeti(L, rpeer);
-    lua_pushinteger(L, ec);
-    lua_rotate(L, -2, 1);
-    if (luaC_xpcall(L, 2, 1) != LUA_OK) {
-      lua_ferror("%s\n", lua_tostring(L, -1));
-      return;
-    }
-    if (ec > 0) {
-      if (!lws::valid(acceptor)) {
-        return;
-      }
-    }
-    if (lua_type(L, -1) != LUA_TUSERDATA) {
-      return;
-    }
-    luaC_checkudata<ud_context>(L, -1, LUAC_SOCKET);
-    lua_pushcfunction(L, luaf_accept);
-    luaC_rawgeti(L, rud);
-    lua_rotate(L, -3, 2);
-    lua_rotate(L, -4, 3);
-    if (luaC_xpcall(L, 3, 0) != LUA_OK) {
-      lua_ferror("%s\n", lua_tostring(L, -1));
-    }
-  });
+  int rpeer  = luaC_ref(L, 2);
+  int rcb    = luaC_ref(L, 3);
+  lws_int ok = lws::accept(
+    acceptor, peer->handle, lws_bind(on_accept, lws_arg1, lws_arg2, acceptor, rpeer, rcb)
+  );
   if (ok != lws_true) {
-    luaC_unref(L, rud);
     luaC_unref(L, rcb);
     luaC_unref(L, rpeer);
   }
@@ -220,7 +215,6 @@ static int luaf_receive(lua_State* L) {
     lua_State* L = luaC_getlocal();
     revert_if_return revert(L);
     unref_if_return  unref_rcb(L, rcb);
-
     luaC_rawgeti(L, rcb);
     if (lua_type(L, -1) != LUA_TFUNCTION) {
       return;

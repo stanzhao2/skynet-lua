@@ -42,52 +42,48 @@ static int luaf_cancel(lua_State* L) {
   return 0;
 }
 
+static void on_timer(int ec, int timer, int rcb, size_t expires, const std::string& name) {
+  lua_State* L = luaC_getlocal();
+  revert_if_return revert(L);
+  unref_if_return  unref_rcb(L, rcb);
+  luaC_rawgeti(L, rcb);
+  if (lua_type(L, -1) != LUA_TFUNCTION) {
+    return;
+  }
+  lua_pushinteger(L, ec);
+  if (luaC_xpcall(L, 1, 2) != LUA_OK) {
+    lua_ferror("(%s)%s\n", lua_tostring(L, -1));
+    return;
+  }
+  if (ec > 0) {
+    return;
+  }
+  if (lua_type(L, -2) != LUA_TBOOLEAN) {
+    lua_ferror("timer '%s' not return boolean\n", name.c_str());
+    return;
+  }
+  int result = lua_toboolean(L, -2);
+  if (result == 0) {
+    return;
+  }
+  auto wait = luaL_optinteger(L, -1, expires);
+  lws_int ok = lws::expires(
+    timer, wait, lws_bind(on_timer, lws_arg1, timer, rcb, expires, name)
+  );
+  if (ok == lws_true) {
+    unref_rcb.cancel();
+  }
+}
+
 static int luaf_expires(lua_State* L) {
   auto ud = luaC_checkudata<ud_timer>(L, 1, LUAC_TIMER);
-  auto name = ud->name;
   size_t expires = luaL_checkinteger(L, 2);
   luaL_checktype(L, 3, LUA_TFUNCTION);
-  int rud = luaC_ref(L, 1);
   int rcb = luaC_ref(L, 3);
-  lws_int ok = lws::expires(ud->timer, expires, [=](int ec) {
-    lua_State* L = luaC_getlocal();
-    revert_if_return revert(L);
-    unref_if_return  unref_rcb(L, rcb);
-    unref_if_return  unref_rud(L, rud);
-
-    luaC_rawgeti(L, rcb);
-    if (lua_type(L, -1) != LUA_TFUNCTION) {
-      return;
-    }
-    luaC_rawgeti(L, rcb);
-    lua_pushinteger(L, ec);
-    if (luaC_xpcall(L, 1, 2) != LUA_OK) {
-      lua_ferror("(%s)%s\n", lua_tostring(L, -1));
-      return;
-    }
-    if (ec > 0) {
-      return;
-    }
-    if (lua_type(L, -2) != LUA_TBOOLEAN) {
-      lua_ferror("timer '%s' not return boolean\n", name.c_str());
-      return;
-    }
-    int result = lua_toboolean(L, -2);
-    if (result == 0) {
-      return;
-    }
-    auto wait = luaL_optinteger(L, -1, expires);
-    lua_pop(L, 2); /* pop result */
-    lua_pushcfunction(L, luaf_expires);
-    luaC_rawgeti(L, rud);
-    lua_pushinteger(L, (lua_Integer)wait);
-    lua_rotate(L, -4, 3);
-    if (luaC_xpcall(L, 3, 0) != LUA_OK) {
-      lua_ferror("%s\n", lua_tostring(L, -1));
-    }
-  });
+  lws_int ok = lws::expires(
+    ud->timer, expires, lws_bind(on_timer, lws_arg1, ud->timer, rcb, expires, ud->name)
+  );
   if (ok != lws_true) {
-    luaC_unref(L, rud);
     luaC_unref(L, rcb);
   }
   lua_pushboolean(L, ok == lws_true ? 1 : 0);
