@@ -90,10 +90,12 @@ local http_mime_type = {
     json  = "application/json",
 };
 
+local os_version = "skynet-lua" .. "/" .. os.version();
+
 --------------------------------------------------------------------------------
 
-local function index_default()
-  return "skynet-lua/3.0.1";
+local function skynet_version()
+  return os_version;
 end
 
 --------------------------------------------------------------------------------
@@ -101,7 +103,7 @@ end
 local function http_response(peer, code, body, encoding)
   body = body or "";
   local headers = {
-    ["Server"]         = index_default(),
+    ["Server"]         = skynet_version(),
     ["Cache-Control"]  = "max-age=0",
     ["Connection"]     = "Close",
     ["Content-Length"] = format("%d", #body),
@@ -291,7 +293,7 @@ function main(port, host, ca, key, pwd)
   local socket = io.socket(protocol, ca, key, pwd);
   acceptor:accept(socket, bind(http_on_accept, protocol, ca, key, pwd));
   
-  os.bind("http:index", index_default);
+  os.bind("http:index", skynet_version);
   print(format("%s works on port %d", os.name(), port));
   while not os.stopped() do
     os.wait();
