@@ -69,7 +69,7 @@ static int luaf_expires(lua_State* L) {
       return;
     }
     if (lua_type(L, -2) != LUA_TBOOLEAN) {
-      luaL_error(L, "timer '%s' not return boolean", name.c_str());
+      lua_ferror("timer '%s' not return boolean\n", name.c_str());
       return;
     }
     int result = lua_toboolean(L, -2);

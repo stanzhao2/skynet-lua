@@ -106,12 +106,13 @@ static int luaf_accept(lua_State* L) {
   if (!ud->accept) {
     luaL_error(L, "invalid method");
   }
+  auto acceptor = ud->handle;
   auto peer = luaC_checkudata<ud_context>(L, 2, LUAC_SOCKET);
   if (peer->accept) {
     luaL_error(L, "invalid method");
   }
   if (lua_isnoneornil(L, 3)) {
-    lws_int ok = lws::accept(ud->handle, peer->handle);
+    lws_int ok = lws::accept(acceptor, peer->handle);
     lua_pushboolean(L, ok == lws_true ? 1 : 0);
     return 1;
   }
@@ -119,7 +120,7 @@ static int luaf_accept(lua_State* L) {
   int rud   = luaC_ref(L, 1);
   int rpeer = luaC_ref(L, 2);
   int rcb   = luaC_ref(L, 3);
-  lws_int ok = lws::accept(ud->handle, peer->handle, [rud, rcb, rpeer](int ec, int peer) {
+  lws_int ok = lws::accept(acceptor, peer->handle, [=](int ec, int peer) {
     lua_State* L = luaC_getlocal();
     revert_if_return revert(L);
     unref_if_return  unref_rud(L, rud);
@@ -137,6 +138,11 @@ static int luaf_accept(lua_State* L) {
     if (luaC_xpcall(L, 2, 1) != LUA_OK) {
       lua_ferror("%s\n", lua_tostring(L, -1));
       return;
+    }
+    if (ec > 0) {
+      if (!lws::valid(acceptor)) {
+        return;
+      }
     }
     if (lua_type(L, -1) != LUA_TUSERDATA) {
       return;
