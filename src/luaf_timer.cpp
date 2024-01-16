@@ -9,10 +9,13 @@
 
 struct ud_timer {
   lws_int timer;
+  std::string name;
 };
 
 static int luaf_timer(lua_State* L) {
+  const char* name = luaL_optstring(L, 1, "unknown");
   auto ud = luaC_newuserdata<ud_timer>(L, LUAC_TIMER);
+  ud->name  = name;
   ud->timer = lws::timer();
   return 1;
 }
@@ -41,11 +44,12 @@ static int luaf_cancel(lua_State* L) {
 
 static int luaf_expires(lua_State* L) {
   auto ud = luaC_checkudata<ud_timer>(L, 1, LUAC_TIMER);
+  auto name = ud->name;
   size_t expires = luaL_checkinteger(L, 2);
   luaL_checktype(L, 3, LUA_TFUNCTION);
   int rud = luaC_ref(L, 1);
   int rcb = luaC_ref(L, 3);
-  lws_int ok = lws::expires(ud->timer, expires, [rcb, rud, expires](int ec) {
+  lws_int ok = lws::expires(ud->timer, expires, [=](int ec) {
     lua_State* L = luaC_getlocal();
     revert_if_return revert(L);
     unref_if_return  unref_rcb(L, rcb);
@@ -57,21 +61,26 @@ static int luaf_expires(lua_State* L) {
     }
     luaC_rawgeti(L, rcb);
     lua_pushinteger(L, ec);
-    if (luaC_xpcall(L, 1, 1) != LUA_OK) {
-      lua_ferror("%s\n", lua_tostring(L, -1));
+    if (luaC_xpcall(L, 1, 2) != LUA_OK) {
+      lua_ferror("(%s)%s\n", lua_tostring(L, -1));
       return;
     }
-    if (ec || lua_type(L, -1) != LUA_TBOOLEAN) {
+    if (ec > 0) {
       return;
     }
-    int result = lua_toboolean(L, -1);
+    if (lua_type(L, -2) != LUA_TBOOLEAN) {
+      luaL_error(L, "timer '%s' not return boolean", name.c_str());
+      return;
+    }
+    int result = lua_toboolean(L, -2);
     if (result == 0) {
       return;
     }
-    lua_pop(L, 1); /* pop result */
+    auto wait = luaL_optinteger(L, -1, expires);
+    lua_pop(L, 2); /* pop result */
     lua_pushcfunction(L, luaf_expires);
     luaC_rawgeti(L, rud);
-    lua_pushinteger(L, (lua_Integer)expires);
+    lua_pushinteger(L, (lua_Integer)wait);
     lua_rotate(L, -4, 3);
     if (luaC_xpcall(L, 3, 0) != LUA_OK) {
       lua_ferror("%s\n", lua_tostring(L, -1));

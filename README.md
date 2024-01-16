@@ -21,7 +21,7 @@
 -   os.rpcall([func, ] name [, ...])
 -   os.deliver(name, mask, receiver [, ...])
 -   os.name()
--   os.timer() #2
+-   os.timer([name]) #2
 -   os.dirsep()
 -   os.mkdir(name)
 -   os.opendir([name])
