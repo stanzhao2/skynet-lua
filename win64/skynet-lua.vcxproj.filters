@@ -24,189 +24,189 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\luaf_allotor.cpp">
+    <ClCompile Include="..\src\luaf_allotor.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\luaf_bind.cpp">
+    <ClCompile Include="..\src\luaf_bind.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\luaf_clock.cpp">
+    <ClCompile Include="..\src\luaf_clock.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\luaf_crypto.cpp">
+    <ClCompile Include="..\src\luaf_crypto.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\luaf_gzip.cpp">
+    <ClCompile Include="..\src\luaf_gzip.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\luaf_json.cpp">
+    <ClCompile Include="..\src\luaf_json.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\luaf_metatable.cpp">
+    <ClCompile Include="..\src\luaf_metatable.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\luaf_pack.cpp">
+    <ClCompile Include="..\src\luaf_pack.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\luaf_pcall.cpp">
+    <ClCompile Include="..\src\luaf_pcall.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\luaf_pload.cpp">
+    <ClCompile Include="..\src\luaf_pload.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\luaf_print.cpp">
+    <ClCompile Include="..\src\luaf_print.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\luaf_ref.cpp">
+    <ClCompile Include="..\src\luaf_ref.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\luaf_require.cpp">
+    <ClCompile Include="..\src\luaf_require.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\luaf_rpcall.cpp">
+    <ClCompile Include="..\src\luaf_rpcall.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\luaf_skynet.cpp">
+    <ClCompile Include="..\src\luaf_skynet.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\luaf_socket.cpp">
+    <ClCompile Include="..\src\luaf_socket.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\luaf_state.cpp">
+    <ClCompile Include="..\src\luaf_state.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\luaf_timer.cpp">
+    <ClCompile Include="..\src\luaf_timer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\rapidjson\document.cpp">
+    <ClCompile Include="..\src\rapidjson\document.cpp">
       <Filter>源文件\rapidjson</Filter>
     </ClCompile>
-    <ClCompile Include="src\rapidjson\rapidjson.cpp">
+    <ClCompile Include="..\src\rapidjson\rapidjson.cpp">
       <Filter>源文件\rapidjson</Filter>
     </ClCompile>
-    <ClCompile Include="src\rapidjson\schema.cpp">
+    <ClCompile Include="..\src\rapidjson\schema.cpp">
       <Filter>源文件\rapidjson</Filter>
     </ClCompile>
-    <ClCompile Include="src\rapidjson\values.cpp">
+    <ClCompile Include="..\src\rapidjson\values.cpp">
       <Filter>源文件\rapidjson</Filter>
     </ClCompile>
-    <ClCompile Include="src\socket.io\socket.io.cpp">
+    <ClCompile Include="..\src\socket.io\socket.io.cpp">
       <Filter>源文件\socket.io</Filter>
     </ClCompile>
-    <ClCompile Include="src\luaf_dir.cpp">
+    <ClCompile Include="..\src\luaf_dir.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\http-parser\http_parser.cpp">
+    <ClCompile Include="..\src\http-parser\http_parser.cpp">
       <Filter>源文件\http-parser</Filter>
     </ClCompile>
-    <ClCompile Include="src\luaf_http.cpp">
+    <ClCompile Include="..\src\luaf_http.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\luaf_string.cpp">
+    <ClCompile Include="..\src\luaf_string.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\luaf_storage.cpp">
+    <ClCompile Include="..\src\luaf_storage.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\luaf_list.cpp">
+    <ClCompile Include="..\src\luaf_list.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\luaf_allotor.h">
+    <ClInclude Include="..\src\luaf_allotor.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\luaf_bind.h">
+    <ClInclude Include="..\src\luaf_bind.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\luaf_clock.h">
+    <ClInclude Include="..\src\luaf_clock.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\luaf_crypto.h">
+    <ClInclude Include="..\src\luaf_crypto.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\luaf_gzip.h">
+    <ClInclude Include="..\src\luaf_gzip.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\luaf_json.h">
+    <ClInclude Include="..\src\luaf_json.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\luaf_metatable.h">
+    <ClInclude Include="..\src\luaf_metatable.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\luaf_pack.h">
+    <ClInclude Include="..\src\luaf_pack.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\luaf_pcall.h">
+    <ClInclude Include="..\src\luaf_pcall.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\luaf_pload.h">
+    <ClInclude Include="..\src\luaf_pload.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\luaf_print.h">
+    <ClInclude Include="..\src\luaf_print.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\luaf_ref.h">
+    <ClInclude Include="..\src\luaf_ref.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\luaf_require.h">
+    <ClInclude Include="..\src\luaf_require.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\luaf_rpcall.h">
+    <ClInclude Include="..\src\luaf_rpcall.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\luaf_skynet.h">
+    <ClInclude Include="..\src\luaf_skynet.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\luaf_socket.h">
+    <ClInclude Include="..\src\luaf_socket.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\luaf_state.h">
+    <ClInclude Include="..\src\luaf_state.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\luaf_timer.h">
+    <ClInclude Include="..\src\luaf_timer.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\rapidjson\file.hpp">
+    <ClInclude Include="..\src\rapidjson\file.hpp">
       <Filter>源文件\rapidjson</Filter>
     </ClInclude>
-    <ClInclude Include="src\rapidjson\luax.hpp">
+    <ClInclude Include="..\src\rapidjson\luax.hpp">
       <Filter>源文件\rapidjson</Filter>
     </ClInclude>
-    <ClInclude Include="src\rapidjson\rapidjson.h">
+    <ClInclude Include="..\src\rapidjson\rapidjson.h">
       <Filter>源文件\rapidjson</Filter>
     </ClInclude>
-    <ClInclude Include="src\rapidjson\stringstream.hpp">
+    <ClInclude Include="..\src\rapidjson\stringstream.hpp">
       <Filter>源文件\rapidjson</Filter>
     </ClInclude>
-    <ClInclude Include="src\rapidjson\userdata.hpp">
+    <ClInclude Include="..\src\rapidjson\userdata.hpp">
       <Filter>源文件\rapidjson</Filter>
     </ClInclude>
-    <ClInclude Include="src\rapidjson\values.hpp">
+    <ClInclude Include="..\src\rapidjson\values.hpp">
       <Filter>源文件\rapidjson</Filter>
     </ClInclude>
-    <ClInclude Include="src\socket.io\socket.io.h">
+    <ClInclude Include="..\src\socket.io\socket.io.h">
       <Filter>源文件\socket.io</Filter>
     </ClInclude>
-    <ClInclude Include="src\socket.io\socket.io.hpp">
+    <ClInclude Include="..\src\socket.io\socket.io.hpp">
       <Filter>源文件\socket.io</Filter>
     </ClInclude>
-    <ClInclude Include="src\luaf_dir.h">
+    <ClInclude Include="..\src\luaf_dir.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\http-parser\http_parser.h">
+    <ClInclude Include="..\src\http-parser\http_parser.h">
       <Filter>源文件\http-parser</Filter>
     </ClInclude>
-    <ClInclude Include="src\luaf_http.h">
+    <ClInclude Include="..\src\luaf_http.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\luaf_string.h">
+    <ClInclude Include="..\src\luaf_string.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\luaf_storage.h">
+    <ClInclude Include="..\src\luaf_storage.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\luaf_list.h">
+    <ClInclude Include="..\src\luaf_list.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
