@@ -102,7 +102,6 @@ local function http_response(peer, code, body, encoding)
   body = body or "";
   local headers = {
     ["Server"]         = index_default(),
-    ["Connection"]     = "keep-alive",
     ["Cache-Control"]  = "max-age=0",
     ["Connection"]     = "Close",
     ["Content-Length"] = format("%d", #body),
