@@ -43,10 +43,21 @@ static void on_memfree(lua_State* L, void* ptr, size_t osize) {
   }
 }
 
-static void on_memralloc(lua_State* L, void* ptr, size_t nsize, void* pnew) {
+static void on_memralloc(lua_State* L, void* ptr, size_t osize, size_t nsize, void* pnew) {
   leak_node node;
   node.size = nsize;
   if (ptr == nullptr) {
+    int type = (int)osize;
+    switch (type) {
+    case LUA_TNONE:
+    case LUA_TNIL:
+    case LUA_TBOOLEAN:
+    case LUA_TLIGHTUSERDATA:
+    case LUA_TUSERDATA:
+    case LUA_TNUMBER:
+    case LUA_TSTRING:
+      return;
+    }
     fileline(getthread(L), node.filename);
     if (!node.filename.empty()) {
       memory_leaks[pnew] = node;
@@ -99,7 +110,7 @@ LUAC_API void* luaC_leakcheck(void* ud, void* ptr, size_t osize, size_t nsize) {
   auto pnew = luaC_realloc(ud, ptr, osize, nsize);
   if (leak_enable) {
     lua_State* L = luaC_getlocal();
-    nsize ? on_memralloc(L, ptr, nsize, pnew) : on_memfree(L, ptr, osize);
+    nsize ? on_memralloc(L, ptr, osize, nsize, pnew) : on_memfree(L, ptr, osize);
   }
   return pnew;
 }
