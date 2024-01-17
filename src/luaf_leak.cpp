@@ -20,12 +20,12 @@ static lua_State *getthread(lua_State *L) {
 static void fileline(lua_State* L, std::string& out) {
   L = getthread(L);
   char filename[1024] = { 0 };
-  for (int i = 1; i < 100; i++) {
+  for (int i = 0; i < 10; i++) {
     lua_Debug ar;
     if (!lua_getstack(L, i, &ar)) {
       break;
     }
-    if (!lua_getinfo(L, "Sl", &ar)) {
+    if (!lua_getinfo(L, "Sln", &ar)) {
       break;
     }
     if (ar.currentline > 0) {
@@ -75,22 +75,31 @@ static void on_memralloc(lua_State* L, void* ptr, size_t osize, size_t nsize, vo
   }
 }
 
+static void lua_on_hook(lua_State* L, lua_Debug* ar) {
+  /* to do nothing */
+}
+
 static int luaf_snapshot(lua_State* L) {
   luaL_checktype(L, 1, LUA_TBOOLEAN);
   leak_enable = lua_toboolean(L, 1) ? true : false;
   if (leak_enable) {
     memory_leaks.clear();
-  }
-  else {
-    lua_newtable(L);
-    auto iter = memory_leaks.begin();
-    for (int i = 1; iter != memory_leaks.end(); ++iter, i++) {
-      const std::string& f = iter->second.filename;
-      lua_pushlstring(L, f.c_str(), f.size());
-      lua_rawseti(L, -2, i++);
+    if (!lua_gethookmask(L)) {
+      lua_sethook(L, lua_on_hook, LUA_MASKLINE, 0);
     }
+    return 0;
   }
-  return lua_gettop(L) - 1;
+  if (lua_gethook(L) == lua_on_hook) {
+    lua_sethook(L, nullptr, 0, 0);
+  }
+  lua_newtable(L);
+  auto iter = memory_leaks.begin();
+  for (int i = 1; iter != memory_leaks.end(); ++iter, i++) {
+    const std::string& f = iter->second.filename;
+    lua_pushlstring(L, f.c_str(), f.size());
+    lua_rawseti(L, -2, i++);
+  }
+  return 1;
 }
 
 /********************************************************************************/

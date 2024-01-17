@@ -37,7 +37,7 @@ static const char* fileline(lua_State* L) {
   luaL_Buffer buf;
   luaL_buffinit(L, &buf);
   char filename[1024] = { 0 };
-  for (int i = 1; i < 100; i++) {
+  for (int i = 0; i < 10; i++) {
     lua_Debug ar;
     if (!lua_getstack(L, i, &ar)) {
       break;
