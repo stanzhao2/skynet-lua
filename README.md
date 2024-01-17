@@ -33,6 +33,7 @@
 -   os.stop()
 -   os.stopped()
 -   os.debugging()
+-   os.snapshot()
 -   os.steady_clock()
 
  **std functions**

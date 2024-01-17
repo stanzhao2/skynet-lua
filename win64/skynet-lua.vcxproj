@@ -20,6 +20,7 @@
     <ClCompile Include="..\src\luaf_gzip.cpp" />
     <ClCompile Include="..\src\luaf_http.cpp" />
     <ClCompile Include="..\src\luaf_json.cpp" />
+    <ClCompile Include="..\src\luaf_leak.cpp" />
     <ClCompile Include="..\src\luaf_list.cpp" />
     <ClCompile Include="..\src\luaf_metatable.cpp" />
     <ClCompile Include="..\src\luaf_pack.cpp" />
@@ -51,6 +52,7 @@
     <ClInclude Include="..\src\luaf_gzip.h" />
     <ClInclude Include="..\src\luaf_http.h" />
     <ClInclude Include="..\src\luaf_json.h" />
+    <ClInclude Include="..\src\luaf_leak.h" />
     <ClInclude Include="..\src\luaf_list.h" />
     <ClInclude Include="..\src\luaf_metatable.h" />
     <ClInclude Include="..\src\luaf_pack.h" />
@@ -112,16 +114,16 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>include;include\asio;include\eport;3rd\openssl;3rd\zlib;3rd\lua\5.4\src;$(IncludePath)</IncludePath>
-    <LibraryPath>3rd\zlib\lib;3rd\openssl;3rd\lua\5.4\src;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\include;..\include\asio;..\include\eport;..\3rd\openssl;..\3rd\zlib;..\3rd\lua\5.4\src;$(IncludePath)</IncludePath>
+    <LibraryPath>..\3rd\zlib\lib;..\3rd\openssl;..\3rd\lua\5.4\src;$(LibraryPath)</LibraryPath>
     <TargetName>skynet</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>include;include\asio;include\eport;3rd\openssl;3rd\zlib;3rd\lua\5.4\src;$(IncludePath)</IncludePath>
-    <LibraryPath>3rd\zlib\lib;3rd\openssl;3rd\lua\5.4\src;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\include;..\include\asio;..\include\eport;..\3rd\openssl;..\3rd\zlib;..\3rd\lua\5.4\src;$(IncludePath)</IncludePath>
+    <LibraryPath>..\3rd\zlib\lib;..\3rd\openssl;..\3rd\lua\5.4\src;$(LibraryPath)</LibraryPath>
     <TargetName>skynet</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

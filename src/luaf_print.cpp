@@ -28,7 +28,12 @@ static const char* tostring(lua_State* L) {
   return luaL_checkstring(L, -1);
 }
 
+static lua_State *getthread(lua_State *L) {
+  return lua_isthread(L, 1) ? lua_tothread(L, 1) : L;
+}
+
 static const char* fileline(lua_State* L) {
+  L = getthread(L);
   luaL_Buffer buf;
   luaL_buffinit(L, &buf);
   char filename[1024] = { 0 };

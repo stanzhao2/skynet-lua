@@ -5,6 +5,7 @@
 #include "luaf_string.h"
 #include "luaf_http.h"
 #include "luaf_json.h"
+#include "luaf_leak.h"
 #include "luaf_list.h"
 #include "luaf_bind.h"
 #include "luaf_gzip.h"
@@ -47,6 +48,7 @@ static const lua_CFunction modules[] = {
   luaC_open_print,
   luaC_open_http,
   luaC_open_json,
+  luaC_open_leak,
   luaf_open_list,
   luaC_open_pack,
   luaC_open_socket,
