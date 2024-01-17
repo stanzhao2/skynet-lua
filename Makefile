@@ -31,7 +31,7 @@ SOURCE  :=  src/socket.io/socket.io.o \
 			src/luaf_crypto.o \
 			src/luaf_gzip.o \
 			src/luaf_dir.o \
-			src/luaf_json.o 
+			src/luaf_json.o \
 			src/luaf_leak.o \
 			src/luaf_list.o \
 			src/luaf_metatable.o \
