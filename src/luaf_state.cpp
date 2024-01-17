@@ -223,6 +223,7 @@ LUAC_API lua_State* luaC_newstate(lua_Alloc alloc, void* ud) {
   lua_State* L = lua_newstate(alloc, ud);
   if (L) {
     luaL_checkversion(L);
+    lua_gc(L, LUA_GCSTOP);
     lua_atpanic  (L, &panic);
     lua_setwarnf (L, warnfoff, L);  /* default is warnings off */
     luaL_openlibs(L);
@@ -231,6 +232,7 @@ LUAC_API lua_State* luaC_newstate(lua_Alloc alloc, void* ud) {
     setpath (L);
     setcpath(L);
     disable_global(L);
+    lua_gc(L, LUA_GCRESTART);
     if (LL == nullptr) LL = L;
   }
   return L;
