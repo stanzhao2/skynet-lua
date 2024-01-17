@@ -7,6 +7,7 @@
 
 struct leak_node {
   size_t size;
+  int    type;
   std::string filename;
 };
 
@@ -60,6 +61,7 @@ static void on_memralloc(lua_State* L, void* ptr, size_t osize, size_t nsize, vo
     }
     fileline(getthread(L), node.filename);
     if (!node.filename.empty()) {
+      node.type = type;
       memory_leaks[pnew] = node;
     }
     return;
@@ -69,6 +71,7 @@ static void on_memralloc(lua_State* L, void* ptr, size_t osize, size_t nsize, vo
   }
   auto iter = memory_leaks.find(ptr);
   if (iter != memory_leaks.end()) {
+    node.type = iter->second.type;
     node.filename = iter->second.filename;
     memory_leaks.erase(iter);
     memory_leaks[pnew] = node;
@@ -95,9 +98,9 @@ static int luaf_snapshot(lua_State* L) {
   lua_newtable(L);
   auto iter = memory_leaks.begin();
   for (int i = 1; iter != memory_leaks.end(); ++iter, i++) {
-    const std::string& f = iter->second.filename;
-    lua_pushlstring(L, f.c_str(), f.size());
-    lua_rawseti(L, -2, i++);
+    const leak_node& node = iter->second;
+    lua_pushstring(L, lua_typename(L, node.type));
+    lua_setfield(L, -2, node.filename.c_str());
   }
   return 1;
 }
