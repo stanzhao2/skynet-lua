@@ -5,7 +5,11 @@ local format = string.format;
 local function build_file(file, outdir)
   local outfile = outdir .. "/" .. file;
   local ok = os.compile(file, outfile);
-  print(format("%s build %s", file, ok and "OK" or "failed"));
+  if ok then
+    print(format("%s build OK", file));
+  else
+    error(format("%s build failed", file));
+  end  
 end
 
 local function build_dir(dir, outdir)
