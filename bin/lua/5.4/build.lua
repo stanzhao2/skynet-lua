@@ -26,7 +26,9 @@ local function build_dir(dir, outdir)
         build_dir(file, outdir);
       end
     else
-      build_file(file, outdir);
+      if name:find(".lua$") then
+        build_file(file, outdir);
+      end
     end
   end
 end
