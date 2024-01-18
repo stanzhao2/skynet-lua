@@ -29,6 +29,7 @@ SOURCE  :=  src/socket.io/socket.io.o \
 			src/luaf_bind.o \
 			src/luaf_clock.o \
 			src/luaf_crypto.o \
+			src/luaf_compile.o \
 			src/luaf_gzip.o \
 			src/luaf_dir.o \
 			src/luaf_json.o \

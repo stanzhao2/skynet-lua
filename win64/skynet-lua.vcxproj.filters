@@ -114,6 +114,9 @@
     <ClCompile Include="..\src\luaf_leak.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\luaf_compile.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\luaf_allotor.h">
@@ -213,6 +216,9 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\luaf_leak.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\luaf_compile.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>

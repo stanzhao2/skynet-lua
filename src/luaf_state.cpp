@@ -3,6 +3,7 @@
 #include "luaf_state.h"
 #include "luaf_allotor.h"
 #include "luaf_string.h"
+#include "luaf_compile.h"
 #include "luaf_http.h"
 #include "luaf_json.h"
 #include "luaf_leak.h"
@@ -44,6 +45,7 @@ static const lua_CFunction modules[] = {
   luaC_open_version,
   luaC_open_pcall,
   luaC_open_bind,
+  luaC_open_compile,
   luaC_open_string,
   luaC_open_print,
   luaC_open_http,

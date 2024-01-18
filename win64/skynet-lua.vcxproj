@@ -15,6 +15,7 @@
     <ClCompile Include="..\src\luaf_allotor.cpp" />
     <ClCompile Include="..\src\luaf_bind.cpp" />
     <ClCompile Include="..\src\luaf_clock.cpp" />
+    <ClCompile Include="..\src\luaf_compile.cpp" />
     <ClCompile Include="..\src\luaf_crypto.cpp" />
     <ClCompile Include="..\src\luaf_dir.cpp" />
     <ClCompile Include="..\src\luaf_gzip.cpp" />
@@ -47,6 +48,7 @@
     <ClInclude Include="..\src\luaf_allotor.h" />
     <ClInclude Include="..\src\luaf_bind.h" />
     <ClInclude Include="..\src\luaf_clock.h" />
+    <ClInclude Include="..\src\luaf_compile.h" />
     <ClInclude Include="..\src\luaf_crypto.h" />
     <ClInclude Include="..\src\luaf_dir.h" />
     <ClInclude Include="..\src\luaf_gzip.h" />
