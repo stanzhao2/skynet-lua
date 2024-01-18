@@ -20,7 +20,7 @@
 -   os.caller()
 -   os.rpcall([func, ] name [, ...])
 -   os.deliver(name, mask, receiver [, ...])
--   os.compile(fname, oname)
+-   os.compile(fname [, oname])
 -   os.name()
 -   os.timer([name]) #2
 -   os.dirsep()
