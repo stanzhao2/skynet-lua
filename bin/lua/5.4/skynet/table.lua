@@ -1,12 +1,18 @@
 ﻿
 
-local pairs = require("skynet.pairs");
-local __table = table;
+--[[
+*********************************************************************************
+** Copyright(C) 2020-2024 https://www.iccgame.com/
+** Author: zhaozp@iccgame.com
+*********************************************************************************
+]]--
 
 ---------------------------------------------------------------------------------
 
-local insert = table.insert;
-local concat = table.concat;
+local pairs = require("skynet.pairs");
+local __table = table;
+local insert  = table.insert;
+local concat  = table.concat;
 
 ---------------------------------------------------------------------------------
 

@@ -1,6 +1,17 @@
 ﻿
 
+--[[
+*********************************************************************************
+** Copyright(C) 2020-2024 https://www.iccgame.com/
+** Author: zhaozp@iccgame.com
+*********************************************************************************
+]]--
+
+---------------------------------------------------------------------------------
+
 local format = string.format;
+
+---------------------------------------------------------------------------------
 
 local function build_file(file, outdir)
   local outfile = outdir .. "/" .. file;
@@ -11,6 +22,8 @@ local function build_file(file, outdir)
     error(format("%s build failed", file));
   end  
 end
+
+---------------------------------------------------------------------------------
 
 local function build_dir(dir, outdir)
   local path = os.opendir(dir);
@@ -33,6 +46,10 @@ local function build_dir(dir, outdir)
   end
 end
 
+---------------------------------------------------------------------------------
+
 function main(outdir)
   build_dir("lua", outdir or "~build");
 end
+
+---------------------------------------------------------------------------------
