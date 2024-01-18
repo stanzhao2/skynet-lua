@@ -18,12 +18,11 @@ static int luaf_compile(lua_State* L) {
   FILE* fpw = fopen(outfile, "wb");
   if (fpw == nullptr) {
     lua_pushboolean(L, 0);
+    return 1;
   }
-  else {
-    lua_dump(L, dump_writer, fpw, 0);
-    lua_pushboolean(L, 1);
-    fclose(fpw);
-  }
+  int result = lua_dump(L, dump_writer, fpw, 0);
+  lua_pushboolean(L, (result == LUA_OK) ? 1 : 0);
+  fclose(fpw);
   return 1;
 }
 
