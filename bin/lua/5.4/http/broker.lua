@@ -7,6 +7,8 @@
 *********************************************************************************
 ]]--
 
+--GET http://xxx.xxx.xxx.xxx/login?username=test&pwd=123456
+
 --------------------------------------------------------------------------------
 
 local format = string.format;
@@ -140,9 +142,20 @@ local function co_on_request(method, session)
   local headers = session.headers;
   local body    = concat(session.body);
   local context = io.http.parse_url(url);
-  local fname   = context.path:sub(2);
-  if not fname or #fname == 0 then
-    fname = "http:index";
+  local paths   = context.path:split("/");
+
+  method = {};
+  for _, v in ipairs(paths) do
+    if #v > 0 then
+      if #method > 0 then
+        insert(method, ":");
+      end
+      insert(method, v);
+    end
+  end
+  method = concat(method);
+  if not method or #method == 0 then
+    method = "http:index";
   end
 
   local query   = context.query;
@@ -156,7 +169,7 @@ local function co_on_request(method, session)
   end
 
   local status = 200;
-  local ok, result = os.rpcall(fname, query, body);
+  local ok, result = os.rpcall(method, query, body);
   if not ok then
     status = 500;
   end
