@@ -401,7 +401,7 @@ static int luaf_rpcall(lua_State* L) {
 }
 
 /* register function */
-static int luaf_bind(lua_State* L) {
+static int luaf_declare(lua_State* L) {
   const char* name = luaL_checkstring(L, 1);
   luaL_checktype(L, 2, LUA_TFUNCTION);
   int opt = 0;
@@ -423,7 +423,7 @@ static int luaf_bind(lua_State* L) {
 }
 
 /* unregister function */
-static int luaf_unbind(lua_State* L) {
+static int luaf_undeclare(lua_State* L) {
   const char* name = luaL_checkstring(L, 1);
   int ios = lws::getlocal();
   int opt = 0;
@@ -502,8 +502,8 @@ static int luaf_r_deliver(lua_State* L) {
 LUAC_API int luaC_open_rpcall(lua_State* L) {
   const luaL_Reg methods[] = {
     { "lookout",    luaf_lookout    },
-    { "bind",       luaf_bind       },
-    { "unbind",     luaf_unbind     },
+    { "declare",    luaf_declare    },
+    { "undeclare",  luaf_undeclare  },
     { "caller",     luaf_caller     },
     { "rpcall",     luaf_rpcall     },
     { "deliver",    luaf_deliver    },

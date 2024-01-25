@@ -325,7 +325,7 @@ function main(host, port, ca, key, pwd)
 
   local socket = io.socket(protocol, ca, key, pwd);
   acceptor:accept(socket, bind(http_on_accept, protocol, ca, key, pwd));  
-  os.bind("http:index", skynet_version);
+  os.declare("http:index", skynet_version);
 
   print(format("%s works on port %d", os.name(), port));
   while not os.stopped() do

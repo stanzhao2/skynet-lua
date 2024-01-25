@@ -15,11 +15,11 @@
  **os functions** 
 -   os.version()
 -   os.pload(name [, ...]) #1
--   os.bind(name, func [, <true/false>])
--   os.unbind(name)
--   os.caller()
+-   os.declare(name, func [, <true/false>])
+-   os.undeclare(name)
 -   os.rpcall([func, ] name [, ...])
 -   os.deliver(name, mask, receiver [, ...])
+-   os.caller()
 -   os.compile(fname [, oname])
 -   os.name()
 -   os.timer([name]) #2
