@@ -10,16 +10,16 @@
 --------------------------------------------------------------------------------
 
 local format = string.format;
-local type_what = require("cluster.protocol");
+local proto_type = require("cluster.protocol");
 
-local sessions   = {};
-local lua_bounds = {};
-local def_ws_port<const> = 80;
+local active_sessions = {};
+local lua_bounds      = {};
+local default_port    = 80;
 
 --------------------------------------------------------------------------------
 
 local function sendto_others(data)
-  for id, session in pairs(sessions) do
+  for id, session in pairs(active_sessions) do
     session.socket:send(data);
   end
 end
@@ -55,9 +55,9 @@ end
 
 local function ws_on_error(ec, peer, msg)
   local id = peer:id();
-  local session = sessions[id];
+  local session = active_sessions[id];
   if session then
-    sessions[id] = nil;
+    active_sessions[id] = nil;
     peer:close();
   end
 
@@ -84,7 +84,7 @@ local function ws_on_receive(peer, ec, data)
   local info = unpack(data);
   local what = info.what;
   
-  if what == type_what.deliver then
+  if what == proto_type.deliver then
     local name   = info.name;
 	local argv   = info.argv;
 	local mask   = info.mask;
@@ -95,7 +95,7 @@ local function ws_on_receive(peer, ec, data)
 	return;
   end
   
-  if what == type_what.response then
+  if what == proto_type.response then
     local data   = info.data;
 	local caller = info.caller;
 	local rcf    = info.rcf;
@@ -103,7 +103,7 @@ local function ws_on_receive(peer, ec, data)
 	return;
   end
   
-  if what == type_what.bind then
+  if what == proto_type.bind then
     local name   = info.name;
 	local rcb    = info.rcb;
 	local caller = info.caller << 16 | id;
@@ -112,7 +112,7 @@ local function ws_on_receive(peer, ec, data)
 	return;
   end
   
-  if what == type_what.unbind then
+  if what == proto_type.unbind then
     local name   = info.name;
 	local caller = info.caller << 16 | id;
 	lua_unbind(name, caller);
@@ -124,30 +124,30 @@ end
 
 local function on_lookout(info)
   local what = info.what;  
-  if what == type_what.bind then
+  if what == proto_type.bind then
 	lua_bind(info, info.caller);
     sendto_others(pack(info));
 	return;
   end
   
-  if what == type_what.unbind then
+  if what == proto_type.unbind then
 	lua_unbind(info.name, info.caller);
     sendto_others(pack(info));
 	return;
   end
   
   local id;
-  if what == type_what.deliver then
+  if what == proto_type.deliver then
     id = info.who & 0xffff;
 	info.who = info.who >> 16;
   end
   
-  if what == type_what.response then
+  if what == proto_type.response then
     id = info.caller & 0xffff;
 	info.caller = info.caller >> 16;
   end
   
-  local session = sessions[id];
+  local session = active_sessions[id];
   if session then
     sendto_member(pack(info), session);
   end
@@ -169,7 +169,7 @@ local function new_session(protocol, peer)
   };
 
   local id = peer:id();
-  sessions[id] = session;
+  active_sessions[id] = session;
   peer:receive(bind(ws_on_receive, peer));
   return true;
 end
@@ -177,7 +177,7 @@ end
 --------------------------------------------------------------------------------
 
 local function peer_exist(host, port)
-  for id, session in pairs(sessions) do
+  for id, session in pairs(active_sessions) do
     if session.ip == host and session.port == port then
 	  return true;
 	end
@@ -234,11 +234,11 @@ local function connect_members(socket, protocol)
 	end
     
 	local packet = unpack(data);
-	if packet.what == type_what.ready then
+	if packet.what == proto_type.ready then
 	  break;
 	end
     
-	if packet.what ~= type_what.forword then
+	if packet.what ~= proto_type.forword then
 	  return false;
 	end
     
@@ -287,7 +287,7 @@ function main(host, port)
   end
   
   host = host or "127.0.0.1";
-  port = port or def_ws_port;
+  port = port or default_port;
   local socket = io.socket(protocol);
   socket:setheader("xforword-port", lport);
   

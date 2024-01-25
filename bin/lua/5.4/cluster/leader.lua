@@ -10,18 +10,18 @@
 --------------------------------------------------------------------------------
 
 local format = string.format;
-local type_what = require("cluster.protocol");
+local proto_type = require("cluster.protocol");
 
-local sessions = {};
-local def_ws_port<const> = 80;
+local default_port = 80;
+local active_sessions = {};
 
 --------------------------------------------------------------------------------
 
 local function sendto_member(session)
-  for peer, v in pairs(sessions) do
+  for peer, v in pairs(active_sessions) do
     if peer ~= session.socket then
 	  local packet = {
-	    what = type_what.forword,
+	    what = proto_type.forword,
 		id   = v.socket:id(),
 		ip   = v.ip,
 		port = v.port,
@@ -30,15 +30,15 @@ local function sendto_member(session)
 	end
   end
   local peer = session.socket;
-  peer:send(pack({what = type_what.ready}));
+  peer:send(pack({what = proto_type.ready}));
 end
 
 --------------------------------------------------------------------------------
 
 local function ws_on_error(ec, peer, msg)
-  local session = sessions[peer];
+  local session = active_sessions[peer];
   if session then
-    sessions[peer] = nil;
+    active_sessions[peer] = nil;
     peer:close();
   end
 end
@@ -70,7 +70,7 @@ local function new_session(protocol, peer)
 	ip     = host,
 	port   = port,
   };
-  sessions[peer] = session;
+  active_sessions[peer] = session;
   sendto_member(session);
   return true;
 end
@@ -95,7 +95,7 @@ end
 --------------------------------------------------------------------------------
 
 function main(host, port)
-  port = port or def_ws_port;
+  port = port or default_port;
   local acceptor = io.acceptor();
   local ok = acceptor:listen(port, host or "0.0.0.0", 16);
 
