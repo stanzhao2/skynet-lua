@@ -118,9 +118,11 @@ local function http_response(peer, code, body, encoding)
     ["Content-Length"] = format("%d", #body),
     ["Content-Type"]   = http_mime_type.html .. ";charset=UTF-8",
   };
+
   if encoding then
     headers["Content-Encoding"] = encoding;
   end
+
   local response = {};
   local status   = format("HTTP/1.1 %d %s\r\n", code, http_status_text[code]);
   insert(response, status);
@@ -197,10 +199,12 @@ local function rp_on_request(session)
   local co     = session.co;
   local parser = session.parser;
   local method = parser:method();
+
   if method ~= "GET" and method ~= "POST" then
     http_response(session.socket, 405, "Method Not Allowed");
     return;
   end
+
   if not coroutine.resume(co, method, session) then
     peer:close();
   end
@@ -226,6 +230,7 @@ local function http_on_receive(session, ec, data)
     coroutine.close(session.co);
     return;
   end
+
   local parser = session.parser;
   while #data > 0 do
     local parsed = parser:execute(data);
@@ -268,11 +273,7 @@ end
 
 --------------------------------------------------------------------------------
 
-local function http_on_accept(protocol, ca, key, pwd, ec, peer)
-  if ec > 0 then
-    peer:close();
-	return;
-  end
+local function http_new_session(peer)
   local session = {
     socket  = peer,
     url     = "",
@@ -280,6 +281,7 @@ local function http_on_accept(protocol, ca, key, pwd, ec, peer)
     headers = {},
     co = coroutine.create(co_on_request)
   };
+
   local options = {
     on_message_begin    = bind(http_on_begin,   session),
     on_body             = bind(http_on_body,    session),
@@ -287,20 +289,30 @@ local function http_on_accept(protocol, ca, key, pwd, ec, peer)
     on_url              = bind(http_on_url,     session),
     on_message_complete = bind(http_on_request, session)
   };
+
   session.parser = io.http.request_parser(options);
-  peer:receive(bind(http_on_receive, session));
-  if not ca then
-    return io.socket(protocol);
+  return session;
+end
+
+--------------------------------------------------------------------------------
+
+local function http_on_accept(protocol, ca, key, pwd, ec, peer)
+  if ec > 0 then
+    peer:close();
+  else
+    local session = http_new_session(peer);
+    peer:receive(bind(http_on_receive, session));
   end
   return io.socket(protocol, ca, key, pwd);
 end
 
 --------------------------------------------------------------------------------
 
-function main(port, host, ca, key, pwd)
+function main(host, port, ca, key, pwd)
   port = port or (ca and 443 or 80);
   local acceptor = io.acceptor();
   local ok = acceptor:listen(port, host or "0.0.0.0", 64);
+
   if not ok then
     error(format("socket listen error at port: %d", port));
 	return;
@@ -310,13 +322,15 @@ function main(port, host, ca, key, pwd)
   if ca and key then
     protocol = "ssl";
   end
+
   local socket = io.socket(protocol, ca, key, pwd);
-  acceptor:accept(socket, bind(http_on_accept, protocol, ca, key, pwd));
-  
+  acceptor:accept(socket, bind(http_on_accept, protocol, ca, key, pwd));  
   os.bind("http:index", skynet_version);
+
   print(format("%s works on port %d", os.name(), port));
   while not os.stopped() do
-    os.wait();
+    os.wait(60000);
+    collectgarbage(); --Actively triggering GC
   end
   acceptor:close();
 end

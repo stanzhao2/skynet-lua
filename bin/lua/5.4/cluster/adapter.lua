@@ -60,6 +60,7 @@ local function ws_on_error(ec, peer, msg)
     sessions[id] = nil;
     peer:close();
   end
+
   --cancel bind for the session
   for caller, v in pairs(lua_bounds) do
     if caller > 0xffff and caller & 0xffff == id then
@@ -159,12 +160,14 @@ local function new_session(protocol, peer)
   if what ~= "skynet-lua" then
     return false;
   end
+
   local ip, port = peer:endpoint();
   local session = {
     socket = peer,
 	ip     = ip,
 	port   = port,
   };
+
   local id = peer:id();
   sessions[id] = session;
   peer:receive(bind(ws_on_receive, peer));
@@ -189,11 +192,12 @@ local function ws_on_accept(protocol, ec, peer)
     ws_on_error(ec, peer, "accept error");
 	return;
   end
+
   if not new_session(protocol, peer) then
     peer:close();
 	return;
   end
-  --
+
   for caller, bounds in pairs(lua_bounds) do
     if caller <= 0xffff then
 	  for name, info in pairs(bounds) do
@@ -210,6 +214,7 @@ local function new_connect(host, port, protocol)
   if peer_exist(host, port) then
     return true;
   end
+
   local peer = io.socket(protocol);
   peer:setheader("xforword-join", "skynet-lua");
   if peer:connect(host, port) then
@@ -227,13 +232,16 @@ local function connect_members(socket, protocol)
 	if not data then
 	  return false;
 	end
+    
 	local packet = unpack(data);
 	if packet.what == type_what.ready then
 	  break;
 	end
+    
 	if packet.what ~= type_what.forword then
 	  return false;
 	end
+    
 	local host = packet.ip;
 	local port = packet.port;
 	if not new_connect(host, port, protocol) then
@@ -247,12 +255,13 @@ end
 
 --------------------------------------------------------------------------------
 
-local function create_listen(port, protocol)
+local function listen_on_local(port, protocol)
   local acceptor = io.acceptor();
   local ok = acceptor:listen(port or 0, "0.0.0.0", 16);
   if not ok then
 	return;
   end
+
   local socket = io.socket(protocol);
   acceptor:accept(socket, bind(ws_on_accept, protocol));
   local host, port = acceptor:endpoint("local");
@@ -262,7 +271,7 @@ end
 --------------------------------------------------------------------------------
 
 local function keepalive(socket, ec, data)
-  if ec  then
+  if ec > 0 then
     socket:close();
   end
 end
@@ -271,7 +280,7 @@ end
 
 function main(host, port)
   local protocol = "ws";
-  local acceptor, lport = create_listen(0, protocol);
+  local acceptor, lport = listen_on_local(0, protocol);
   if not lport then
     error(format("socket listen error at port: %d", port));
     return;
@@ -286,6 +295,7 @@ function main(host, port)
     error(format("socket connect to %s:%d error", host, port));
 	return;
   end  
+
   if not connect_members(socket, protocol) then
     return;
   end

@@ -59,10 +59,12 @@ local function new_session(protocol, peer)
   if not port then
     return false;
   end
+
   local host = peer:getheader("xforword-host");
   if not host then
     host = peer:endpoint();
   end
+
   local session = {
     socket = peer,
 	ip     = host,
@@ -80,20 +82,23 @@ local function ws_on_accept(protocol, ec, peer)
     ws_on_error(ec, peer, "accept error");
 	return;
   end
+
   if not new_session(protocol, peer) then
     peer:close();
 	return;
   end
+
   peer:receive(bind(ws_on_receive, peer));
   return io.socket(protocol);
 end
 
 --------------------------------------------------------------------------------
 
-function main(port, host)
+function main(host, port)
   port = port or def_ws_port;
   local acceptor = io.acceptor();
   local ok = acceptor:listen(port, host or "0.0.0.0", 16);
+
   if not ok then
     error(format("socket listen error at port: %d", port));
 	return;
