@@ -160,7 +160,7 @@ local function co_on_request(method, session)
     method = "http:index";
   end
 
-  local query   = context.query;
+  local query = context.query;
   if query and #query > 0 then
     local t = string.split(query, "&");
     query = {};
