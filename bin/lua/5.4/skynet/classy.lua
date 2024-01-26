@@ -1,4 +1,4 @@
-﻿
+
 
 -- class-based OO module for Lua
 -- https://github.com/siffiejoe/lua-classy/
