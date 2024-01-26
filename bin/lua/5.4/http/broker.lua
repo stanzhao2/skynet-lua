@@ -166,7 +166,7 @@ local function co_on_request(method, session)
     query = {};
     for k, v in pairs(t) do
       local s = string.split(v, "=");
-      query[s[1]] = s[2];
+      query[s[1]] = io.http.unescape(s[2]);
     end
   end
 
