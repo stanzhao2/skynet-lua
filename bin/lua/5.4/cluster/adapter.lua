@@ -273,6 +273,7 @@ end
 local function keepalive(socket, ec, data)
   if ec > 0 then
     socket:close();
+    error("connection error with leader");
   end
 end
 
