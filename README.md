@@ -26,6 +26,7 @@
 -   os.dirsep()
 -   os.mkdir(name)
 -   os.opendir([name])
+-   os.processors()
 -   os.id()
 -   os.post(func [, ...])
 -   os.wait([expires])

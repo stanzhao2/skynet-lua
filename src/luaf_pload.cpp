@@ -8,6 +8,7 @@
 
 #include "luaf_state.h"
 #include "socket.io/socket.io.hpp"
+#include "eport/detail/os/os.hpp"
 
 LUAC_API int luaC_clsexpires();
 
@@ -120,7 +121,7 @@ static int luaf_job_id(lua_State* L) {
   return 1;
 }
 
-static int luaf_wait(lua_State* L) {
+static int luaf_os_wait(lua_State* L) {
   lua_getglobal(L, LUAC_STOPCALL);
   if (lua_type(L, -1) == LUA_TFUNCTION) {
     luaC_pcall(L, 0, 0);
@@ -145,27 +146,27 @@ static int luaf_wait(lua_State* L) {
   return 1;
 }
 
-static int luaf_restart(lua_State* L) {
+static int luaf_os_restart(lua_State* L) {
   lws::restart();
   return 0;
 }
 
-static int luaf_exit(lua_State* L) {
+static int luaf_os_exit(lua_State* L) {
   luaC_exit();
   return 0;
 }
 
-static int luaf_stop(lua_State* L) {
+static int luaf_os_stop(lua_State* L) {
   lws::stop();
   return 0;
 }
 
-static int luaf_stopped(lua_State* L) {
+static int luaf_os_stopped(lua_State* L) {
   lua_pushboolean(L, lws::stopped());
   return 1;
 }
 
-static int luaf_pload(lua_State* L) {
+static int luaf_os_pload(lua_State* L) {
   size_t size;
   int argc = lua_gettop(L) - 1;
   if (argc < 0) {
@@ -209,29 +210,35 @@ static int luaf_pload(lua_State* L) {
   return 2;
 }
 
-static int luaf_name(lua_State* L) {
+static int luaf_os_name(lua_State* L) {
   lua_getglobal(L, LUAC_PROGNAME);
   return 1;
 }
 
-static int luaf_id(lua_State* L) {
+static int luaf_os_id(lua_State* L) {
   auto ios = lws::getlocal();
   lua_pushinteger(L, ios);
   return 1;
 }
 
-static int luaf_dirsep(lua_State* L) {
+static int luaf_os_dirsep(lua_State* L) {
   lua_pushstring(L, LUA_DIRSEP);
   return 1;
 }
 
-static int luaf_debugging(lua_State* L) {
+static int luaf_os_debugging(lua_State* L) {
   auto debug = luaC_debugging();
   lua_pushboolean(L, debug ? 1 : 0);
   return 1;
 }
 
-static int luaf_post(lua_State* L) {
+static int luaf_os_processors(lua_State* L) {
+  auto count = eport::os::cpu_count();
+  lua_pushinteger(L, (lua_Integer)count);
+  return 1;
+}
+
+static int luaf_os_post(lua_State* L) {
   luaL_checktype(L, 1, LUA_TFUNCTION);
   int argc = lua_gettop(L);
   int rcb  = luaC_ref(L, 1);
@@ -296,18 +303,19 @@ LUAC_API void luaC_exit() {
 LUAC_API int luaC_open_pload(lua_State* L) {
   init_metatable(L);
   const luaL_Reg methods[] = {
-    { "pload",      luaf_pload      },
-    { "name",       luaf_name       },
-    { "dirsep",     luaf_dirsep     },
-    { "id",         luaf_id         },
-    { "post",       luaf_post       },
-    { "wait",       luaf_wait       },
-    { "restart",    luaf_restart    },
-    { "exit",       luaf_exit       },
-    { "stop",       luaf_stop       },
-    { "stopped",    luaf_stopped    },
-    { "debugging",  luaf_debugging  },
-    { NULL,         NULL            }
+    { "pload",      luaf_os_pload      },
+    { "name",       luaf_os_name       },
+    { "dirsep",     luaf_os_dirsep     },
+    { "processors", luaf_os_processors },
+    { "id",         luaf_os_id         },
+    { "post",       luaf_os_post       },
+    { "wait",       luaf_os_wait       },
+    { "restart",    luaf_os_restart    },
+    { "exit",       luaf_os_exit       },
+    { "stop",       luaf_os_stop       },
+    { "stopped",    luaf_os_stopped    },
+    { "debugging",  luaf_os_debugging  },
+    { NULL,         NULL               }
   };
   lua_getglobal(L, "os");
   luaL_setfuncs(L, methods, 0);
