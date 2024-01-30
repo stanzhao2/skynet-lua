@@ -170,8 +170,8 @@ static std::string exedir() {
 static void setpath(lua_State* L) {
   auto module_path = exedir();
   const char* path[] = {
-    "lua" LUA_DIRSEP LUA_VERSION_MAJOR "." LUA_VERSION_MINOR LUA_DIRSEP "?.lua",
-    "lua" LUA_DIRSEP LUA_VERSION_MAJOR "." LUA_VERSION_MINOR LUA_DIRSEP "?" LUA_DIRSEP "init.lua",
+    "lua" LUA_DIRSEP "?.lua",
+    "lua" LUA_DIRSEP "?" LUA_DIRSEP "init.lua",
   };
   auto count = sizeof(path) / sizeof(const char*);
 
@@ -196,7 +196,7 @@ static void setpath(lua_State* L) {
 static void setcpath(lua_State* L) {
   auto module_path = exedir();
   const char* path[] = {
-    "lib" LUA_DIRSEP "lua" LUA_DIRSEP LUA_VERSION_MAJOR "." LUA_VERSION_MINOR LUA_DIRSEP "?" FSO_EXT
+    "lib" LUA_DIRSEP "lua" LUA_DIRSEP "?" FSO_EXT
   };
   std::string dir;
   auto count = sizeof(path) / sizeof(const char*);
