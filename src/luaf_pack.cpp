@@ -1,8 +1,10 @@
 
 
 #include "luaf_pack.h"
+#include "luaf_state.h"
 
 #include <math.h>
+#include <set>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -457,21 +459,39 @@ static int table_is_an_array(lua_State *L) {
   return max == count;
 }
 
-/* If the length operator returns non-zero, that is, there is at least
-* an object at key '1', we serialize to message pack list. Otherwise
-* we use a map. */
-static void mp_encode_lua_table(lua_State *L, mp_buf *buf, int level) {
-  if (table_is_an_array(L))
-    mp_encode_lua_table_as_array(L,buf,level);
-  else
-    mp_encode_lua_table_as_map(L,buf,level);
-}
-
 static void mp_encode_lua_null(lua_State *L, mp_buf *buf) {
   unsigned char b[1];
 
   b[0] = 0xc0;
   mp_buf_append(L,buf,b,1);
+}
+
+
+/* If the length operator returns non-zero, that is, there is at least
+* an object at key '1', we serialize to message pack list. Otherwise
+* we use a map. */
+static void mp_encode_lua_table(lua_State *L, mp_buf *buf, int level) {
+#ifdef _MSC_VER
+  static thread_local std::set<const void*> readed;
+  if (level == 0) {
+    readed.clear();
+  }
+  auto p = lua_topointer(L, -1);
+  auto iter = readed.find(p);
+  if (iter == readed.end()) {
+    readed.insert(p);
+  }
+  else {
+    lua_pop(L, 1);
+    lua_pushnil(L);
+    mp_encode_lua_null(L, buf);
+    return;
+  }
+#endif
+  if (table_is_an_array(L))
+    mp_encode_lua_table_as_array(L,buf,level);
+  else
+    mp_encode_lua_table_as_map(L,buf,level);
 }
 
 static void mp_encode_lua_type(lua_State *L, mp_buf *buf, int level) {
@@ -521,9 +541,7 @@ static int pack_any(lua_State *L) {
     * the encode function pops it from the stack when complete. */
     luaL_checkstack(L, 1, "in function mp_check");
     lua_pushvalue(L, i);
-
     mp_encode_lua_type(L,buf,0);
-
     lua_pushlstring(L,(char*)buf->b,buf->len);
 
     /* Reuse the buffer for the next operation by
