@@ -30,7 +30,7 @@ static void fileline(lua_State* L, std::string& out) {
       break;
     }
     if (ar.currentline > 0) {
-      snprintf(filename, sizeof(filename), "<%s:%d>", ar.short_src, ar.currentline);
+      snprintf(filename, sizeof(filename), "<%s:%d> ", ((*ar.source == '@') ? ar.source + 1 : ar.short_src), ar.currentline);
       out.assign(filename);
       break;
     }

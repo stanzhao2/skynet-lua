@@ -42,11 +42,11 @@ static const char* fileline(lua_State* L) {
     if (!lua_getstack(L, i, &ar)) {
       break;
     }
-    if (!lua_getinfo(L, "Sln", &ar)) {
+    if (!lua_getinfo(L, "Sl", &ar)) {
       break;
     }
     if (ar.currentline > 0) {
-      snprintf(filename, sizeof(filename), "<%s:%d> ", ar.short_src, ar.currentline);
+      snprintf(filename, sizeof(filename), "<%s:%d> ", ((*ar.source == '@') ? ar.source + 1 : ar.short_src), ar.currentline);
       luaL_addstring(&buf, filename);
       break;
     }
