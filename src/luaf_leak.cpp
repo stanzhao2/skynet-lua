@@ -18,6 +18,18 @@ static lua_State *getthread(lua_State *L) {
   return lua_isthread(L, 1) ? lua_tothread(L, 1) : L;
 }
 
+static const char* fixstr(const char* in, size_t inlen, char* out, size_t outlen) {
+  if (inlen < outlen) {
+    return in;
+  }
+  size_t first = outlen / 3;
+  size_t second = outlen - first - 4;
+  strncpy(out, in, first);
+  strncpy(out + first, "...", 4);
+  strncpy(out + first + 3, in + inlen - second, second + 1);
+  return out;
+}
+
 static void fileline(lua_State* L, std::string& out) {
   L = getthread(L);
   char filename[1024] = { 0 };
@@ -30,7 +42,13 @@ static void fileline(lua_State* L, std::string& out) {
       break;
     }
     if (ar.currentline > 0) {
-      snprintf(filename, sizeof(filename), "<%s:%d> ", ((*ar.source == '@') ? ar.source + 1 : ar.short_src), ar.currentline);
+      if (*ar.source == '@') {
+        ar.source++;
+        ar.srclen--;
+      }
+      char temp[512];
+      auto str = fixstr(ar.source, ar.srclen, temp, sizeof(temp));
+      snprintf(filename, sizeof(filename), "<%s:%d> ", str, ar.currentline);
       out.assign(filename);
       break;
     }
