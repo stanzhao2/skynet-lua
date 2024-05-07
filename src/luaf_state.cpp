@@ -70,13 +70,6 @@ static const lua_CFunction modules[] = {
 
 /********************************************************************************/
 
-#ifdef _MSC_VER
-#define FSO_EXT ".dll"
-#else
-#define FSO_EXT ".so"
-#endif
-#define LUAC_DIR "lua" LUA_DIRSEP LUA_VERSION_MAJOR "." LUA_VERSION_MINOR
-
 static void warnfoff (void *ud, const char *message, int tocont);
 static void warnfon  (void *ud, const char *message, int tocont);
 static void warnfcont(void *ud, const char *message, int tocont);
@@ -163,57 +156,66 @@ static void disable_global(lua_State* L) {
   lua_pop(L, 1);
 }
 
-static std::string exedir() {
-  return eport::os::pmd();
-}
+/********************************************************************************/
 
-static void setpath(lua_State* L) {
-  auto module_path = exedir();
-  const char* path[] = {
-    "lua" LUA_DIRSEP "?.lua",
-    "lua" LUA_DIRSEP "?" LUA_DIRSEP "init.lua",
-  };
-  auto count = sizeof(path) / sizeof(const char*);
+#ifdef _MSC_VER
+#define LIBEXT   ".dll"
+#define readlink GetModuleFileNameA
+#define procself NULL
+#else
+#define LIBEXT   ".so"
+#define procself "/proc/self/exe"
+#endif
 
-  std::string dir;
-  for (size_t i = 0; i < count; i++) {
-    dir.append(path[i]);
-    dir.append(";");
+static const char* reallink(char* path, int size) {
+  auto rslt = readlink(procself, path, size - 1);
+  if (rslt <= 0) {
+    return NULL;
   }
-  for (size_t i = 0; i < count; i++) {
-    dir.append(module_path + LUA_DIRSEP + path[i]);
-    if (i + 1 < count) {
-      dir.append(";");
+  path[rslt] = '\0';
+  for (int i = rslt; i >= 0; i--) {
+    if (path[i] == '/') {
+      path[i] = '\0';
+      break;
     }
   }
+  return path;
+}
 
+static void setpath(lua_State* L, const char* name, const char* path[]) {
+  luaL_Buffer buf;
+  luaL_buffinit(L, &buf);
+  for (int i = 0; path[i]; i++) {
+    luaL_addstring(&buf, path[i]);
+    luaL_addchar(&buf, ';');
+  }
+  char dir[1024];
+  if (reallink(dir, sizeof(dir))) {
+    for (int i = 0; path[i]; i++) {
+      luaL_addstring(&buf, dir);
+      luaL_addstring(&buf, LUA_DIRSEP);
+      luaL_addstring(&buf, path[i]);
+      if (path[i + 1]) {
+        luaL_addchar(&buf, ';');
+      }
+    }
+  }
+  luaL_pushresult(&buf);
   lua_getglobal(L, LUA_LOADLIBNAME);
-  lua_pushlstring(L, dir.c_str(), dir.size());
-  lua_setfield(L, -2, "path");
+  lua_rotate   (L, -2, -1);
+  lua_setfield (L, -2, name);
   lua_pop(L, 1);
 }
 
-static void setcpath(lua_State* L) {
-  auto module_path = exedir();
+static void initpath(lua_State* L) {
   const char* path[] = {
-    "lib" LUA_DIRSEP "lua" LUA_DIRSEP "?" FSO_EXT
+    "lua" LUA_DIRSEP "?.lua", "lua" LUA_DIRSEP "?" LUA_DIRSEP "init.lua", NULL
   };
-  std::string dir;
-  auto count = sizeof(path) / sizeof(const char*);
-  for (size_t i = 0; i < count; i++) {
-    dir.append(path[i]);
-    dir.append(";");
-  }
-  for (size_t i = 0; i < count; i++) {
-    dir.append(module_path + LUA_DIRSEP + path[i]);
-    if (i + 1 < count) {
-      dir.append(";");
-    }
-  }
-  lua_getglobal(L, LUA_LOADLIBNAME);
-  lua_pushlstring(L, dir.c_str(), dir.size());
-  lua_setfield(L, -2, "cpath");
-  lua_pop(L, 1);
+  const char* cpath[] = {
+    "lib" LUA_DIRSEP "lua" LUA_DIRSEP "?" LIBEXT, NULL
+  };
+  setpath(L, "path",  path);
+  setpath(L, "cpath", cpath);
 }
 
 /********************************************************************************/
@@ -231,8 +233,7 @@ LUAC_API lua_State* luaC_newstate(lua_Alloc alloc, void* ud) {
     luaL_openlibs(L);
     luaC_openlibs(L, modules);
 
-    setpath (L);
-    setcpath(L);
+    initpath(L);
     disable_global(L);
     lua_gc(L, LUA_GCRESTART);
     if (LL == nullptr) LL = L;
