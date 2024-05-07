@@ -174,7 +174,7 @@ static const char* reallink(char* path, int size) {
   }
   path[rslt] = '\0';
   for (int i = rslt; i >= 0; i--) {
-    if (path[i] == '/') {
+    if (path[i] == *LUA_DIRSEP) {
       path[i] = '\0';
       break;
     }
