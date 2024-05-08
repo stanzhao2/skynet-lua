@@ -7,14 +7,13 @@
 #pragma once
 #endif
 
-/********************************************************************************/
-
 #ifdef _MSC_VER
 #include <windows.h>
 #endif
 
-#include <lua.hpp>
+#include <string>
 #include <string.h>
+#include <lua.hpp>
 
 /********************************************************************************/
 

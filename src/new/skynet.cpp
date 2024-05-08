@@ -1,7 +1,17 @@
 
 
-#include <string>
-#include "console.h"
+#include "skynet.h"
+
+/********************************************************************************/
+
+
+const lua_CFunction* luaC_modules() {
+  static const lua_CFunction modules[] = {
+    luaopen_wrapper,
+    NULL
+  };
+  return modules;
+}
 
 /********************************************************************************/
 
@@ -40,7 +50,7 @@ static void fatal(const char* message) {
 }
 
 static int pload(lua_State* L) {
-  return luaC_dofile(L) == LUA_OK ? 0 : lua_error(L);
+  return luaC_dofile(L, luaC_modules()) == LUA_OK ? 0 : lua_error(L);
 }
 
 static int pmain(lua_State* L) {
