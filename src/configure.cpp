@@ -5,18 +5,6 @@
 
 /********************************************************************************/
 
-static int luaopen_bind (lua_State* L);
-static int luaopen_pcall(lua_State* L);
-
-static const lua_CFunction lualibs[] = {
-  luaopen_pcall,  /* open pcall and xpcall */
-  luaopen_bind,   /* open bind */
-  /* ... */
-  NULL
-};
-
-/********************************************************************************/
-
 #ifdef _MSC_VER
 # define LIBEXT    ".dll"
 # define readlink  GetModuleFileNameA
@@ -81,136 +69,7 @@ static void initpath(lua_State* L) {
 }
 
 /********************************************************************************/
-/* init state of lua */
-
-static void warnfoff (void *ud, const char *message, int tocont);
-static void warnfon  (void *ud, const char *message, int tocont);
-static void warnfcont(void *ud, const char *message, int tocont);
-
-static int panic(lua_State *L) {
-  const char *msg = lua_tostring(L, -1);
-  if (msg == NULL) {
-    msg = "error object is not a string";
-  }
-  lua_writestringerror("PANIC: unprotected error in call to Lua API (%s)\n", msg);
-  return 0;
-}
-
-static int checkcontrol(lua_State *L, const char *message, int tocont) {
-  if (tocont || *(message++) != '@')  /* not a control message? */
-    return 0;
-  else {
-    if (strcmp(message, "off") == 0)
-      lua_setwarnf(L, warnfoff, L);  /* turn warnings off */
-    else if (strcmp(message, "on") == 0)
-      lua_setwarnf(L, warnfon, L);   /* turn warnings on */
-    return 1;  /* it was a control message */
-  }
-}
-
-static void warnfcont(void *ud, const char *message, int tocont) {
-  lua_State *L = (lua_State *)ud;
-  lua_writestringerror("%s", message);  /* write message */
-  if (tocont) { /* not the last part? */
-    lua_setwarnf(L, warnfcont, L);  /* to be continued */
-  }
-  else {  /* last part */
-    lua_writestringerror("%s", "\n");  /* finish message with end-of-line */
-    lua_setwarnf(L, warnfon, L);  /* next call is a new message */
-  }
-}
-
-static void warnfon(void *ud, const char *message, int tocont) {
-  if (checkcontrol((lua_State*)ud, message, tocont)) { /* control message? */
-    return;  /* nothing else to be done */
-  }
-  lua_writestringerror("%s", "Lua warning: ");  /* start a new warning */
-  warnfcont(ud, message, tocont);  /* finish processing */
-}
-
-static void warnfoff(void *ud, const char *message, int tocont) {
-  checkcontrol((lua_State *)ud, message, tocont);
-}
-
-static int luachecker(lua_State* L) {
-  lua_Debug ar;
-  if (lua_getstack(L, 1, &ar) == 0) {
-    lua_rawset(L, 1);
-    return 0;
-  }
-  if (lua_getinfo(L, "Sl", &ar) && ar.currentline < 0) {
-    lua_rawset(L, 1);
-    return 0;
-  }
-  const char* name = luaL_checkstring(L, -2);
-  if (lua_isfunction(L, -1)) {
-    if (strcmp(name, "main") == 0) {
-      lua_rawset(L, 1);
-      return 0;
-    }
-  }
-  return luaL_error(L, "Cannot use global variables: %s", name);
-}
-
-static void globalsafe(lua_State* L) {
-  lua_getglobal(L, LUA_GNAME);
-  lua_getfield(L, -1, "__newindex");
-  if (lua_isfunction(L, -1)) {
-    lua_pop(L, 2);
-    return;
-  }
-  lua_pop(L, 1);
-  luaL_newmetatable(L, "placeholders");
-  lua_pushliteral(L, "__newindex");
-  lua_pushcfunction(L, luachecker);
-
-  lua_rawset(L, -3);
-  lua_setmetatable(L, -2);
-  lua_pop(L, 1);
-}
-
-static void* mallotor(void* ud, void* ptr, size_t osize, size_t nsize) {
-  (void)ud;  /* not used */
-  lua_allotor* allotor = (lua_allotor*)ud;
-  if (nsize == 0) {
-    allotor->p_free(ptr, osize);
-    return NULL;
-  }
-  return allotor->p_realloc(ptr, osize, nsize);
-}
-
-static int openlibs(lua_State* L) {
-  luaL_openlibs(L);
-  initpath(L);
-  const lua_CFunction* f = lualibs;
-  while (*f) {
-    lua_pushcfunction(L, *f++);
-    if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
-      lua_error(L);
-    }
-  }
-  return LUA_OK;
-}
-
-static lua_State* newstate(lua_allotor* allotor) {
-  lua_State* L = lua_newstate(mallotor, allotor);
-  if (L) {
-    lua_atpanic(L, &panic);
-    lua_setwarnf(L, warnfoff, L);  /* default is warnings off */
-    lua_gc(L, LUA_GCSTOP);
-    lua_pushcfunction(L, openlibs);
-    if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
-      lua_close(L);
-      return NULL;
-    }
-    globalsafe(L);
-    lua_gc(L, LUA_GCRESTART);
-  }
-  return L;
-}
-
-/********************************************************************************/
-/* pcalland xpcall */
+/* pcall and xpcall */
 
 static int finishpcall(lua_State *L, int status, lua_KContext extra) {
   if (luai_unlikely(status != LUA_OK && status != LUA_YIELD)) {  /* error? */
@@ -319,6 +178,130 @@ static int luaopen_bind(lua_State* L) {
 }
 
 /********************************************************************************/
+/* init state of lua */
+
+static void warnfoff (void *ud, const char *message, int tocont);
+static void warnfon  (void *ud, const char *message, int tocont);
+static void warnfcont(void *ud, const char *message, int tocont);
+
+static int panic(lua_State *L) {
+  const char *msg = lua_tostring(L, -1);
+  if (msg == NULL) {
+    msg = "error object is not a string";
+  }
+  lua_writestringerror("PANIC: unprotected error in call to Lua API (%s)\n", msg);
+  return 0;
+}
+
+static int checkcontrol(lua_State *L, const char *message, int tocont) {
+  if (tocont || *(message++) != '@')  /* not a control message? */
+    return 0;
+  else {
+    if (strcmp(message, "off") == 0)
+      lua_setwarnf(L, warnfoff, L);  /* turn warnings off */
+    else if (strcmp(message, "on") == 0)
+      lua_setwarnf(L, warnfon, L);   /* turn warnings on */
+    return 1;  /* it was a control message */
+  }
+}
+
+static void warnfcont(void *ud, const char *message, int tocont) {
+  lua_State *L = (lua_State *)ud;
+  lua_writestringerror("%s", message);  /* write message */
+  if (tocont) { /* not the last part? */
+    lua_setwarnf(L, warnfcont, L);  /* to be continued */
+  }
+  else {  /* last part */
+    lua_writestringerror("%s", "\n");  /* finish message with end-of-line */
+    lua_setwarnf(L, warnfon, L);  /* next call is a new message */
+  }
+}
+
+static void warnfon(void *ud, const char *message, int tocont) {
+  if (checkcontrol((lua_State*)ud, message, tocont)) { /* control message? */
+    return;  /* nothing else to be done */
+  }
+  lua_writestringerror("%s", "Lua warning: ");  /* start a new warning */
+  warnfcont(ud, message, tocont);  /* finish processing */
+}
+
+static void warnfoff(void *ud, const char *message, int tocont) {
+  checkcontrol((lua_State *)ud, message, tocont);
+}
+
+static int luachecker(lua_State* L) {
+  lua_Debug ar;
+  if (lua_getstack(L, 1, &ar) == 0) {
+    lua_rawset(L, 1);
+    return 0;
+  }
+  if (lua_getinfo(L, "Sl", &ar) && ar.currentline < 0) {
+    lua_rawset(L, 1);
+    return 0;
+  }
+  const char* name = luaL_checkstring(L, -2);
+  if (lua_isfunction(L, -1)) {
+    if (strcmp(name, lua_pmain) == 0) {
+      lua_rawset(L, 1);
+      return 0;
+    }
+  }
+  return luaL_error(L, "Cannot use global variables: %s", name);
+}
+
+static void globalsafe(lua_State* L) {
+  lua_getglobal(L, LUA_GNAME);
+  lua_getfield(L, -1, "__newindex");
+  if (lua_isfunction(L, -1)) {
+    lua_pop(L, 2);
+    return;
+  }
+  lua_pop(L, 1);
+  luaL_newmetatable(L, "placeholders");
+  lua_pushliteral(L, "__newindex");
+  lua_pushcfunction(L, luachecker);
+
+  lua_rawset(L, -3);
+  lua_setmetatable(L, -2);
+  lua_pop(L, 1);
+}
+
+static void* mallotor(void* ud, void* ptr, size_t osize, size_t nsize) {
+  (void)ud;  /* not used */
+  lua_allotor* allotor = (lua_allotor*)ud;
+  if (nsize == 0) {
+    allotor->p_free(ptr, osize);
+    return NULL;
+  }
+  return allotor->p_realloc(ptr, osize, nsize);
+}
+
+static int openlibs(lua_State* L) {
+  luaL_openlibs(L);
+  initpath(L);
+  luaopen_bind(L);
+  luaopen_pcall(L);
+  return LUA_OK;
+}
+
+static lua_State* newstate(lua_allotor* allotor) {
+  lua_State* L = lua_newstate(mallotor, allotor);
+  if (L) {
+    lua_atpanic(L, &panic);
+    lua_setwarnf(L, warnfoff, L);  /* default is warnings off */
+    lua_gc(L, LUA_GCSTOP);
+    lua_pushcfunction(L, openlibs);
+    if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
+      lua_close(L);
+      return NULL;
+    }
+    globalsafe(L);
+    lua_gc(L, LUA_GCRESTART);
+  }
+  return L;
+}
+
+/********************************************************************************/
 /* methods */
 
 lua_State* luaC_state() {
@@ -337,7 +320,7 @@ int luaC_pcallk(lua_State* L, int n, int r, int f, lua_KContext k) {
   return lua_pcallk(L, n, r, f, k, finishpcall);
 }
 
-int luaC_dofile(lua_State* L, const char* entry) {
+int luaC_dofile(lua_State* L, const lua_CFunction *f) {
   char name[1024];
   strcpy(name, luaL_checkstring(L, 1));
   char* pdot = strrchr(name, '.');
@@ -357,6 +340,15 @@ int luaC_dofile(lua_State* L, const char* entry) {
   }
   lua_pushstring(L, name);
   lua_replace(L, 1);
+  lua_pushvalue(L, 1);
+  lua_setglobal(L, "progname");
+
+  while (f && *f) {
+    lua_pushcfunction(L, *f++);
+    if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
+      return LUA_ERRERR;
+    }
+  }
 
   int top = lua_gettop(L);
   lua_getglobal(L, LUA_LOADLIBNAME); /* package */
@@ -376,12 +368,10 @@ int luaC_dofile(lua_State* L, const char* entry) {
     return LUA_ERRERR;
   }
   lua_settop(L, top);
-  if (entry) {
-    lua_getglobal(L, entry);
-    if (lua_isfunction(L, -1)) {
-      lua_rotate(L, 2, 1);
-      return lua_pcall(L, top - 1, 0, 0);
-    }
+  lua_getglobal(L, lua_pmain);
+  if (lua_isfunction(L, -1)) {
+    lua_rotate(L, 2, 1);
+    return lua_pcall(L, top - 1, 0, 0);
   }
   return LUA_OK;
 }
