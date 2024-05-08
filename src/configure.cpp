@@ -246,7 +246,7 @@ static int luachecker(lua_State* L) {
       return 0;
     }
   }
-  return luaL_error(L, "Cannot use global variables: %s", name);
+  return luaL_error(L, "missing local (%s is global)", name);
 }
 
 static void globalsafe(lua_State* L) {
