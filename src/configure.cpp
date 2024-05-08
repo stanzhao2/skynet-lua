@@ -287,6 +287,7 @@ static int openlibs(lua_State* L) {
 static lua_State* newstate(lua_allotor* allotor) {
   lua_State* L = lua_newstate(mallotor, allotor);
   if (L) {
+    luaL_checkversion(L);
     lua_atpanic(L, &panic);
     lua_setwarnf(L, warnfoff, L);  /* default is warnings off */
     lua_gc(L, LUA_GCSTOP);
