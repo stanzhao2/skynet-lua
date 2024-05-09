@@ -4,10 +4,10 @@
 
 /********************************************************************************/
 
-
 const lua_CFunction* luaC_modules() {
   static const lua_CFunction modules[] = {
     luaopen_wrapper,
+    luaopen_osfix,
     NULL
   };
   return modules;

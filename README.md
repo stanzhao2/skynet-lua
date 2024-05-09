@@ -36,7 +36,6 @@
 -   os.stopped()
 -   os.debugging()
 -   os.snapshot()
--   os.steady_clock()
 
  **std functions**
 -   std.list() #3

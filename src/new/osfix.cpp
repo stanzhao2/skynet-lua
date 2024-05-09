@@ -1,7 +1,8 @@
 
 
 #include <chrono>
-#include "luaf_clock.h"
+#include <time.h>
+#include "osfix.h"
 
 /********************************************************************************/
 
@@ -88,7 +89,7 @@ static time_t l_checktime(lua_State *L, int arg) {
   return (time_t)t;
 }
 
-static int luaf_date(lua_State *L) {
+static int os_date(lua_State *L) {
   size_t slen;
   const char *s = luaL_optlstring(L, 1, "%c", &slen);
   time_t t = luaL_opt(L, l_checktime, 2, time(NULL));
@@ -133,7 +134,7 @@ static int luaf_date(lua_State *L) {
 
 static const size_t runclock = luaC_clock();
 
-static int luaf_clock(lua_State *L) {
+static int os_clock(lua_State *L) {
   const char* opt = luaL_optstring(L, 1, "s");
   auto now = luaC_clock() - runclock;
   if (strcmp(opt, "ms") == 0) {
@@ -146,17 +147,17 @@ static int luaf_clock(lua_State *L) {
 
 /********************************************************************************/
 
-LUAC_API size_t luaC_clock() {
+size_t luaC_clock() {
   return (size_t)std::chrono::duration_cast<std::chrono::milliseconds>(
     std::chrono::steady_clock::now().time_since_epoch()
   ).count();
 }
 
-LUAC_API int luaC_open_clock(lua_State* L) {
-  const luaL_Reg methods[] = {
-    { "date",   luaf_date   }, /* os.date()  */
-    { "clock",  luaf_clock  }, /* os.clock() */
-    { NULL,     NULL        }
+int luaopen_osfix(lua_State* L) {
+  static const luaL_Reg methods[] = {
+    { "date",   os_date   },
+    { "clock",  os_clock  },
+    { NULL,     NULL      }
   };
   lua_getglobal(L, "os");
   luaL_setfuncs(L, methods, 0);

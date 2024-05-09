@@ -1,19 +1,19 @@
 
 
-#ifndef __LUA_SKYNET_H_
-#define __LUA_SKYNET_H_
+#ifndef __LUA_OSFIX_H_
+#define __LUA_OSFIX_H_
 
 #if defined (_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
 #endif
 
-#include "wrapper.h"
-#include "osfix.h"
+#include "configure.h"
 
 /********************************************************************************/
 
-const lua_CFunction* luaC_modules();
+int luaopen_osfix(lua_State* L);
+size_t luaC_clock();
 
 /********************************************************************************/
 
-#endif //__LUA_SKYNET_H_
+#endif //__LUA_OSFIX_H_

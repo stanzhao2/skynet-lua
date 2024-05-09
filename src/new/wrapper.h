@@ -1,7 +1,7 @@
 
 
-#ifndef __LUA_PACKAGE_H_
-#define __LUA_PACKAGE_H_
+#ifndef __LUA_WRAPPER_H_
+#define __LUA_WRAPPER_H_
 
 #if defined (_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -17,4 +17,4 @@ int luaC_unwrap    (lua_State* L);
 
 /********************************************************************************/
 
-#endif //__LUA_PACKAGE_H_
+#endif //__LUA_WRAPPER_H_
