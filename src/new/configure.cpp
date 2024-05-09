@@ -2,6 +2,7 @@
 
 #include "allotor.h"
 #include "configure.h"
+#include "require.h"
 
 /********************************************************************************/
 
@@ -279,6 +280,7 @@ static void* mallotor(void* ud, void* ptr, size_t osize, size_t nsize) {
 static int openlibs(lua_State* L) {
   luaL_openlibs(L);
   initpath(L);
+  luaopen_require(L);
   luaopen_bind(L);
   luaopen_pcall(L);
   return LUA_OK;
@@ -296,8 +298,16 @@ static lua_State* newstate(lua_allotor* allotor) {
       lua_close(L);
       return NULL;
     }
-    globalsafe(L);
     lua_gc(L, LUA_GCRESTART);
+    lua_gc(L, LUA_GCGEN, 0, 0);
+    globalsafe(L);
+
+#ifdef _DEBUG
+    lua_pushboolean(L, 1);
+#else
+    lua_pushboolean(L, 0);
+#endif
+    lua_setglobal(L, "DEBUG");
   }
   return L;
 }

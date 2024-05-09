@@ -7,6 +7,7 @@
 const lua_CFunction* luaC_modules() {
   static const lua_CFunction modules[] = {
     luaopen_wrapper,
+    luaopen_json,
     luaopen_osfix,
     NULL
   };
@@ -49,6 +50,21 @@ static void fatal(const char* message) {
   exit(EXIT_FAILURE);
 }
 
+static int usage(const char* name) {
+#if defined(_WIN32)
+  char fname[MAX_PATH];
+  strcpy(fname, name);
+  char* pdot = strrchr(fname, '.');
+  if (pdot) {
+    *pdot = '\0';
+    name = fname;
+  }
+#endif
+  fprintf(stderr, "%s for %s\n", name, LUA_RELEASE);
+  fprintf(stderr, "usage: %s module [options]\n\n", name);
+  return EXIT_FAILURE;
+}
+
 static int pload(lua_State* L) {
   return luaC_dofile(L, luaC_modules()) == LUA_OK ? 0 : lua_error(L);
 }
@@ -89,8 +105,8 @@ int main(int argc, const char* argv[]) {
   if (dirsep) {
     progname = dirsep + 1;
   }
-  if (argc < 2) {
-    fatal("no input file given");
+  if (argc < 2) {    
+    return usage(progname);
   }
   lua_State *L = luaC_state();
   if (L == NULL) {

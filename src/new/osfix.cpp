@@ -78,8 +78,7 @@ static const char *checkoption(lua_State *L, const char *conv, ptrdiff_t convlen
       return conv + oplen;  /* return next item */
     }
   }
-  luaL_argerror(L, 1,
-    lua_pushfstring(L, "invalid conversion specifier '%%%s'", conv));
+  luaL_argerror(L, 1, lua_pushfstring(L, "invalid conversion specifier '%%%s'", conv));
   return conv;  /* to avoid warnings */
 }
 
@@ -99,11 +98,12 @@ static int os_date(lua_State *L) {
     stm = l_gmtime(&t, &tmr);
     s++;  /* skip '!' */
   }
-  else
+  else {
     stm = l_localtime(&t, &tmr);
-  if (stm == NULL)  /* invalid date? */
-    return luaL_error(L,
-      "date result cannot be represented in this installation");
+  }
+  if (stm == NULL) { /* invalid date? */
+    return luaL_error(L, "date result cannot be represented in this installation");
+  }
   if (strcmp(s, "*t") == 0) {
     lua_createtable(L, 0, 9);  /* 9 = number of fields */
     setallfields(L, stm);
