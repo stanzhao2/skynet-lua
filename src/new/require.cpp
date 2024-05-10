@@ -246,10 +246,10 @@ static int luaf_require(lua_State* L) {
   if (lua_pcall(L, 1, 1, 0) != LUA_OK) {
     lua_error(L);
   }
-  if (lua_type(L, -1) == LUA_TNIL) {
-    /* load failed */
+  int rettype = lua_type(L, -1);
+  if (rettype != LUA_TSTRING) {
     lua_pop(L, 1); /* pop nil */
-    return 1;      /* return error message */
+    return 1;      /* return error */
   }
   size_t size = 0;
   const char* buff = luaL_checklstring(L, -1, &size);

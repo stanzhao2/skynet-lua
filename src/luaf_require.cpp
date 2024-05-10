@@ -259,8 +259,8 @@ static int luaf_require(lua_State* L) {
   }
   int return_type = lua_type(L, -1);
   if (return_type != LUA_TSTRING) {
-    lua_pop(L, 1);
-    return 0;
+    lua_pop(L, 1); /* pop nil */
+    return 1;      /* return error */
   }
   size_t size = 0;
   const char* buff = luaL_checklstring(L, -1, &size);
@@ -283,7 +283,7 @@ static void lua_newrequire(lua_State* L, lua_CFunction f) {
 
 LUAC_API int luaC_execute(lua_State* L) {
   int argc = lua_gettop(L) - 1;
-  if (luaf_require(L) == 0) {
+  if (luaf_require(L) != 2) {
     lua_error(L);
   }
   if (luaC_pcall(L, 1, 0) != LUA_OK) {
