@@ -328,7 +328,14 @@ lua_State* luaC_state() {
 }
 
 int luaC_pcallk(lua_State* L, int n, int r, int f, lua_KContext k) {
-  return lua_pcallk(L, n, r, f, k, finishpcall);
+  if (f <= 0) {
+    int top = lua_gettop(L);
+    lua_pushcfunction(L, traceback);
+    lua_insert(L, (f = top - n));
+  }
+  int status = lua_pcallk(L, n, r, f, k, finishpcall);
+  lua_remove(L, f); /* remove traceback from stack */
+  return status;
 }
 
 int luaC_dofile(lua_State* L, const lua_CFunction *f) {

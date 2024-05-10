@@ -80,7 +80,7 @@ LUAC_API int luaC_xpcall(lua_State* L, int n, int r) {
   lua_pushcfunction(L, traceback);
   int errfunc = top - n;
   lua_insert(L, errfunc);
-  int status = lua_pcallk(L, n, r, errfunc, 1, finishpcall);
+  int status = lua_pcallk(L, n, r, errfunc, 0, finishpcall);
   lua_remove(L, errfunc); /* remove traceback from stack */
   return status;
 }
