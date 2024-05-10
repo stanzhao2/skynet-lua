@@ -236,6 +236,7 @@ LUAC_API lua_State* luaC_newstate(lua_Alloc alloc, void* ud) {
     initpath(L);
     disable_global(L);
     lua_gc(L, LUA_GCRESTART);
+    lua_gc(L, LUA_GCGEN, 0, 0);
     if (LL == nullptr) LL = L;
   }
   return L;
