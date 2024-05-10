@@ -83,10 +83,9 @@ static const char* localtime(char* out, size_t size) {
 
 static void foutput(const char* msg, color_type color) {
   char prefix[128];
-  localtime(prefix, sizeof(prefix));
-
   static std::mutex printlock;
   std::unique_lock<std::mutex> lock(printlock);
+  localtime(prefix, sizeof(prefix));
 
 #ifndef _MSC_VER
   printf("\033[1;36m%s\033[0m", prefix);
