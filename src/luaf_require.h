@@ -6,7 +6,7 @@
 
 #include "luaf_state.h"
 
-#define LUAC_PROGNAME "@<PROGNAME>"
+#define LUAC_PROGNAME "progname"
 
 /********************************************************************************/
 

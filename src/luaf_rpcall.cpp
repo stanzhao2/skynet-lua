@@ -377,8 +377,10 @@ static int luaf_rpcall(lua_State* L) {
   int expires = max_expires;
   while (!lws::stopped()) {
     int wait = luaC_min(10, expires);
-    if ((expires -= wait) <= 0) {
-      break;
+    if (!luaC_debugging()) {
+      if ((expires -= wait) <= 0) {
+        break;
+      }
     }
     lws::poll();
     if (lws::runone_for(rcf, wait) > 0) {

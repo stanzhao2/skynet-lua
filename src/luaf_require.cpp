@@ -218,18 +218,7 @@ static const char* searchpath(lua_State *L, const char *name, const char *path, 
   return NULL;  /* not found */
 }
 
-static void setprogname(lua_State* L, const char* filename) {
-  lua_getglobal(L, LUAC_PROGNAME);
-  if (lua_isnil(L, -1)) {
-    lua_pushstring(L, filename);
-    lua_setglobal(L, LUAC_PROGNAME);
-  }
-  lua_pop(L, 1);
-}
-
 static const char* findfile(lua_State* L, const char* path, const char* filename) {
-  char temp[8192];
-  filename = normal(filename, temp);
   return searchpath(L, filename, path, ".", LUA_DIRSEP);
 }
 
@@ -248,7 +237,6 @@ static int luaf_require(lua_State* L) {
     if (ll_requiref(L, fullname) != LUA_OK) {
       lua_error(L);
     }
-    setprogname(L, filename);
     return 2;
   }
   /* file not found */
@@ -267,7 +255,6 @@ static int luaf_require(lua_State* L) {
   if (ll_requireb(L, buff, size, filename) != LUA_OK) {
     lua_error(L);
   }
-  setprogname(L, filename);
   return 2;
 }
 
@@ -282,22 +269,38 @@ static void lua_newrequire(lua_State* L, lua_CFunction f) {
 /********************************************************************************/
 
 LUAC_API int luaC_execute(lua_State* L) {
-  int argc = lua_gettop(L) - 1;
-  if (luaf_require(L) != 2) {
+  char name[2048];
+  const char* filename = luaL_checkstring(L, 1);
+  filename = normal(filename, name);
+
+  lua_pushstring(L, filename);
+  lua_replace(L, 1);
+  lua_pushvalue(L, 1);
+  lua_setglobal(L, LUAC_PROGNAME);
+
+  int top = lua_gettop(L);
+  lua_getglobal(L, LUA_LOADLIBNAME);  /* package */
+  lua_getfield(L, -1, loader_field);  /* searchers or loaders */
+  lua_rawgeti(L, -1, 2);
+  lua_pushvalue(L, 1);
+  int result = lua_pcall(L, 1, LUA_MULTRET, 0);
+  if (result != LUA_OK) {
     lua_error(L);
   }
-  if (luaC_pcall(L, 1, 0) != LUA_OK) {
+  int retcnt = lua_gettop(L) - top - 2;
+  if (retcnt != 2) {
     lua_error(L);
   }
-  lua_settop(L, argc + 1);
+  result = lua_pcall(L, 1, 0, 0);
+  if (result != LUA_OK) {
+    lua_error(L);
+  }
+  lua_settop(L, top);
   lua_getglobal(L, LUAC_MAIN);
-  if (lua_type(L, -1) == LUA_TFUNCTION) {
+  if (lua_isfunction(L, -1)) {
     lua_rotate(L, 2, 1);
-    if (luaC_pcall(L, argc, 0) != LUA_OK) {
-      lua_error(L);
-    }
+    return lua_pcall(L, top - 1, 0, 0);
   }
-  lua_settop(L, argc + 1);
   return LUA_OK;
 }
 
