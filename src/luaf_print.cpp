@@ -64,7 +64,7 @@ static const char* fileline(lua_State* L) {
       }
       char temp[512];
       auto str = fixstr(ar.source, ar.srclen, temp, sizeof(temp));
-      snprintf(filename, sizeof(filename), "<%s:%d> ", str, ar.currentline);
+      snprintf(filename, sizeof(filename), "<%s:%d>", str, ar.currentline);
       luaL_addstring(&buf, filename);
       break;
     }
