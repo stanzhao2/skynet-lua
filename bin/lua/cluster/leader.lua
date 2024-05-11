@@ -26,11 +26,11 @@ local function sendto_member(session)
 		ip   = v.ip,
 		port = v.port,
 	  };
-	  session.socket:send(pack(packet));
+	  session.socket:send(wrap(packet));
 	end
   end
   local peer = session.socket;
-  peer:send(pack({what = proto_type.ready}));
+  peer:send(wrap({what = proto_type.ready}));
 end
 
 --------------------------------------------------------------------------------

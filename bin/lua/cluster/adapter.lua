@@ -81,7 +81,7 @@ local function ws_on_receive(peer, ec, data)
   end
   
   local id   = peer:id();
-  local info = unpack(data);
+  local info = unwrap(data);
   local what = info.what;
   
   if what == proto_type.deliver then
@@ -126,13 +126,13 @@ local function on_lookout(info)
   local what = info.what;  
   if what == proto_type.bind then
 	lua_bind(info, info.caller);
-    sendto_others(pack(info));
+    sendto_others(wrap(info));
 	return;
   end
   
   if what == proto_type.unbind then
 	lua_unbind(info.name, info.caller);
-    sendto_others(pack(info));
+    sendto_others(wrap(info));
 	return;
   end
   
@@ -149,7 +149,7 @@ local function on_lookout(info)
   
   local session = active_sessions[id];
   if session then
-    sendto_member(pack(info), session);
+    sendto_member(wrap(info), session);
   end
 end
 
@@ -201,7 +201,7 @@ local function ws_on_accept(protocol, ec, peer)
   for caller, bounds in pairs(lua_bounds) do
     if caller <= 0xffff then
 	  for name, info in pairs(bounds) do
-	    peer:send(pack(info));
+	    peer:send(wrap(info));
 	  end
 	end
   end
@@ -233,7 +233,7 @@ local function connect_members(socket, protocol)
 	  return false;
 	end
     
-	local packet = unpack(data);
+	local packet = unwrap(data);
 	if packet.what == proto_type.ready then
 	  break;
 	end
