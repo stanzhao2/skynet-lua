@@ -3,7 +3,7 @@
 -   skynet cluster.leader [port] [host]
 
  **global functions**
--   bind(<func/name>, [obj, ...])
+-   bind(func, [, ...])
 -   pack(...)
 -   unpack(str)
 -   pcall(func [, ...])
