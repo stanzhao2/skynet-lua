@@ -4,8 +4,8 @@
 
  **global functions**
 -   bind(func, [, ...])
--   pack(...)
--   unpack(str)
+-   wrap(...)
+-   unwrap(str)
 -   pcall(func [, ...])
 -   print(fmt [, ...])
 -   trace(fmt [, ...])

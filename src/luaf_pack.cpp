@@ -899,10 +899,10 @@ static int mp_safe(lua_State *L) {
 }
 
 static const struct luaL_Reg methods[] = {
-  { "pack",           pack_any       },
-  { "unpack",         unpack_any     },
-  { "unpack_one",     unpack_one     },
-  { "unpack_limit",   unpack_limit   },
+  { "wrap",           pack_any       },
+  { "unwrap",         unpack_any     },
+  { "unwrap_one",     unpack_one     },
+  { "unwrap_limit",   unpack_limit   },
   { NULL,             NULL           }
 };
 
