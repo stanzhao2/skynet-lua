@@ -1,5 +1,6 @@
 
 
+#include <string.h>
 #include <chrono>
 #include "luaf_clock.h"
 

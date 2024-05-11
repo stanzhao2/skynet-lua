@@ -1,5 +1,6 @@
 
 
+#include <string.h>
 #include <map>
 #include "luaf_leak.h"
 
