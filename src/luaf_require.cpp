@@ -1,6 +1,7 @@
 
 
 #include <string.h>
+#include <eport/detail/os/os.hpp>
 #include "luaf_require.h"
 
 /********************************************************************************/
@@ -46,7 +47,7 @@ static const char* normal(const char* filename, char* out) {
       continue;
     }
     if (c == '.') {
-      if (strcmp(p, ".lua") == 0) {
+      if (stricmp(p, ".lua") == 0) {
         *p = 0;
         break;
       }
