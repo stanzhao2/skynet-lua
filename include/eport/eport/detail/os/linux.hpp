@@ -35,6 +35,8 @@ typedef long long __int64;
 typedef unsigned long long __uint64;
 #endif
 
+#define stricmp strcasecmp
+
 /***********************************************************************************/
 namespace eport {
 namespace os     {

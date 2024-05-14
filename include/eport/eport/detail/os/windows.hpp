@@ -23,7 +23,8 @@
 typedef unsigned long long __uint64;
 #endif
 
-#define chdir _chdir
+#define chdir   _chdir
+#define stricmp _stricmp
 
 /***********************************************************************************/
 namespace eport {

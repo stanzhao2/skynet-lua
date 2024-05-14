@@ -332,8 +332,12 @@ class stream final
 
   bool is_ws_request() const {
     const http::request& req = _request;
-    auto name    = req.get_header(HTTP_HCONNECTION);
-    auto value   = req.get_header(name);
+    auto name = req.get_header(HTTP_HCONNECTION);
+	  if (stricmp(name.c_str(), "Upgrade") != 0) {
+      return false;
+	  }
+	
+    auto value = req.get_header("Upgrade");
     auto version = req.get_header(HTTP_HSEC_WEBSOCKET_VERSION);
 
     std::transform(value.begin(), value.end(), value.begin(), [](unsigned char c) {
