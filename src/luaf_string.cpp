@@ -1,6 +1,7 @@
 
 
 #include <string.h>
+#include <eport/detail/os/os.hpp>
 #include "luaf_string.h"
 
 /********************************************************************************/
@@ -45,6 +46,13 @@ static int luaf_trim(lua_State* L) {
   return 1;
 }
 
+static int luaf_icmp(lua_State* L) {
+  const char* a = luaL_checkstring(L, 1);
+  const char* b = luaL_checkstring(L, 2);
+  lua_pushboolean(L, stricmp(a, b) == 0 ? 1 : 0);
+  return 1;
+}
+
 static int luaf_split(lua_State* L) {
   const char *s = luaL_checkstring(L, 1);
   const char *sep = luaL_checkstring(L, 2);
@@ -70,6 +78,7 @@ LUAC_API int luaC_open_string(lua_State* L) {
   const luaL_Reg methods[] = {
     { "split",    luaf_split    }, /* string.split(s, r) */
     { "trim",     luaf_trim     }, /* string.trim(s) */
+    { "icmp",     luaf_icmp     }, /* string.icmp(a, b) */
     { "isalnum",  luaf_isalnum  }, /* string.isalnum(s)  */
     { "isalpha",  luaf_isalpha  }, /* string.isalpha(s)  */
     { NULL,       NULL          }
