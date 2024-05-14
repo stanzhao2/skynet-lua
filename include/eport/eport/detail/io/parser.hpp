@@ -15,6 +15,10 @@
 #define strcasecmp _stricmp
 #endif
 
+#ifndef CRLF
+#define CRLF "\r\n"
+#endif
+
 /*******************************************************************************/
 namespace eport {
 namespace http  {
@@ -52,6 +56,7 @@ struct request {
         return;
       }
     }
+    
     header new_header;
     new_header.name = name;
     new_header.value = value;
@@ -59,7 +64,7 @@ struct request {
   }
   std::string to_string() const {
     char line[4096];
-    snprintf(line, sizeof(line), "%s %s HTTP/%d.%d\r\n",
+    snprintf(line, sizeof(line), "%s %s HTTP/%d.%d" CRLF,
       method.c_str(),
       (uri.empty() ? "/" : uri.c_str()),
       http_version_major,
@@ -67,10 +72,10 @@ struct request {
     );
     std::string out(line);
     for (auto iter = headers.begin(); iter != headers.end(); iter++) {
-      snprintf(line, sizeof(line), "%s: %s\r\n", iter->name.c_str(), iter->value.c_str());
+      snprintf(line, sizeof(line), "%s: %s" CRLF, iter->name.c_str(), iter->value.c_str());
       out.append(line);
     }
-    return out.append("\r\n");
+    return out.append(CRLF);
   }
   std::string method;
   std::string uri;
@@ -569,7 +574,7 @@ struct response {
   }
   std::string to_string() const {
     char line[4096];
-    snprintf(line, sizeof(line), "HTTP/%d.%d %d %s\r\n",
+    snprintf(line, sizeof(line), "HTTP/%d.%d %d %s" CRLF,
       http_version_major,
       http_version_major,
       status,
@@ -577,10 +582,10 @@ struct response {
     );
     std::string out(line);
     for (auto iter = headers.begin(); iter != headers.end(); iter++) {
-      snprintf(line, sizeof(line), "%s: %s\r\n",iter->name.c_str(), iter->value.c_str());
+      snprintf(line, sizeof(line), "%s: %s" CRLF,iter->name.c_str(), iter->value.c_str());
       out.append(line);
     }
-    return out.append("\r\n");
+    return out.append(CRLF);
   }
   int status;
   int http_version_major;
