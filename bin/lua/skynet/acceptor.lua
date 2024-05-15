@@ -16,7 +16,7 @@ local ws_class = class("ws_class");
 --------------------------------------------------------------------------------
 
 local function ws_callback(handler, ec, peer, data)
-  local ok, err = pcall(handler, peer, ec, data);
+  local ok, err = pcall(handler, ec, peer, data);
   if not ok then
     error(err);
   end

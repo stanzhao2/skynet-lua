@@ -308,7 +308,7 @@ end
 
 --------------------------------------------------------------------------------
 
-function main(host, port, ca, key, pwd)
+function main(port, host, ca, key, pwd)
   port = port or (ca and 443 or 80);
   local acceptor = io.acceptor();
   local ok = acceptor:listen(port, host or "0.0.0.0", 64);
