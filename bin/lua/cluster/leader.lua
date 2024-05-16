@@ -94,7 +94,7 @@ end
 
 --------------------------------------------------------------------------------
 
-function main(host, port)
+function main(port, host)
   port = port or default_port;
   local acceptor = io.acceptor();
   local ok = acceptor:listen(port, host or "0.0.0.0", 16);
