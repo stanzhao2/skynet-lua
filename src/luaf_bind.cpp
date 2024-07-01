@@ -7,6 +7,7 @@
 static int callback(lua_State* L) {
   int index = lua_upvalueindex(1); /* get the first up-value */
   int up_values = (int)luaL_checkinteger(L, index); /* get the number of up-values */
+  lua_checkstack(L, up_values);
   for (int i = 2; i <= up_values; i++) {
     lua_pushvalue(L, lua_upvalueindex(i));
   }
