@@ -141,6 +141,9 @@ static int luaf_os_wait(lua_State* L) {
       break;
     }
     luaC_clsexpires();
+#ifdef _MSC_VER
+    lua_gc(L, LUA_GCCOLLECT);
+#endif
   }
   lua_pushinteger(L, (lua_Integer)count);
   return 1;
