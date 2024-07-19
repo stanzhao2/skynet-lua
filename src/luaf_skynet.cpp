@@ -105,7 +105,7 @@ int main(int argc, const char *argv[]) {
     lua_ferror("%s\n", lua_tostring(L, -1)); /* error? */
   }
   else {
-    lua_fprint("%s exited normally, goodbye!\n\n", filename);
+    lua_fprint("%s exited normally, goodbye!\n", filename);
   }
   luaC_close(L);
   return 0;
