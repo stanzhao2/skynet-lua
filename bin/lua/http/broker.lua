@@ -205,7 +205,9 @@ local function rp_on_request(session)
     return;
   end
 
-  if not coroutine.resume(co, method, session) then
+  local ok, err = coroutine.resume(co, method, session);
+  if not ok then
+    error(err);
     peer:close();
   end
 end
