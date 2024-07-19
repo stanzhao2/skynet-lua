@@ -77,8 +77,6 @@ static void on_signal(int code) {
 }
 
 static void usage(const char* filename) {
-  const char* p = strrchr(filename, *LUA_DIRSEP);
-  filename = p ? p + 1 : filename;
   printf("%s\n", "Copyright (C) iccgame.com, All right reserved");
   printf("%s\n", "https://gitee.com/stancpp/skynet-lua.git");
   printf("Version(R): %s\n\n", SKYNET_VERSION);
@@ -91,8 +89,12 @@ int main(int argc, const char *argv[]) {
 #ifdef _MSC_VER
   SetConsoleOutputCP(65001);
 #endif
+  const char* filename = argv[0];
+  const char* p = strrchr(filename, *LUA_DIRSEP);
+  filename = p ? p + 1 : filename;
+
   if (argc == 1) {
-    usage(argv[0]);
+    usage(filename);
     return 0;
   }
   lua_State* L = luaC_newstate(luaC_leakcheck, nullptr);
@@ -101,6 +103,9 @@ int main(int argc, const char *argv[]) {
   lua_pushlightuserdata(L, argv);
   if (luaC_pcall(L, 2, 0) != LUA_OK) {
     lua_ferror("%s\n", lua_tostring(L, -1)); /* error? */
+  }
+  else {
+    lua_fprint("%s exited normally, goodbye!\n\n", filename);
   }
   luaC_close(L);
   return 0;
