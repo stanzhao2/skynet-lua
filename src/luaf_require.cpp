@@ -300,7 +300,9 @@ LUAC_API int luaC_execute(lua_State* L) {
   lua_getglobal(L, LUAC_MAIN);
   if (lua_isfunction(L, -1)) {
     lua_rotate(L, 2, 1);
-    return lua_pcall(L, top - 1, 0, 0);
+    if (lua_pcall(L, top - 1, 0, 0) != LUA_OK) {
+      lua_error(L);
+    }
   }
   return LUA_OK;
 }
