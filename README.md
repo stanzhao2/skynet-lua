@@ -1,6 +1,11 @@
  **skynet-lua usage**
 -   skynet name [arguments...]
+
+ **skynet cluster**
 -   skynet cluster.leader [port] [host]
+
+ **skynet http broker**
+-   skynet http.broker [port] [host] [ca] [key] [pwd] 
 
  **global functions**
 -   bind(func, [, ...])
