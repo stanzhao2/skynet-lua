@@ -17,7 +17,7 @@ local co_class = class("co_class");
 
 local function print_if_error(name, ok, err)
   if ok ~= true then
-    error(format("coroutine(%s) error: ", err));
+    error(format("coroutine(%s) error: %s", name, err));
   end
 end
 
@@ -25,7 +25,7 @@ end
 
 function co_class:__init(name)
   self.tasklist = std.list();
-  self.name     = name or "unknown";
+  self.name     = name or "no name";
   self.closed   = false;
   self.co = coroutine.create(bind(self.comain, self));
 end
