@@ -69,13 +69,14 @@
 
  **socket functions**
 -   socket:connect(host, port [, func])
+-   socket:valid()
+-   socket:close()
 -   socket:id()
 -   socket:read()
 -   socket:write(data)
 -   socket:send(data)
 -   socket:receive(func)
 -   socket:endpoint([<"local"/"remote">])
--   socket:close()
 -   socket:geturi()
 -   socket:getheader(name)
 -   socket:seturi(uri)

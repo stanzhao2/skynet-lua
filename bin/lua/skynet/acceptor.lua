@@ -66,11 +66,9 @@ local function on_accept(context, ec, peer)
     local ok, err = pcall(handler, ec, peer);
     if not ok then
       error(err);
-	elseif err == false then
-	  ec = ec > 0 and ec or 10013;
     end
   end
-  if ec > 0 then
+  if ec > 0 or not peer:valid() then
     peer:close();
   else
     local handler = context.receive_handler;

@@ -72,6 +72,12 @@ static int luaf_close(lua_State* L) {
   return 0;
 }
 
+static int luaf_valid(lua_State* L) {
+  auto ud = luaC_checkudata<ud_context>(L, 1, LUAC_SOCKET);
+  lua_pushboolean(L, lws::valid(ud->handle));
+  return 1;
+}
+
 static int luaf_gc(lua_State* L) {
   if (luaC_debugging()) {
     lua_ftrace("DEBUG: %s will gc\n", LUAC_SOCKET);
@@ -366,6 +372,7 @@ static void init_metatable(lua_State* L) {
   const luaL_Reg methods[] = {
     { "__gc",       luaf_gc         },
     { "close",      luaf_close      },
+    { "valid",      luaf_valid      },
     { "id",         luaf_id         },
     { "connect",    luaf_connect    },
     { "listen",     luaf_listen     },
