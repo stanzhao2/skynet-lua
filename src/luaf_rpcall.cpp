@@ -241,20 +241,19 @@ static int dispatch(const topic_type& topic, int rcb, const char* data, size_t s
       lua_pushlstring(L, argv.c_str(), argv.size());
       argc += luaC_unpack(L);
     }
-    bool success = true;
     size_t previous = rpcall_caller;
     rpcall_caller = caller;
-    if (luaC_xpcall(L, argc, LUA_MULTRET) != LUA_OK) {
-      success = false;
+
+    int callok = luaC_xpcall(L, argc, LUA_MULTRET);
+    if (callok != LUA_OK) {
       lua_ferror("%s\n", lua_tostring(L, -1));
-      lua_pop(L, 1); /* pop error */
     }
     rpcall_caller = previous;
     /* don't need result */
     if (rcf == 0) {
       return;
     }
-    lua_pushboolean(L, success ? 1 : 0);
+    lua_pushboolean(L, callok == LUA_OK ? 1 : 0);
     int count = lua_gettop(L) - revert.top();
     if (count > 1) {
       lua_rotate(L, -count, 1);
