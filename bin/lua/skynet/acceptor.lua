@@ -101,6 +101,7 @@ function ws_class:on(receive, accept)
   assert(accept == nil or type(accept) == "function");
   self.accept_handler  = accept;
   self.receive_handler = receive;
+  return self;
 end
 
 --------------------------------------------------------------------------------
