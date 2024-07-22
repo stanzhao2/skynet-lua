@@ -30,7 +30,11 @@ end
 
 --------------------------------------------------------------------------------
 
-local function new_socket(protocol, ca, key, pwd)
+local function new_socket(context)
+  local protocol = context.protocol;
+  local ca       = context.ca;
+  local key      = context.key;
+  local pwd      = context.pwd;
   return io.socket(protocol, ca, key, pwd);
 end
 
@@ -63,12 +67,7 @@ local function on_ws_accept(context, handler, ec, peer)
     local session = new_session(peer, handler);
     peer:receive(bind(on_ws_receive, session));
   end
-
-  local protocol = context.protocol;
-  local ca  = context.ca;
-  local key = context.key;
-  local pwd = context.pwd;
-  return new_socket(protocol, ca, key, pwd);
+  return new_socket(context);
 end
 
 --------------------------------------------------------------------------------
@@ -98,11 +97,7 @@ function ws_class:listen(handler, port, host, backlog)
     return false;
   end
 
-  local protocol = self.protocol;
-  local ca       = self.ca;
-  local key      = self.key;
-  local pwd      = self.pwd;
-  local socket   = new_socket(protocol, ca, key, pwd);
+  local socket = new_socket(self);
   self.acceptor:accept(socket, bind(on_ws_accept, self, handler));
   return true;
 end
