@@ -195,9 +195,8 @@ end
 --------------------------------------------------------------------------------
 
 local function rp_on_request(session)
-  local peer   = session.socket;
-  local co     = session.co;
   local parser = session.parser;
+  local co     = session.co;
   local method = parser:method();
 
   if method ~= "GET" and method ~= "POST" then
@@ -208,6 +207,7 @@ local function rp_on_request(session)
   local ok, err = coroutine.resume(co, method, session);
   if not ok then
     error(err);
+    local peer = session.socket;
     peer:close();
   end
 end
