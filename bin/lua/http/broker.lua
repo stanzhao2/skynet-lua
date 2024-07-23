@@ -331,8 +331,7 @@ function main(port, host, ca, key, pwd)
 
   print(format("%s works on port %d", os.name(), port));
   while not os.stopped() do
-    os.wait(60000);
-    collectgarbage(); --Actively triggering GC
+    os.wait();
   end
   acceptor:close();
 end

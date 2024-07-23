@@ -122,6 +122,7 @@ static int luaf_job_id(lua_State* L) {
 }
 
 static int luaf_os_wait(lua_State* L) {
+  static auto lastgc = luaC_clock();
   lua_getglobal(L, LUAC_STOPCALL);
   if (lua_type(L, -1) == LUA_TFUNCTION) {
     luaC_pcall(L, 0, 0);
@@ -141,7 +142,9 @@ static int luaf_os_wait(lua_State* L) {
       break;
     }
     luaC_clsexpires();
-    if (luaC_debugging()) {
+    auto now = luaC_clock();
+    if (luaC_debugging() || now - lastgc >= 600000) {
+      lastgc = now;
       lua_gc(L, LUA_GCCOLLECT);
     }
   }

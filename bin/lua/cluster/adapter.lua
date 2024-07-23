@@ -306,8 +306,7 @@ function main(host, port)
   print(format("%s works on port %d", os.name(), lport));
   
   while not os.stopped() do
-    os.wait(60000);
-	collectgarbage();
+    os.wait();
   end
   socket:close();
   acceptor:close();

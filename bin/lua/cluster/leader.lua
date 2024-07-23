@@ -110,8 +110,7 @@ function main(port, host)
   
   print(format("%s works on port %d", os.name(), port));
   while not os.stopped() do
-    os.wait(60000);
-	collectgarbage();
+    os.wait();
   end
   acceptor:close();
 end
