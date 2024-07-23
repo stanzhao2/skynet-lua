@@ -28,9 +28,9 @@ static int luaf_dir_close(lua_State* L) {
 }
 
 static int luaf_dir_gc(lua_State* L) {
-  if (luaC_debugging()) {
-    lua_ftrace("DEBUG: %s will gc\n", LUAC_DIR);
-  }
+#ifdef _DEBUG
+  lua_ftrace("DEBUG: %s will gc\n", LUAC_DIR);
+#endif
   auto ud = luaC_checkudata<ud_dir>(L, 1, LUAC_DIR);
   int result = luaf_dir_close(L);
   ud->~ud_dir();

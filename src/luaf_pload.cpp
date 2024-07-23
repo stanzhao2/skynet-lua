@@ -109,9 +109,9 @@ static int luaf_job_stop(lua_State* L) {
 }
 
 static int luaf_job_gc(lua_State* L) {
-  if (luaC_debugging()) {
-    lua_ftrace("DEBUG: %s will gc\n", LUAC_THREAD);
-  }
+#ifdef _DEBUG
+  lua_ftrace("DEBUG: %s will gc\n", LUAC_THREAD);
+#endif
   ud_thread* job = luaC_checkudata<ud_thread>(L, 1, LUAC_THREAD);
   int result = luaf_job_stop(L);
   job->~ud_thread();

@@ -27,9 +27,9 @@ static int luaf_close(lua_State* L) {
 }
 
 static int luaf_gc(lua_State* L) {
-  if (luaC_debugging()) {
-    lua_ftrace("DEBUG: %s will gc\n", LUAC_TIMER);
-  }
+#ifdef _DEBUG
+  lua_ftrace("DEBUG: %s will gc\n", LUAC_TIMER);
+#endif
   auto ud = luaC_checkudata<ud_timer>(L, 1, LUAC_TIMER);
   int result = luaf_close(L);
   ud->~ud_timer();
