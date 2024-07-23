@@ -9,13 +9,16 @@
 
  **global functions**
 -   bind(func, [, ...])
--   wrap(...)
--   unwrap(str)
 -   pcall(func [, ...])
 -   print(fmt [, ...])
 -   trace(fmt [, ...])
 -   error(fmt [, ...])
 -   throw(fmt [, ...])
+-   wrap(...)
+-   unwrap(s)
+-   unwrap_rest(s [, offset])
+-   unwrap_one(s [, offset])
+-   unwrap_limit(s, n [, offset])
 
  **os functions** 
 -   os.version()

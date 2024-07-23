@@ -859,8 +859,16 @@ static int mp_unpack_full(lua_State *L, int limit, int offset) {
   return cnt;
 }
 
-int unpack_any(lua_State *L) {
+static int unpack_any(lua_State *L) {
   return mp_unpack_full(L, 0, 0);
+}
+
+static int unpack_rest(lua_State* L) {
+  int offset = (int)luaL_optinteger(L, 2, 0);
+  /* Variable pop because offset may not exist */
+  lua_pop(L, lua_gettop(L)-1);
+  int count = mp_unpack_full(L, INT_MAX, offset);
+  return count > 0 ? count - 1 : count;
 }
 
 static int unpack_one(lua_State *L) {
@@ -901,6 +909,7 @@ static int mp_safe(lua_State *L) {
 static const struct luaL_Reg methods[] = {
   { "wrap",           pack_any       },
   { "unwrap",         unpack_any     },
+  { "unwrap_rest",    unpack_rest    },
   { "unwrap_one",     unpack_one     },
   { "unwrap_limit",   unpack_limit   },
   { NULL,             NULL           }
