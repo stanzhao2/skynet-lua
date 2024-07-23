@@ -21,15 +21,15 @@ function service.load(query)
   local result = {};
   local ok, job = os.pload(name, query);
   if not ok then  
-    result.state  = "ERROR";
-	result.encode = "base64";
-    result.error  = base64.encode(job);
+    result.state = "ERROR";
+    result.error = job;
+	print(job);
     return json.encode(result);
   end
   if not actives[name] then
     actives[name] = {};
   end
-  table.insert(actives[name], job);    
+  table.insert(actives[name], job);
   result.state = "OK";
   result.count = #actives[name];
   return json.encode(result);
@@ -103,8 +103,7 @@ function service.exec(query)
     return json.encode(result);
   end
   result.state  = "OK";
-  result.encode = "base64";
-  result.output = base64.encode(err);
+  result.output = err;
   return json.encode(result);
 end
 
@@ -134,7 +133,7 @@ function main(port, httpurl)
 	return;
   end
   while not os.stopped() do
-    os.wait(10000);
+    os.wait(5000);
     if httpurl then
       io.wwwget(makeurl(httpurl, port));
     end

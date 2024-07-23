@@ -122,13 +122,13 @@ static int luaf_job_state(lua_State* L) {
   ud_thread* job = luaC_checkudata<ud_thread>(L, 1, LUAC_THREAD);
   switch (job->state) {
   case job_state::successfully:
-    lua_pushstring(L, "working");
+    lua_pushstring(L, "active");
     break;
   case job_state::error:
     lua_pushstring(L, "error");
     break;
   case job_state::exited:
-    lua_pushstring(L, "exited");
+    lua_pushstring(L, "dead");
     break;
   }
   return 1;
