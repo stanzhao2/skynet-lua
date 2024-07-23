@@ -43,18 +43,17 @@ function service.stop(query)
   if type(name) ~= "string" then
     return "name not found";
   end
-  local removed = {};
+  local reserved = {};
   local id = tonumber(query.id) or 0;
   for i, job in pairs(actives[name] or {}) do
     if id == 0 or id == job:id() then
       job:stop();
-	  table.insert(removed, i);
+	else
+	  table.insert(reserved, job);
     end
   end
-  for _, i in pairs(removed) do
-    table.remove(actives[name], i);
-  end
-  if actives[name] and #actives[name] == 0 then
+  actives[name] = reserved;
+  if #actives[name] == 0 then
     actives[name] = nil;
   end
   local result = {};
