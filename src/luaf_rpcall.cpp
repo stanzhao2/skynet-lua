@@ -38,7 +38,7 @@ typedef std::map<
   int, pend_invoke
 > invoke_map_type;
 
-#define max_expires  5000
+#define max_expires  10000
 #define is_local(what) (what <= 0xffff)
 #define unique_mutex_lock(what) std::unique_lock<std::mutex> lock(what)
 
@@ -49,6 +49,7 @@ static lws_int         watcher_luaf  = 0;
 static lua_CFunction   watcher_cfn   = nullptr;
 static rpcall_map_type rpcall_handlers;
 static thread_local size_t rpcall_caller = 0;
+static thread_local bool rpcall_complete = false;
 static thread_local std::string rpcall_result;
 static thread_local invoke_map_type invoke_pendings;
 
@@ -341,6 +342,7 @@ static int luaf_rpcall(lua_State* L) {
   else {
     /* not in coroutine */
     rpcall_result.clear();
+    rpcall_complete = false;
     rcf = 0 - lws::newstate();
   }
   const char* name = luaL_checkstring(L, 1);
@@ -373,17 +375,19 @@ static int luaf_rpcall(lua_State* L) {
   }
   /* not in coroutine */
   rcf = std::abs(rcf);
-  int expires = max_expires;
+  auto begin = luaC_clock();
   while (!lws::stopped()) {
-    int wait = luaC_min(10, expires);
+    //check timeout
     if (!luaC_debugging()) {
-      if ((expires -= wait) <= 0) {
+      if (luaC_clock() - begin >= max_expires) {
         break;
       }
     }
     lws::poll();
-    if (lws::runone_for(rcf, wait) > 0) {
-      break;
+    if (lws::runone_for(rcf, max_expires) > 0) {
+      if (rpcall_complete) {
+        break;
+      }
     }
   }
   lws::close(rcf);
@@ -533,6 +537,9 @@ LUAC_API int luaC_lookout(lua_CFunction f) {
 }
 
 LUAC_API int luaC_clsexpires() {
+  if (luaC_debugging()) {
+    return LUA_OK;
+  }
   auto now  = luaC_clock();
   auto iter = invoke_pendings.begin();
   for (; iter != invoke_pendings.end();) {
@@ -607,6 +614,7 @@ LUAC_API int luaC_r_response(const std::string& data, size_t caller, int rcf) {
     if (rcf < 0) {
       lws::post(std::abs(rcf), [data]() {
         rpcall_result.assign(data);
+        rpcall_complete = true;
       });
       return LUA_OK;
     }
