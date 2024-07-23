@@ -118,8 +118,21 @@ end
 
 --------------------------------------------------------------------------------
 
-local function makeurl(url, port)
-  return string.format("%s/?type=http&port=%d", url, port);
+local function callback(what, url, port)
+  local domain = url;
+  if not domain then
+    return true;
+  end
+  domain = string.format("%s/?type=%s&port=%d", domain, what, port);
+  for i = 1, 5 do
+	local result = io.wwwget(url);
+	if result ~= nil then
+	  print(string.format("GET %s OK", url));
+	  return true;
+	end
+	error(string.format("GET %s Failed", url));
+  end
+  return false;
 end
 
 --------------------------------------------------------------------------------
@@ -132,13 +145,15 @@ function main(port, httpurl)
     error(job);
 	return;
   end
+  if not callback("online", httpurl, port) then
+    job:stop();
+    return;
+  end
   while not os.stopped() do
-    os.wait(5000);
-    if httpurl then
-      io.wwwget(makeurl(httpurl, port));
-    end
+    os.wait();
   end
   job:stop();
+  callback("offline", httpurl, port);
 end
 
 --------------------------------------------------------------------------------
