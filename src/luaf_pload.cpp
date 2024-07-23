@@ -28,6 +28,7 @@ struct ud_thread {
   lua_Alloc     alloter;
   std::string   name;
   std::string   argv;
+  std::string   error;
   std::shared_ptr<std::thread> thread;
 };
 
@@ -83,10 +84,12 @@ static void lua_thread(lua_State* PL, ud_thread* job) {
 
   int status = luaC_xpcall(L, argc, 0);
   if (status != LUA_OK) {
-    lua_ferror("%s\n", luaL_checkstring(L, -1));
+    job->error = luaL_checkstring(L, -1);
     job->state = job_state::error;
+    lua_ferror("%s\n", job->error.c_str());
   }
-  if (job->state == job_state::pending) {
+  else {
+    job->error = "already exited";
     job->state = job_state::exited;
   }
   luaC_close(L);
@@ -113,6 +116,22 @@ static int luaf_job_gc(lua_State* L) {
   int result = luaf_job_stop(L);
   job->~ud_thread();
   return result;
+}
+
+static int luaf_job_state(lua_State* L) {
+  ud_thread* job = luaC_checkudata<ud_thread>(L, 1, LUAC_THREAD);
+  switch (job->state) {
+  case job_state::successfully:
+    lua_pushstring(L, "working");
+    break;
+  case job_state::error:
+    lua_pushstring(L, "error");
+    break;
+  case job_state::exited:
+    lua_pushstring(L, "exited");
+    break;
+  }
+  return 1;
 }
 
 static int luaf_job_id(lua_State* L) {
@@ -203,14 +222,20 @@ static int luaf_os_pload(lua_State* L) {
       std::chrono::milliseconds(10)
     );
   }
-  if (job->state == job_state::successfully) {
-    lua_pushboolean(L, 1);
-    lua_rotate(L, -2, 1);
-  } else {
+  if (job->state == job_state::error) {
     lua_pushboolean(L, 0);
-    lua_pushnil(L);
+    lua_pushlstring(L, job->error.c_str(), job->error.size());
     if (job->thread->joinable()) {
       job->thread->join();
+    }
+  }
+  else {
+    lua_pushboolean(L, 1);
+    lua_rotate(L, -2, 1);
+    if (job->state != job_state::successfully) {
+      if (job->thread->joinable()) {
+        job->thread->join();
+      }
     }
   }
   return 2;
@@ -286,6 +311,31 @@ static int luaf_os_post(lua_State* L) {
 
 /********************************************************************************/
 
+#include <stdio.h>
+
+#ifdef _MSC_VER
+#define popen  _popen
+#define pclose _pclose
+#endif
+
+static int luaf_os_shell(lua_State* L) {
+  const char* cmd = luaL_checkstring(L, 1);
+  FILE *fd = 0;
+  char data[8192];
+  std::string result;
+  if (fd = popen(cmd, "r")){
+    while (fgets(data, sizeof(data), fd) != NULL) {
+      result += data;
+    }
+    pclose(fd);
+  }
+  lua_pushboolean(L, fd ? 1 : 0);
+  lua_pushlstring(L, result.c_str(), result.size());
+  return 2;
+}
+
+/********************************************************************************/
+
 static int main_ios = 0;
 
 static void init_metatable(lua_State* L) {
@@ -294,6 +344,7 @@ static void init_metatable(lua_State* L) {
   }  
   const luaL_Reg methods[] = {
     { "__gc",       luaf_job_gc     },
+    { "state",      luaf_job_state  },
     { "id",         luaf_job_id     },
     { "stop",       luaf_job_stop   },
     { NULL,         NULL            }
@@ -313,6 +364,7 @@ LUAC_API int luaC_open_pload(lua_State* L) {
     { "name",       luaf_os_name       },
     { "dirsep",     luaf_os_dirsep     },
     { "processors", luaf_os_processors },
+    { "shell",      luaf_os_shell      },
     { "id",         luaf_os_id         },
     { "post",       luaf_os_post       },
     { "wait",       luaf_os_wait       },

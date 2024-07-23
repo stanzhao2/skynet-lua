@@ -7,6 +7,9 @@
  **skynet http broker**
 -   skynet http.broker [port] [host] [ca] [key] [pwd] 
 
+ **skynet shell**
+-   skynet skynet.shell [port] [callback]
+
  **global functions**
 -   bind(func, [, ...])
 -   pcall(func [, ...])
@@ -64,6 +67,7 @@
  **job functions**
 -   job:stop()
 -   job:id()
+-   job:state()
 
  **io functions** 
 -   io.wwwget(url)
