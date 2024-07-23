@@ -376,19 +376,18 @@ static int luaf_rpcall(lua_State* L) {
   /* not in coroutine */
   rcf = std::abs(rcf);
   auto begin = luaC_clock();
-  while (!lws::stopped()) {
-    //check timeout
+  while (!rpcall_complete) {
+    if (lws::stopped()) {
+      break;
+    }
     if (!luaC_debugging()) {
+      //check timeout
       if (luaC_clock() - begin >= max_expires) {
         break;
       }
     }
     lws::poll();
-    if (lws::runone_for(rcf, max_expires) > 0) {
-      if (rpcall_complete) {
-        break;
-      }
-    }
+    lws::runone_for(rcf, 10); //wait
   }
   lws::close(rcf);
   if (lws::stopped()) {
