@@ -78,7 +78,7 @@ static const char* localtime(char* out, size_t size) {
   time_t now = time(NULL);
   struct tm* ptm = localtime(&now);
   auto ms = (int)(luaC_clock() % 1000);
-  snprintf(out, size, "%02d/%02d %02d:%02d:%02d.%03d: ", ptm->tm_mday, ptm->tm_mon + 1, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, ms);
+  snprintf(out, size, "[%02d-%02d %02d:%02d:%02d.%03d] ", ptm->tm_mon + 1, ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, ms);
   return out;
 }
 
