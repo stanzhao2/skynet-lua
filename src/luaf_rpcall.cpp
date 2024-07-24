@@ -442,6 +442,14 @@ static int luaf_undeclare(lua_State* L) {
 
 /* watch events */
 static int luaf_lookout(lua_State* L) {
+  if (lua_isnoneornil(L, 1)) {
+    if (watcher_luaf) {
+      luaC_unref(L, watcher_luaf);
+      watcher_ios  = 0;
+      watcher_luaf = 0;
+    }
+    return 0;
+  }
   luaL_checktype(L, 1, LUA_TFUNCTION);
   if (watcher_luaf) {
     luaL_error(L, "lookout can only be called once");
