@@ -103,6 +103,7 @@ static void lua_thread(lua_State* PL, ud_thread* job) {
     job->state = job_state::exited;
   }
   luaC_close(L);
+  local_job = nullptr;
 }
 
 static int luaf_job_stop(lua_State* L) {
@@ -181,12 +182,11 @@ static int luaf_os_wait(lua_State* L) {
     if (luaC_debugging() || now - lastgc >= 600000) {
       lastgc = now;
       lua_gc(L, LUA_GCCOLLECT);
-      if (local_job) {
-        local_job->memory = memory_usage(L);
-      }
+    }
+    if (local_job) {
+      local_job->memory = memory_usage(L);
     }
   }
-  local_job = nullptr;
   lua_pushinteger(L, (lua_Integer)count);
   return 1;
 }
