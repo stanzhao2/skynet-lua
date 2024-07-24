@@ -24,6 +24,7 @@
     <ClCompile Include="..\src\luaf_leak.cpp" />
     <ClCompile Include="..\src\luaf_list.cpp" />
     <ClCompile Include="..\src\luaf_metatable.cpp" />
+    <ClCompile Include="..\src\luaf_misc.cpp" />
     <ClCompile Include="..\src\luaf_pack.cpp" />
     <ClCompile Include="..\src\luaf_pcall.cpp" />
     <ClCompile Include="..\src\luaf_pload.cpp" />
@@ -57,6 +58,7 @@
     <ClInclude Include="..\src\luaf_leak.h" />
     <ClInclude Include="..\src\luaf_list.h" />
     <ClInclude Include="..\src\luaf_metatable.h" />
+    <ClInclude Include="..\src\luaf_misc.h" />
     <ClInclude Include="..\src\luaf_pack.h" />
     <ClInclude Include="..\src\luaf_pcall.h" />
     <ClInclude Include="..\src\luaf_pload.h" />

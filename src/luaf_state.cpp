@@ -1,6 +1,7 @@
 
 
 #include "luaf_state.h"
+#include "luaf_misc.h"
 #include "luaf_allotor.h"
 #include "luaf_string.h"
 #include "luaf_compile.h"
@@ -43,6 +44,7 @@ static int luaC_open_version(lua_State* L) {
 
 static const lua_CFunction modules[] = {
   luaC_open_version,
+  luaC_open_misc,
   luaC_open_pcall,
   luaC_open_bind,
   luaC_open_compile,
