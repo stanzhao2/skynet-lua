@@ -99,7 +99,7 @@ static void lua_thread(lua_State* PL, ud_thread* job) {
     lua_ferror("%s\n", job->error.c_str());
   }
   else {
-    job->error = "already exited";
+    job->error = "exit";
     job->state = job_state::exited;
   }
   luaC_close(L);
