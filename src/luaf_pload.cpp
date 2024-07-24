@@ -243,20 +243,15 @@ static int luaf_os_pload(lua_State* L) {
       std::chrono::milliseconds(10)
     );
   }
-  if (job->state == job_state::error) {
+  if (job->state == job_state::successfully) {
+    lua_pushboolean(L, 1);
+    lua_rotate(L, -2, 1);
+  }
+  else {
     lua_pushboolean(L, 0);
     lua_pushlstring(L, job->error.c_str(), job->error.size());
     if (job->thread->joinable()) {
       job->thread->join();
-    }
-  }
-  else {
-    lua_pushboolean(L, 1);
-    lua_rotate(L, -2, 1);
-    if (job->state != job_state::successfully) {
-      if (job->thread->joinable()) {
-        job->thread->join();
-      }
     }
   }
   return 2;
