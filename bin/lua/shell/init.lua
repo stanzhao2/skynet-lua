@@ -78,6 +78,7 @@ function service.list(query)
     result.array[name] = {};
     for _, job in pairs(item) do
       local state = {};
+      state.memory = job:memory();
       state.id = job:id();
       state.state = job:state();
 	  table.insert(result.array[name], state);

@@ -26,6 +26,7 @@ struct ud_thread {
   void*         ud;
   lws_int       ios;
   lua_Alloc     alloter;
+  size_t        memory;
   std::string   name;
   std::string   argv;
   std::string   error;
@@ -33,6 +34,14 @@ struct ud_thread {
 };
 
 /********************************************************************************/
+
+static thread_local ud_thread* local_job = nullptr;
+
+static size_t memory_usage(lua_State* L) {
+  auto part1 = lua_gc(L, LUA_GCCOUNT, 0) * 1024;
+  auto part2 = lua_gc(L, LUA_GCCOUNTB, 0);
+  return part1 + part2;
+}
 
 static int luaf_callback(lua_State* L) {
   int index = lua_upvalueindex(1); /* get the first up-value */
@@ -60,6 +69,7 @@ static void clonepath(lua_State* from, lua_State* to, const char* name) {
 }
 
 static void lua_thread(lua_State* PL, ud_thread* job) {
+  local_job  = job;
   auto& name = job->name;
   auto& argv = job->argv;
   job->ios   = lws::getlocal();
@@ -140,6 +150,12 @@ static int luaf_job_id(lua_State* L) {
   return 1;
 }
 
+static int luaf_job_usage(lua_State* L) {
+  ud_thread* job = luaC_checkudata<ud_thread>(L, 1, LUAC_THREAD);
+  lua_pushinteger(L, job->memory);
+  return 1;
+}
+
 static int luaf_os_wait(lua_State* L) {
   static auto lastgc = luaC_clock();
   lua_getglobal(L, LUAC_STOPCALL);
@@ -165,8 +181,12 @@ static int luaf_os_wait(lua_State* L) {
     if (luaC_debugging() || now - lastgc >= 600000) {
       lastgc = now;
       lua_gc(L, LUA_GCCOLLECT);
+      if (local_job) {
+        local_job->memory = memory_usage(L);
+      }
     }
   }
+  local_job = nullptr;
   lua_pushinteger(L, (lua_Integer)count);
   return 1;
 }
@@ -214,6 +234,7 @@ static int luaf_os_pload(lua_State* L) {
   job->state   = job_state::pending;
   job->name    = name;
   job->argv    = argv;
+  job->memory  = 0;
   job->alloter = lua_getallocf(L, &job->ud);
   job->thread  = std::make_shared<std::thread>(std::bind(lua_thread, L, job));
 
@@ -239,6 +260,12 @@ static int luaf_os_pload(lua_State* L) {
     }
   }
   return 2;
+}
+
+static int luaf_os_memory(lua_State* L) {
+  auto used = memory_usage(L);
+  lua_pushinteger(L, (lua_Integer)used);
+  return 1;
 }
 
 static int luaf_os_name(lua_State* L) {
@@ -341,12 +368,13 @@ static int main_ios = 0;
 static void init_metatable(lua_State* L) {
   if (main_ios == 0) {
     main_ios = lws::getlocal();
-  }  
+  }
   const luaL_Reg methods[] = {
     { "__gc",       luaf_job_gc     },
     { "state",      luaf_job_state  },
     { "id",         luaf_job_id     },
     { "stop",       luaf_job_stop   },
+    { "memory",     luaf_job_usage  },
     { NULL,         NULL            }
   };
   luaC_newmetatable(L, LUAC_THREAD, methods);
@@ -365,6 +393,7 @@ LUAC_API int luaC_open_pload(lua_State* L) {
     { "dirsep",     luaf_os_dirsep     },
     { "processors", luaf_os_processors },
     { "shell",      luaf_os_shell      },
+    { "memory",     luaf_os_memory     },
     { "id",         luaf_os_id         },
     { "post",       luaf_os_post       },
     { "wait",       luaf_os_wait       },

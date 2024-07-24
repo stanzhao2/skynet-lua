@@ -38,6 +38,7 @@
 -   os.mkdir(name)
 -   os.opendir([name])
 -   os.processors()
+-   os.memory()
 -   os.id()
 -   os.post(func [, ...])
 -   os.wait([expires])
@@ -65,6 +66,7 @@
 -   list:pop_front()
 
  **job functions**
+-   job:memory()
 -   job:stop()
 -   job:id()
 -   job:state()
