@@ -79,9 +79,9 @@ static int luaf_valid(lua_State* L) {
 }
 
 static int luaf_gc(lua_State* L) {
-#ifdef _DEBUG
-  lua_ftrace("DEBUG: %s will gc\n", LUAC_SOCKET);
-#endif
+  if (luaC_debugging()) {
+    lua_ftrace("DEBUG: %s will gc\n", LUAC_SOCKET);
+  }
   auto ud = luaC_checkudata<ud_context>(L, 1, LUAC_SOCKET);
   int result = luaf_close(L);
   ud->~ud_context();

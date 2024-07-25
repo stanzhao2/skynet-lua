@@ -260,10 +260,6 @@ LUAC_API void luaC_openlibs(lua_State* L, const lua_CFunction f[]) {
   }
 }
 
-LUAC_API bool luaC_debugging() {
-  return (*LUA_DIRSEP == '\\');
-}
-
 LUAC_API lua_State* luaC_getlocal() {
   return LL;
 }
