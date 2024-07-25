@@ -100,7 +100,7 @@ static void usage(const char* filename) {
   printf("%s\n", "https://gitee.com/stancpp/skynet-lua.git");
   printf("Version(R): %s\n", SKYNET_VERSION);
   printf("------------------------------------------------------\n");
-  printf("Usage: %s [<-d>/<-h>] module [, ...]\n\n", filename);
+  printf("Usage: %s [<-d>/<-h>] module [...]\n\n", filename);
 }
 
 static int check_devel(int n, const char* argv[]) {
