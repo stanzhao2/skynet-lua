@@ -58,13 +58,19 @@ inline std::string pwd() {
 /***********************************************************************************/
 
 inline std::string pmd() {
-  char filename[MAX_PATH] = { 0 };
-  GetModuleFileNameA(NULL, filename, MAX_PATH);
-  char* pos = strrchr(filename, '\\');
-  if (pos) {
-    *pos = 0;
+  char path[MAX_PATH] = { 0 };
+  DWORD rslt = GetModuleFileNameA(NULL, path, sizeof(path));
+  if (rslt == 0) {
+    return nullptr;
   }
-  return filename;
+  path[rslt] = '\0';
+  for (int i = (int)rslt; i >= 0; i--) {
+    if (path[i] == '\\') {
+      path[i ? i : 1] = '\0';
+      break;
+    }
+  }
+  return path;
 }
 
 /***********************************************************************************/

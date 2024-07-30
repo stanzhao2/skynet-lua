@@ -77,7 +77,7 @@ inline std::string pmd() {
   path[rslt] = '\0';
   for (i = rslt; i >= 0; i--) {
     if (path[i] == '/') {
-      path[i] = '\0';
+      path[i ? i : 1] = '\0';
       break;
     }
   }
