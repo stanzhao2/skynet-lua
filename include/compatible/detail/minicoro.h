@@ -252,7 +252,7 @@ extern "C" {
 
 /* Size of coroutine storage buffer. */
 #ifndef MCO_DEFAULT_STORAGE_SIZE
-#define MCO_DEFAULT_STORAGE_SIZE 1024
+#define MCO_DEFAULT_STORAGE_SIZE 8192
 #endif
 
 #include <stddef.h> /* for size_t */

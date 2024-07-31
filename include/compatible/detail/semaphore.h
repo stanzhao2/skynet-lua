@@ -21,21 +21,21 @@ struct condition {
 
 /***********************************************************************************/
 
-CONF_API void co_signal(condition& ref) {
+CONF_API void cv_signal(condition& ref) {
   std::unique_lock<std::mutex> unique(ref.mt);
   if ((++ref.counter) <= 0) {
     ref.cond.notify_one();
   }
 }
 
-CONF_API void co_wait(condition& ref) {
+CONF_API void cv_wait(condition& ref) {
   std::unique_lock<std::mutex> unique(ref.mt);
   if ((--ref.counter) < 0) {
     ref.cond.wait(unique);
   }
 }
 
-CONF_API bool co_wait_for(condition& ref, size_t expires) {
+CONF_API bool cv_wait_for(condition& ref, size_t expires) {
   std::unique_lock<std::mutex> unique(ref.mt);
   if ((--ref.counter) >= 0) {
     return true;
@@ -58,13 +58,13 @@ public:
     cond.counter = count;
   }
   inline void signal() {
-    co_signal(cond);
+    cv_signal(cond);
   }
   inline void wait() {
-    co_wait(cond);
+    cv_wait(cond);
   }
   inline bool wait_for(size_t expires) {
-    return co_wait_for(cond, expires);
+    return cv_wait_for(cond, expires);
   }
 private:
   condition cond;
