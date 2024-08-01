@@ -14,6 +14,7 @@
 #define cbminx(a, b) ((a) < (b) ? (a) : (b))
 #define cbused(w, r) ((w) - (r))
 #define cbfree(w, r) (_size - cbused(w, r))
+#define is_power_of_2(n) (n && ((n & (n - 1)) == 0))
 
 class circular_buffer final {
   circular_buffer(const circular_buffer&);
@@ -53,7 +54,9 @@ public:
 
 private:
   static size_t roundup_power_of_2(size_t n) {
-    n = n ? n : 1;
+    if (is_power_of_2(n)) {
+      return n;
+    }
     size_t maxv = ~0;
     size_t andv = ~(maxv & (maxv >> 1));
     while ((andv & n) == 0) andv = andv >> 1;
