@@ -34,6 +34,9 @@ public:
     _buff = realloc(_size);
   }
   inline char operator[](size_t i) const {
+    return at(i);
+  }
+  inline char at(size_t i) const {
     assert(i < cbused(_wi, _ri));
     return (char)_buff[(_ri + i) & (_size - 1)];
   }
