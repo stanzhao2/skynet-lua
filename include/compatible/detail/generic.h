@@ -8,8 +8,6 @@
 #pragma once
 #endif
 
-#include "coroutine.h"
-
 #define CONF_API inline
 
 /***********************************************************************************/
@@ -49,14 +47,6 @@
 #endif
 
 /***********************************************************************************/
-
-CONF_API size_t roundup_power_of_2(size_t n) {
-  n = n ? n : 1;
-  size_t maxv = ~0;
-  size_t andv = ~(maxv & (maxv >> 1));
-  while ((andv & n) == 0) andv = andv >> 1;
-  return andv << 1;
-}
 
 CONF_API size_t cpu_hardware() {
   return std::thread::hardware_concurrency();

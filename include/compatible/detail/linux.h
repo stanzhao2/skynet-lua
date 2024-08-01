@@ -8,12 +8,15 @@
 #pragma once
 #endif
 
-#include "semaphore.h"
-
 #include <linux/kernel.h>
 #include <unistd.h>
 #include <dlfcn.h>    //dlopen, dlclose, dlsym
 #include <dirent.h>
+
+#include "generic.h"
+#include "struct/semaphore.h"
+#include "struct/circular_buffer.h"
+#include "co/coroutine.h"
 
 /***********************************************************************************/
 

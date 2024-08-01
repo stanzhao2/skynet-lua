@@ -8,7 +8,7 @@
 #pragma once
 #endif
 
-#include "generic.h"
+#include <mutex>
 #include <condition_variable>
 
 /***********************************************************************************/

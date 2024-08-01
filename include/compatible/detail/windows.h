@@ -8,8 +8,6 @@
 #pragma once
 #endif
 
-#include "semaphore.h"
-
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0601
 #endif
@@ -20,6 +18,11 @@
 
 #include <windows.h>
 #include <direct.h>
+
+#include "generic.h"
+#include "struct/semaphore.h"
+#include "struct/circular_buffer.h"
+#include "co/coroutine.h"
 
 /***********************************************************************************/
 
