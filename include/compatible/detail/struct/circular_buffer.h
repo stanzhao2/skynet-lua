@@ -18,7 +18,7 @@
 class circular_buffer final {
   circular_buffer(const circular_buffer&);
   unsigned char *_buff;
-  size_t _size, _wi, _ri;
+  size_t _size, _wi, _ri, _limit;
 
 public:
   virtual ~circular_buffer() {
@@ -28,8 +28,12 @@ public:
     : _buff(0)
     , _size(roundup_power_of_2(size))
     , _wi(0)
-    , _ri(0) {
+    , _ri(0)
+    , _limit(0) {
     _buff = realloc(_size);
+  }
+  inline void limit(size_t nmax) {
+    _limit = roundup_power_of_2(nmax);
   }
   inline size_t read(char* buff, size_t size) {
     return _read(buff, size);
@@ -65,7 +69,7 @@ private:
   }
   size_t _write(const char* data, size_t size) {
     size_t nmax = cbminx(size, cbfree(_wi, _ri));
-    if (nmax < size) {
+    if (_limit && nmax < size) {
       size_t n = cbused(_wi, _ri);
       if (resize(n, size)) {
         return _write(data, size);
@@ -80,6 +84,9 @@ private:
   bool resize(size_t original, size_t growing) {
     size_t nsize = original + growing;
     nsize = roundup_power_of_2(nsize);
+    if (nsize > _limit) {
+      return false;
+    }
     unsigned char* nbuff = realloc(nsize);
     if (!nbuff) {
       return false;
