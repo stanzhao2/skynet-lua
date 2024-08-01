@@ -11,9 +11,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define cbminx(a, b) ((a) < (b) ? (a) : (b))
-#define cbused(w, r) ((w) - (r))
-#define cbfree(w, r) (_size - cbused(w, r))
+#define cbminx(a, b)     ((a) < (b) ? (a) : (b))
+#define cbused(w, r)     ((w) - (r))
+#define cbfree(w, r)     (_size - cbused(w, r))
 #define is_power_of_2(n) (n && ((n & (n - 1)) == 0))
 
 class circular_buffer final {
@@ -36,8 +36,8 @@ public:
   inline void limit(size_t nmax) {
     _limit = roundup_power_of_2(nmax);
   }
-  inline size_t read(char* buff, size_t size) {
-    return _read(buff, size);
+  inline size_t read(void* buff, size_t size) {
+    return _read((char*)buff, size);
   }
   inline size_t write(const void* buff, size_t size) {
     return _write((char*)buff, size);
