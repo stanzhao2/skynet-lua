@@ -33,14 +33,18 @@ public:
     , _limit(0) {
     _buff = realloc(_size);
   }
+  inline char operator[](size_t i) const {
+    assert(i < cbused(_wi, _ri));
+    return (char)_buff[(_ri + i) & (_size - 1)];
+  }
   inline void limit(size_t nmax) {
     _limit = roundup_power_of_2(nmax);
   }
-  inline size_t read(void* buff, size_t size) {
-    return _read((char*)buff, size);
+  inline void clear() {
+    _wi = _ri = 0;
   }
-  inline size_t write(const void* buff, size_t size) {
-    return _write((char*)buff, size);
+  inline bool empty() const {
+    return cbused(_wi, _ri) == 0;
   }
   inline size_t size() const {
     return _size;
@@ -48,8 +52,11 @@ public:
   inline size_t used() const {
     return cbused(_wi, _ri);
   }
-  inline bool empty() const {
-    return cbused(_wi, _ri) == 0;
+  inline size_t read(void* buff, size_t size) {
+    return _read((char*)buff, size);
+  }
+  inline size_t write(const void* buff, size_t size) {
+    return _write((char*)buff, size);
   }
 
 private:
@@ -102,8 +109,7 @@ private:
         _wi = _wi + _size;
       }
     }
-    _buff = nbuff;
-    _size = nsize;
+    _buff = nbuff; _size = nsize;
     return true;
   }
   unsigned char* realloc(size_t nsize) {
@@ -116,3 +122,4 @@ private:
 #endif //__CIRCULAR_BUFFER_H_
 
 /***********************************************************************************/
+ 
