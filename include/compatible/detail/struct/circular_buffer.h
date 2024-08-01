@@ -55,6 +55,10 @@ public:
   inline size_t used() const {
     return cbused(_wi, _ri);
   }
+  inline size_t read(size_t size) {
+    size_t nmax = cbminx(size, cbused(_wi, _ri));
+    return (_ri += nmax), nmax;
+  }
   inline size_t read(void* buff, size_t size) {
     return _read((char*)buff, size);
   }
